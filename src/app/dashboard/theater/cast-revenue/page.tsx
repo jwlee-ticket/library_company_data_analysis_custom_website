@@ -7,9 +7,9 @@ import AllCastTable from '@/components/dashboard/theater/AllCastTable';
 
 // 임시 데이터
 const DUMMY_PERFORMANCES = [
-  { id: 1, title: '햄릿' },
-  { id: 2, title: '로미오와 줄리엣' },
-  { id: 3, title: '맥베스' },
+  { id: 1, title: '바닷마을 다이어리' },
+  { id: 2, title: '타인의 삶' },
+  { id: 3, title: '사운드 인사이드' },
 ];
 
 export default function CastRevenuePage() {
@@ -22,7 +22,6 @@ export default function CastRevenuePage() {
         <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           캐스트별 매출 분석
         </h1>
-        <p className="mt-2 text-gray-600">각 캐스트 조합별 매출 실적을 분석하고 비교합니다.</p>
       </div>
 
       {/* 공연 선택 섹션 */}

@@ -15,16 +15,21 @@ interface DropdownProps {
 
 function Dropdown({ title, items, isOpen, onToggle, currentPath }: DropdownProps) {
   return (
-    <div className="mb-2">
+    <div className="mb-3">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-4 py-2 text-white hover:bg-gray-700 rounded transition-colors duration-200"
+        className={`
+          w-full flex items-center justify-between px-4 py-2.5 
+          text-gray-200 hover:bg-gray-700/50 rounded-lg
+          transition-all duration-200 ease-in-out
+          ${isOpen ? 'bg-gray-700/30' : ''}
+        `}
       >
-        <span>{title}</span>
+        <span className="font-medium">{title}</span>
         <motion.svg
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
-          className="w-4 h-4"
+          className={`w-4 h-4 transition-colors duration-200 ${isOpen ? 'text-blue-400' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -53,11 +58,14 @@ function Dropdown({ title, items, isOpen, onToggle, currentPath }: DropdownProps
                   >
                     <Link
                       href={item.href}
-                      className={`block px-4 py-2 text-sm rounded transition-colors duration-200 ${
-                        isActive
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                      }`}
+                      className={`
+                        block px-4 py-2 text-sm rounded-md
+                        transition-all duration-200 ease-in-out
+                        ${isActive
+                          ? 'bg-blue-600/90 text-white font-medium shadow-sm'
+                          : 'text-gray-300 hover:bg-gray-700/50 hover:text-white hover:translate-x-1'
+                        }
+                      `}
                     >
                       {item.name}
                     </Link>
@@ -124,14 +132,25 @@ export default function Sidebar() {
   const isHome = pathname === '/dashboard';
 
   return (
-    <div className="w-64 h-screen bg-gray-800 text-white p-4">
-      <div className="text-2xl font-bold mb-8">MVP 버전</div>
-      <nav className="space-y-2">
+    <div className="w-64 h-screen bg-gray-800 text-white p-6 shadow-xl">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          MVP 버전
+        </h1>
+        <div className="mt-2 h-0.5 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full" />
+      </div>
+      
+      <nav className="space-y-3">
         <Link
           href="/dashboard"
-          className={`block px-4 py-2 rounded ${
-            isHome ? 'bg-blue-600 text-white' : 'text-white hover:bg-gray-700'
-          }`}
+          className={`
+            block px-4 py-2.5 rounded-lg font-medium
+            transition-all duration-200 ease-in-out
+            ${isHome 
+              ? 'bg-blue-600/90 text-white shadow-sm' 
+              : 'text-gray-200 hover:bg-gray-700/50 hover:text-white'
+            }
+          `}
         >
           전체
         </Link>

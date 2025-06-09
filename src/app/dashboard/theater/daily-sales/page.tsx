@@ -6,9 +6,9 @@ import DailySalesTable from '@/components/dashboard/theater/DailySalesTable';
 
 // 임시 데이터
 const DUMMY_PERFORMANCES = [
-  { id: 1, title: '햄릿' },
-  { id: 2, title: '로미오와 줄리엣' },
-  { id: 3, title: '맥베스' },
+  { id: 1, title: '바닷마을 다이어리' },
+  { id: 2, title: '타인의 삶' },
+  { id: 3, title: '사운드 인사이드' },
 ];
 
 export default function DailySalesPage() {

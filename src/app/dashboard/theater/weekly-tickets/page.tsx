@@ -4,11 +4,12 @@ import { useState } from 'react';
 import WeeklyTicketsChart from '@/components/dashboard/WeeklyTicketsChart';
 import TheaterTicketsTable from '@/components/dashboard/TheaterTicketsTable';
 import { motion } from 'framer-motion';
+import { IoStatsChart } from 'react-icons/io5';
 
 const dummyData = [
   {
     id: '1',
-    title: '햄릿',
+    title: '바닷마을 다이어리',
     weeklyData: [
       { week: '1주차', soldTickets: 450, maxTickets: 500 },
       { week: '2주차', soldTickets: 480, maxTickets: 500 },
@@ -21,7 +22,7 @@ const dummyData = [
   },
   {
     id: '2',
-    title: '로미오와 줄리엣',
+    title: '타인의 삶',
     weeklyData: [
       { week: '1주차', soldTickets: 380, maxTickets: 450 },
       { week: '2주차', soldTickets: 420, maxTickets: 450 },
@@ -34,7 +35,7 @@ const dummyData = [
   },
   {
     id: '3',
-    title: '맥베스',
+    title: '사운드 인사이드',
     weeklyData: [
       { week: '1주차', soldTickets: 320, maxTickets: 400 },
       { week: '2주차', soldTickets: 350, maxTickets: 400 },
@@ -49,6 +50,7 @@ const dummyData = [
 
 export default function WeeklyTicketsPage() {
   const [selectedPerformance, setSelectedPerformance] = useState(dummyData[0]);
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
 
   return (
     <motion.div 
@@ -81,32 +83,64 @@ export default function WeeklyTicketsPage() {
         className="bg-white rounded-xl shadow-lg p-6 border border-gray-100"
       >
         <div className="mb-6">
-          <label htmlFor="performance" className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <IoStatsChart className="w-4 h-4 mr-2 text-blue-500" />
             공연 상세 분석
           </label>
           <div className="relative">
-            <select
-              id="performance"
-              value={selectedPerformance.id}
-              onChange={(e) => {
-                const selected = dummyData.find(p => p.id === e.target.value);
-                if (selected) setSelectedPerformance(selected);
-              }}
-              className="block w-full rounded-lg border-gray-300 bg-white pr-10 pl-4 py-2.5 text-sm
+            <button
+              onClick={() => setIsSelectOpen(!isSelectOpen)}
+              className="relative w-full bg-white border border-gray-200 rounded-lg pl-4 pr-10 py-2.5 text-left
                        shadow-sm transition duration-200 ease-in-out
-                       focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20"
+                       hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20"
             >
-              {dummyData.map((performance) => (
-                <option key={performance.id} value={performance.id}>
-                  {performance.title}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-              <svg className="h-4 w-4 fill-current" viewBox="0 0 20 20">
-                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-              </svg>
-            </div>
+              <span className="block truncate text-gray-900">{selectedPerformance.title}</span>
+              <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <motion.svg
+                  animate={{ rotate: isSelectOpen ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="h-4 w-4 text-gray-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </motion.svg>
+              </span>
+            </button>
+
+            {/* Dropdown Menu */}
+            {isSelectOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg"
+              >
+                <div className="py-1 max-h-60 overflow-auto">
+                  {dummyData.map((performance) => (
+                    <button
+                      key={performance.id}
+                      onClick={() => {
+                        setSelectedPerformance(performance);
+                        setIsSelectOpen(false);
+                      }}
+                      className={`
+                        w-full text-left px-4 py-2.5 text-sm
+                        transition duration-150 ease-in-out
+                        ${selectedPerformance.id === performance.id
+                          ? 'bg-blue-50 text-blue-700 font-medium'
+                          : 'text-gray-900 hover:bg-gray-50'
+                        }
+                      `}
+                    >
+                      {performance.title}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
         </div>
 

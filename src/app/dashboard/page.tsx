@@ -16,31 +16,38 @@ interface SummaryCardProps {
 
 function SummaryCard({ title, value, subtitle, comparison }: SummaryCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-sm font-medium text-gray-500 mb-1">{title}</h3>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-      {comparison && (
-        <div className="flex items-center mt-2">
-          {comparison.value > 0 ? (
-            <IoMdArrowDropup className="text-green-500 text-xl" />
-          ) : comparison.value < 0 ? (
-            <IoMdArrowDropdown className="text-red-500 text-xl" />
-          ) : null}
-          <span className={`text-sm ${
-            comparison.value > 0 ? 'text-green-600' : 
-            comparison.value < 0 ? 'text-red-600' : 
-            'text-gray-600'
-          }`}>
-            {Math.abs(comparison.value).toLocaleString()}원
-          </span>
-          <span className="text-sm text-gray-500 ml-1">
-            {comparison.label}
-          </span>
-        </div>
-      )}
-      {subtitle && (
-        <p className="text-sm text-gray-600 mt-2">{subtitle}</p>
-      )}
+    <div className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-lg transition-all duration-300">
+      <div className="flex flex-col h-full">
+        <h3 className="text-sm font-medium text-gray-500 mb-1">{title}</h3>
+        <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          {value}
+        </p>
+        {comparison && (
+          <div className="flex items-center mt-2">
+            {comparison.value > 0 ? (
+              <div className="flex items-center text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                <IoMdArrowDropup className="text-xl" />
+                <span className="text-sm font-medium">
+                  {Math.abs(comparison.value).toLocaleString()}원
+                </span>
+              </div>
+            ) : comparison.value < 0 ? (
+              <div className="flex items-center text-red-600 bg-red-50 px-2 py-1 rounded-full">
+                <IoMdArrowDropdown className="text-xl" />
+                <span className="text-sm font-medium">
+                  {Math.abs(comparison.value).toLocaleString()}원
+                </span>
+              </div>
+            ) : null}
+            <span className="text-sm text-gray-500 ml-2">
+              {comparison.label}
+            </span>
+          </div>
+        )}
+        {subtitle && (
+          <p className="text-sm text-gray-600 mt-2">{subtitle}</p>
+        )}
+      </div>
     </div>
   );
 }
@@ -69,13 +76,13 @@ export default function DashboardPage() {
   const performanceData = [
     {
       genre: '연극' as const,
-      title: '햄릿',
+      title: '바닷마을 다이어리',
       currentSales: 45000000,
       targetSales: 50000000,
     },
     {
       genre: '연극' as const,
-      title: '로미오와 줄리엣',
+      title: '타인의 삶',
       currentSales: 80000000,
       targetSales: 100000000,
     },
@@ -112,10 +119,14 @@ export default function DashboardPage() {
   const dailyChange = totalCurrent - totalPreviousDay;
 
   return (
-    <div className="space-y-8">
+    <div className="p-6 space-y-8">
+
       {/* 전체 매출 요약 */}
-      <div>
-        <h2 className="text-xl font-bold text-gray-800 mb-4">전체 매출 요약</h2>
+      <div className="animate-fadeIn">
+        <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+          <span className="inline-block w-2 h-6 bg-blue-500 rounded mr-3"></span>
+          전체 매출 요약
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <SummaryCard
             title="총 매출"
@@ -146,8 +157,11 @@ export default function DashboardPage() {
       </div>
 
       {/* 장르별 매출 현황 */}
-      <div>
-        <h2 className="text-xl font-bold text-gray-800 mb-4">장르별 매출 현황</h2>
+      <div className="animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+        <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+          <span className="inline-block w-2 h-6 bg-purple-500 rounded mr-3"></span>
+          장르별 매출 현황
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <SalesCard
             title="연극 매출"
@@ -176,9 +190,12 @@ export default function DashboardPage() {
       </div>
 
       {/* 공연별 매출 현황 */}
-      <div>
-        <h2 className="text-xl font-bold text-gray-800 mb-4">공연별 매출 현황</h2>
-        <div className="bg-white rounded-lg shadow">
+      <div className="animate-fadeIn" style={{ animationDelay: '0.4s' }}>
+        <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+          <span className="inline-block w-2 h-6 bg-green-500 rounded mr-3"></span>
+          공연별 매출 현황
+        </h2>
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
           <SalesTable performances={performanceData} />
         </div>
       </div>

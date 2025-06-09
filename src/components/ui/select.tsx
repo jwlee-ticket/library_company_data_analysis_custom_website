@@ -1,9 +1,8 @@
 'use client';
 
-import * as React from 'react';
-import * as SelectPrimitive from '@radix-ui/react-select';
-import { ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { IoChevronDown, IoCheckmark } from 'react-icons/io5';
 
 interface SelectOption {
   value: string;
@@ -18,48 +17,77 @@ interface SelectProps {
   className?: string;
 }
 
-export function Select({
-  value,
-  onValueChange,
-  options,
-  placeholder,
-  className,
-}: SelectProps) {
+export function Select({ value, onValueChange, options, placeholder, className = '' }: SelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selectedOption = options.find(option => option.value === value);
+
   return (
-    <SelectPrimitive.Root value={value} onValueChange={onValueChange}>
-      <SelectPrimitive.Trigger
-        className={cn(
-          'flex h-10 w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-          className
-        )}
+    <div ref={selectRef} className={`relative ${className}`}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-left
+                 flex items-center justify-between group
+                 hover:border-blue-400 focus:outline-none focus:border-blue-500 focus:ring-2 
+                 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200"
       >
-        <SelectPrimitive.Value placeholder={placeholder}>
-          {options.find(option => option.value === value)?.label || placeholder}
-        </SelectPrimitive.Value>
-        <SelectPrimitive.Icon>
-          <ChevronDown className="h-4 w-4 opacity-50" />
-        </SelectPrimitive.Icon>
-      </SelectPrimitive.Trigger>
-      <SelectPrimitive.Portal>
-        <SelectPrimitive.Content
-          className="relative z-50 min-w-[8rem] overflow-hidden rounded-md border border-gray-200 bg-white text-gray-950 shadow-md animate-in fade-in-80"
-          position="popper"
-          side="bottom"
-          sideOffset={5}
+        <span className={`text-sm ${selectedOption ? 'text-gray-900' : 'text-gray-500'}`}>
+          {selectedOption ? selectedOption.label : placeholder}
+        </span>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+          className="text-gray-400 group-hover:text-gray-600"
         >
-          <SelectPrimitive.Viewport className="p-1">
-            {options.map((option) => (
-              <SelectPrimitive.Item
-                key={option.value}
-                value={option.value}
-                className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-gray-100 focus:text-gray-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-              >
-                <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
-              </SelectPrimitive.Item>
-            ))}
-          </SelectPrimitive.Viewport>
-        </SelectPrimitive.Content>
-      </SelectPrimitive.Portal>
-    </SelectPrimitive.Root>
+          <IoChevronDown className="h-5 w-5" />
+        </motion.div>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.15 }}
+            className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg
+                     overflow-hidden"
+          >
+            <div className="max-h-60 overflow-y-auto py-1">
+              {options.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => {
+                    onValueChange(option.value);
+                    setIsOpen(false);
+                  }}
+                  className="w-full px-4 py-2.5 text-sm text-left hover:bg-blue-50 flex items-center
+                           justify-between transition-colors duration-150"
+                >
+                  <span className={`${value === option.value ? 'text-blue-600' : 'text-gray-700'}`}>
+                    {option.label}
+                  </span>
+                  {value === option.value && (
+                    <IoCheckmark className="h-5 w-5 text-blue-500" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 } 

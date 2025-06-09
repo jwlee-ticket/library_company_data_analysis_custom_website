@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import MonthlyRevenueChart from '@/components/dashboard/MonthlyRevenueChart';
-import { motion } from 'framer-motion';
-import { IoStatsChart, IoCalendarOutline } from 'react-icons/io5';
+import { motion, AnimatePresence } from 'framer-motion';
+import { IoStatsChart, IoCalendarOutline, IoChevronDown, IoCheckmark } from 'react-icons/io5';
 
 // 더미 데이터
 const dummyData = {
@@ -18,7 +18,7 @@ const dummyData = {
   performances: [
     {
       id: '1',
-      title: '햄릿',
+      title: '바닷마을 다이어리',
       monthlyData: [
         { month: '2024-01', revenue: 45000000, previousRevenue: null },
         { month: '2024-02', revenue: 48000000, previousRevenue: 45000000 },
@@ -30,7 +30,7 @@ const dummyData = {
     },
     {
       id: '2',
-      title: '로미오와 줄리엣',
+      title: '타인의 삶',
       monthlyData: [
         { month: '2024-01', revenue: 42000000, previousRevenue: null },
         { month: '2024-02', revenue: 45000000, previousRevenue: 42000000 },
@@ -42,7 +42,7 @@ const dummyData = {
     },
     {
       id: '3',
-      title: '맥베스',
+      title: '사운드 인사이드',
       monthlyData: [
         { month: '2024-01', revenue: 38000000, previousRevenue: null },
         { month: '2024-02', revenue: 42000000, previousRevenue: 38000000 },
@@ -57,6 +57,7 @@ const dummyData = {
 
 export default function MonthlyRevenuePage() {
   const [selectedPerformance, setSelectedPerformance] = useState<string | 'total'>('total');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const getChartData = () => {
     if (selectedPerformance === 'total') {
@@ -88,6 +89,11 @@ export default function MonthlyRevenuePage() {
   };
 
   const latestGrowth = getLatestGrowth();
+
+  const getSelectedTitle = () => {
+    if (selectedPerformance === 'total') return '전체 통합';
+    return dummyData.performances.find(p => p.id === selectedPerformance)?.title;
+  };
 
   return (
     <motion.div 
@@ -136,31 +142,70 @@ export default function MonthlyRevenuePage() {
         className="bg-white rounded-xl shadow-lg p-6 border border-gray-100"
       >
         <div className="mb-6">
-          <label htmlFor="performance" className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             매출 분석 대상
           </label>
           <div className="relative">
-            <select
-              id="performance"
-              value={selectedPerformance}
-              onChange={(e) => setSelectedPerformance(e.target.value)}
-              className="block w-full rounded-lg border-gray-300 bg-white pr-10 pl-4 py-2.5 text-sm
-                       shadow-sm transition duration-200 ease-in-out
-                       focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20
-                       appearance-none"
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-left
+                         flex items-center justify-between
+                         hover:border-blue-500 focus:outline-none focus:border-blue-500 focus:ring-2 
+                         focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200"
             >
-              <option value="total">전체 통합</option>
-              {dummyData.performances.map((performance) => (
-                <option key={performance.id} value={performance.id}>
-                  {performance.title}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-              <svg className="h-4 w-4 fill-current" viewBox="0 0 20 20">
-                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-              </svg>
-            </div>
+              <span className="text-sm text-gray-700">{getSelectedTitle()}</span>
+              <motion.div
+                animate={{ rotate: isDropdownOpen ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <IoChevronDown className="h-5 w-5 text-gray-400" />
+              </motion.div>
+            </button>
+
+            <AnimatePresence>
+              {isDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg
+                           overflow-hidden"
+                >
+                  <div className="max-h-60 overflow-y-auto py-1">
+                    <button
+                      onClick={() => {
+                        setSelectedPerformance('total');
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full px-4 py-2.5 text-sm text-left hover:bg-blue-50 flex items-center
+                               justify-between transition-colors duration-150"
+                    >
+                      <span className="text-gray-700">전체 통합</span>
+                      {selectedPerformance === 'total' && (
+                        <IoCheckmark className="h-5 w-5 text-blue-500" />
+                      )}
+                    </button>
+                    {dummyData.performances.map((performance) => (
+                      <button
+                        key={performance.id}
+                        onClick={() => {
+                          setSelectedPerformance(performance.id);
+                          setIsDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-2.5 text-sm text-left hover:bg-blue-50 flex items-center
+                                 justify-between transition-colors duration-150"
+                      >
+                        <span className="text-gray-700">{performance.title}</span>
+                        {selectedPerformance === performance.id && (
+                          <IoCheckmark className="h-5 w-5 text-blue-500" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 

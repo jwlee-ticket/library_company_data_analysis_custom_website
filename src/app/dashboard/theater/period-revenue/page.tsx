@@ -4,13 +4,14 @@ import { useState } from 'react';
 import CumulativeRevenueChart from '@/components/dashboard/CumulativeRevenueChart';
 import WeeklyRevenueTable from '@/components/dashboard/WeeklyRevenueTable';
 import { Select } from '@/components/ui/select';
+import { motion } from 'framer-motion';
 
 // 더미 데이터
 const DUMMY_SHOWS = [
   { id: 'all', name: '전체 연극' },
-  { id: 'show1', name: '로미오와 줄리엣' },
-  { id: 'show2', name: '햄릿' },
-  { id: 'show3', name: '맥베스' },
+  { id: 'show1', name: '타인의 삶' },
+  { id: 'show2', name: '바닷마을 다이어리' },
+  { id: 'show3', name: '사운드 인사이드' },
 ];
 
 const DUMMY_REVENUE_DATA = {
@@ -122,41 +123,58 @@ export default function TheaterPeriodRevenuePage() {
   return (
     <div className="p-6 space-y-8 animate-fadeIn">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <motion.h1 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+        >
           연극 기간별 통합 매출
-        </h1>
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <Select
-            value={selectedShow}
-            onValueChange={setSelectedShow}
-            options={DUMMY_SHOWS.map(show => ({
-              value: show.id,
-              label: show.name,
-            }))}
-            placeholder="공연 선택"
-            className="min-w-[160px] shadow-sm"
-          />
-          <Select
-            value={startDate}
-            onValueChange={setStartDate}
-            options={DUMMY_REVENUE_DATA.dates.map(date => ({
-              value: date,
-              label: date,
-            }))}
-            placeholder="시작일"
-            className="min-w-[120px] shadow-sm"
-          />
-          <Select
-            value={endDate}
-            onValueChange={setEndDate}
-            options={DUMMY_REVENUE_DATA.dates.map(date => ({
-              value: date,
-              label: date,
-            }))}
-            placeholder="종료일"
-            className="min-w-[120px] shadow-sm"
-          />
-        </div>
+        </motion.h1>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto bg-white p-3 rounded-xl shadow-sm"
+        >
+          <div className="w-full sm:w-auto">
+            <Select
+              value={selectedShow}
+              onValueChange={setSelectedShow}
+              options={DUMMY_SHOWS.map(show => ({
+                value: show.id,
+                label: show.name,
+              }))}
+              placeholder="공연 선택"
+              className="min-w-[180px]"
+            />
+          </div>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Select
+              value={startDate}
+              onValueChange={setStartDate}
+              options={DUMMY_REVENUE_DATA.dates.map(date => ({
+                value: date,
+                label: date,
+              }))}
+              placeholder="시작일"
+              className="min-w-[130px]"
+            />
+            <div className="flex items-center">
+              <span className="text-gray-400">~</span>
+            </div>
+            <Select
+              value={endDate}
+              onValueChange={setEndDate}
+              options={DUMMY_REVENUE_DATA.dates.map(date => ({
+                value: date,
+                label: date,
+              }))}
+              placeholder="종료일"
+              className="min-w-[130px]"
+            />
+          </div>
+        </motion.div>
       </div>
 
       <div className="space-y-8">

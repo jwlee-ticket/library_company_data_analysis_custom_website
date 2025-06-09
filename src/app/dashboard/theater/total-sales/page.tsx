@@ -14,28 +14,28 @@ export default function TheaterTotalSalesPage() {
 
   const performanceData = [
     {
-      title: '햄릿',
+      title: '바닷마을 다이어리',
       totalSales: 45000000,
       totalTarget: 50000000,
       dailySales: 2000000,
       dailyTarget: 2500000,
     },
     {
-      title: '로미오와 줄리엣',
+      title: '타인의 삶',
       totalSales: 35000000,
       totalTarget: 40000000,
       dailySales: 1500000,
       dailyTarget: 1800000,
     },
     {
-      title: '맥베스',
+      title: '사운드 인사이드',
       totalSales: 25000000,
       totalTarget: 35000000,
       dailySales: 1000000,
       dailyTarget: 1200000,
     },
     {
-      title: '리어왕',
+      title: '붉은 낙엽',
       totalSales: 20000000,
       totalTarget: 25000000,
       dailySales: 500000,
