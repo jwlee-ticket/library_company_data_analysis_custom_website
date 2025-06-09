@@ -4,7 +4,7 @@ export default function Header() {
   return (
     <header className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-        <h1 className="text-lg font-semibold text-gray-900">라이브러리 데이터 분석</h1>
+        <h1 className="text-lg font-semibold text-gray-900">라이브러리컴퍼니 판매 데이터 대시보드</h1>
         <div className="flex items-center space-x-4">
           <button className="bg-gray-100 p-2 rounded-full">
             <svg className="h-6 w-6 text-gray-600" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">

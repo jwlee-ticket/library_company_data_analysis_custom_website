@@ -2,6 +2,48 @@
 
 import SalesCard from '@/components/dashboard/SalesCard';
 import SalesTable from '@/components/dashboard/SalesTable';
+import { IoMdArrowDropup, IoMdArrowDropdown } from 'react-icons/io';
+
+interface SummaryCardProps {
+  title: string;
+  value: string;
+  subtitle?: string;
+  comparison?: {
+    value: number;
+    label: string;
+  };
+}
+
+function SummaryCard({ title, value, subtitle, comparison }: SummaryCardProps) {
+  return (
+    <div className="bg-white rounded-lg shadow p-6">
+      <h3 className="text-sm font-medium text-gray-500 mb-1">{title}</h3>
+      <p className="text-2xl font-bold text-gray-900">{value}</p>
+      {comparison && (
+        <div className="flex items-center mt-2">
+          {comparison.value > 0 ? (
+            <IoMdArrowDropup className="text-green-500 text-xl" />
+          ) : comparison.value < 0 ? (
+            <IoMdArrowDropdown className="text-red-500 text-xl" />
+          ) : null}
+          <span className={`text-sm ${
+            comparison.value > 0 ? 'text-green-600' : 
+            comparison.value < 0 ? 'text-red-600' : 
+            'text-gray-600'
+          }`}>
+            {Math.abs(comparison.value).toLocaleString()}원
+          </span>
+          <span className="text-sm text-gray-500 ml-1">
+            {comparison.label}
+          </span>
+        </div>
+      )}
+      {subtitle && (
+        <p className="text-sm text-gray-600 mt-2">{subtitle}</p>
+      )}
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   // 실제로는 API나 데이터베이스에서 가져올 데이터입니다
@@ -63,50 +105,43 @@ export default function DashboardPage() {
     },
   ];
 
+  const totalCurrent = salesData.theater.current + salesData.musical.current + salesData.concert.current;
+  const totalTarget = salesData.theater.target + salesData.musical.target + salesData.concert.target;
+  const totalPreviousDay = salesData.theater.previousDay + salesData.musical.previousDay + salesData.concert.previousDay;
+  const achievementRate = ((totalCurrent / totalTarget) * 100).toFixed(1);
+  const dailyChange = totalCurrent - totalPreviousDay;
+
   return (
     <div className="space-y-8">
       {/* 전체 매출 요약 */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div>
         <h2 className="text-xl font-bold text-gray-800 mb-4">전체 매출 요약</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-1">총 매출</p>
-            <p className="text-2xl font-bold text-gray-800">
-              {new Intl.NumberFormat('ko-KR', {
-                style: 'currency',
-                currency: 'KRW',
-                maximumFractionDigits: 0
-              }).format(
-                salesData.theater.current +
-                salesData.musical.current +
-                salesData.concert.current
-              )}
-            </p>
-          </div>
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-1">총 목표</p>
-            <p className="text-2xl font-bold text-gray-800">
-              {new Intl.NumberFormat('ko-KR', {
-                style: 'currency',
-                currency: 'KRW',
-                maximumFractionDigits: 0
-              }).format(
-                salesData.theater.target +
-                salesData.musical.target +
-                salesData.concert.target
-              )}
-            </p>
-          </div>
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-1">전체 달성률</p>
-            <p className="text-2xl font-bold text-gray-800">
-              {(
-                ((salesData.theater.current + salesData.musical.current + salesData.concert.current) /
-                (salesData.theater.target + salesData.musical.target + salesData.concert.target)) *
-                100
-              ).toFixed(1)}%
-            </p>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <SummaryCard
+            title="총 매출"
+            value={new Intl.NumberFormat('ko-KR', {
+              style: 'currency',
+              currency: 'KRW',
+              maximumFractionDigits: 0
+            }).format(totalCurrent)}
+            comparison={{
+              value: dailyChange,
+              label: "전일 대비"
+            }}
+          />
+          <SummaryCard
+            title="총 목표"
+            value={new Intl.NumberFormat('ko-KR', {
+              style: 'currency',
+              currency: 'KRW',
+              maximumFractionDigits: 0
+            }).format(totalTarget)}
+          />
+          <SummaryCard
+            title="전체 달성률"
+            value={`${achievementRate}%`}
+            subtitle={`목표 대비 ${achievementRate}% 달성`}
+          />
         </div>
       </div>
 
@@ -119,7 +154,7 @@ export default function DashboardPage() {
             currentSales={salesData.theater.current}
             targetSales={salesData.theater.target}
             previousDaySales={salesData.theater.previousDay}
-            backgroundColor="bg-blue-50"
+            backgroundColor="bg-white"
           />
           
           <SalesCard
@@ -127,7 +162,7 @@ export default function DashboardPage() {
             currentSales={salesData.musical.current}
             targetSales={salesData.musical.target}
             previousDaySales={salesData.musical.previousDay}
-            backgroundColor="bg-purple-50"
+            backgroundColor="bg-white"
           />
           
           <SalesCard
@@ -135,7 +170,7 @@ export default function DashboardPage() {
             currentSales={salesData.concert.current}
             targetSales={salesData.concert.target}
             previousDaySales={salesData.concert.previousDay}
-            backgroundColor="bg-pink-50"
+            backgroundColor="bg-white"
           />
         </div>
       </div>
