@@ -125,8 +125,8 @@ export default function Sidebar() {
   ];
 
   const concertItems = [
-    { name: '통합현황', href: '/dashboard/concert/overview' },
-    { name: '개별현황', href: '/dashboard/concert/individual' },
+    { name: '통합현황', href: '/dashboard/concert/total-status' },
+    { name: '개별현황', href: '/dashboard/concert/individual-status' },
   ];
 
   const isHome = pathname === '/dashboard';
