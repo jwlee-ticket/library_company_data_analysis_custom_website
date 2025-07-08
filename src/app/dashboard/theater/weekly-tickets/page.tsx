@@ -1,7 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import WeeklyTicketsChart from '@/components/dashboard/WeeklyTicketsChart';
+import dynamic from 'next/dynamic';
+
+const WeeklyTicketsChart = dynamic(() => import('@/components/dashboard/WeeklyTicketsChart'), {
+  ssr: false,
+  loading: () => <div className="bg-white rounded-lg p-8 flex items-center justify-center">
+    <div className="text-gray-500">차트를 로딩 중...</div>
+  </div>
+});
 import TheaterTicketsTable from '@/components/dashboard/TheaterTicketsTable';
 import { motion } from 'framer-motion';
 import { IoStatsChart } from 'react-icons/io5';
