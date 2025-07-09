@@ -83,26 +83,31 @@ function Dropdown({ title, items, isOpen, onToggle, currentPath }: DropdownProps
 export default function Sidebar() {
   const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
+    concert: false,
     theater: false,
     musical: false,
-    concert: false,
   });
 
   // useState를 useEffect로 수정
   useEffect(() => {
     const path = pathname || '';
-    if (path.includes('/theater')) {
+    if (path.includes('/concert')) {
+      setOpenMenus(prev => ({ ...prev, concert: true }));
+    } else if (path.includes('/theater')) {
       setOpenMenus(prev => ({ ...prev, theater: true }));
     } else if (path.includes('/musical')) {
       setOpenMenus(prev => ({ ...prev, musical: true }));
-    } else if (path.includes('/concert')) {
-      setOpenMenus(prev => ({ ...prev, concert: true }));
     }
   }, [pathname]); // pathname이 변경될 때마다 실행
 
   const toggleMenu = (menu: string) => {
     setOpenMenus(prev => ({ ...prev, [menu]: !prev[menu] }));
   };
+
+  const concertItems = [
+    { name: '통합현황', href: '/dashboard/concert/total-status' },
+    { name: '개별현황', href: '/dashboard/concert/individual-status' },
+  ];
 
   const theaterItems = [
     { name: '통합 티켓 판매합계 : 총계', href: '/dashboard/theater/total-sales' },
@@ -122,11 +127,6 @@ export default function Sidebar() {
     { name: '주간별 통합 매출', href: '/dashboard/musical/weekly-revenue' },
     { name: '일간별 판매현황', href: '/dashboard/musical/daily-sales' },
     { name: '캐스트별 매출', href: '/dashboard/musical/cast-revenue' },
-  ];
-
-  const concertItems = [
-    { name: '통합현황', href: '/dashboard/concert/total-status' },
-    { name: '개별현황', href: '/dashboard/concert/individual-status' },
   ];
 
   const isHome = pathname === '/dashboard';
@@ -156,6 +156,14 @@ export default function Sidebar() {
         </Link>
         
         <Dropdown
+          title="콘서트"
+          items={concertItems}
+          isOpen={openMenus.concert}
+          onToggle={() => toggleMenu('concert')}
+          currentPath={pathname}
+        />
+        
+        <Dropdown
           title="연극"
           items={theaterItems}
           isOpen={openMenus.theater}
@@ -168,14 +176,6 @@ export default function Sidebar() {
           items={musicalItems}
           isOpen={openMenus.musical}
           onToggle={() => toggleMenu('musical')}
-          currentPath={pathname}
-        />
-        
-        <Dropdown
-          title="콘서트"
-          items={concertItems}
-          isOpen={openMenus.concert}
-          onToggle={() => toggleMenu('concert')}
           currentPath={pathname}
         />
       </nav>

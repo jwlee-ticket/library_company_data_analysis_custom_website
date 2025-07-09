@@ -7,6 +7,9 @@ import ConcertMonthlyChart from '@/components/dashboard/concert/ConcertMonthlyCh
 import ConcertMonthlyTable from '@/components/dashboard/concert/ConcertMonthlyTable';
 import ConcertWeeklyChart from '@/components/dashboard/concert/ConcertWeeklyChart';
 import ConcertWeeklyTable from '@/components/dashboard/concert/ConcertWeeklyTable';
+import ApiDataViewer from '@/components/debug/ApiDataViewer';
+import ErrorView from '@/components/ui/ErrorView';
+import { useConcertApi } from '@/hooks/useConcertApi';
 
 // 더미 데이터
 const DUMMY_CONCERTS = [
@@ -80,20 +83,74 @@ const DUMMY_SALES_DATA = {
 };
 
 export default function ConcertTotalStatusPage() {
+  // API 훅 사용
+  const { responses, isLoading, hasErrors, retryAll } = useConcertApi();
+  
+  // 개발환경에서만 데이터 뷰어 표시
+  const showDataViewer = process.env.NODE_ENV === 'development';
+
+  // 전체 페이지 에러 상태 체크 (모든 API가 실패한 경우)
+  const allApisFailure = Object.keys(responses).length > 0 && 
+    Object.values(responses).every(r => r.status === 'error');
+
+  // 전체 페이지 에러 화면
+  if (allApisFailure) {
+    return (
+      <div className="p-6">
+        {/* 데이터 뷰어 (개발환경) */}
+        {showDataViewer && <ApiDataViewer responses={responses} />}
+        
+        <div className="max-w-2xl mx-auto mt-20">
+          <ErrorView
+            title="콘서트 데이터를 불러올 수 없습니다"
+            message="모든 API 서버 연결에 실패했습니다. 네트워크 상태와 서버 상태를 확인해주세요."
+            onRetry={retryAll}
+            showRetry={true}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 space-y-8">
+      {/* 데이터 뷰어 (개발환경에서만) */}
+      {showDataViewer && <ApiDataViewer responses={responses} />}
+      
       {/* 페이지 헤더 */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-          콘서트 통합 현황
-        </h1>
-        <p className="text-gray-500">
-          최근 업데이트: {new Date().toLocaleString('ko-KR')}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+              콘서트 통합 현황
+            </h1>
+            <p className="text-gray-500">
+              최근 업데이트: {new Date().toLocaleString('ko-KR')}
+              {isLoading && (
+                <span className="ml-2 inline-flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mr-1"></span>
+                  데이터 로딩 중...
+                </span>
+              )}
+            </p>
+          </div>
+          
+          {/* API 상태 표시 */}
+          <div className="flex items-center space-x-2">
+            {hasErrors && (
+              <button
+                onClick={retryAll}
+                className="px-3 py-1 bg-orange-100 text-orange-700 rounded-lg text-sm hover:bg-orange-200"
+              >
+                일부 데이터 로드 실패 - 재시도
+              </button>
+            )}
+          </div>
+        </div>
       </motion.div>
 
       {/* 매출 카드 섹션 */}
