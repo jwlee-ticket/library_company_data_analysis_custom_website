@@ -573,7 +573,17 @@ export default function ConcertTotalStatusPage() {
             )}
           </h2>
         </div>
-        <ConcertMonthlyChart data={monthlyData} />
+        {monthlyData && !isLoading ? (
+          <ConcertMonthlyChart data={monthlyData} />
+        ) : (
+          <div className="w-full h-[400px] bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gray-300 rounded-full mb-4 mx-auto animate-pulse"></div>
+              <div className="h-4 bg-gray-300 rounded w-32 mx-auto mb-2 animate-pulse"></div>
+              <div className="h-3 bg-gray-300 rounded w-24 mx-auto animate-pulse"></div>
+            </div>
+          </div>
+        )}
       </motion.div>
 
       {/* 월간 매출 테이블 */}
@@ -587,7 +597,32 @@ export default function ConcertTotalStatusPage() {
           <span className="inline-block w-1 h-6 bg-pink-500 rounded-full mr-3"></span>
           월간 매출 상세
         </h2>
-        <ConcertMonthlyTable data={monthlyData} />
+        {monthlyData && !isLoading ? (
+          <ConcertMonthlyTable data={monthlyData} />
+        ) : (
+          <div className="animate-pulse">
+            {/* 테이블 헤더 스켈레톤 */}
+            <div className="mb-4">
+              <div className="flex space-x-4">
+                <div className="h-6 bg-gray-300 rounded w-20"></div>
+                <div className="h-6 bg-gray-300 rounded w-32"></div>
+                <div className="h-6 bg-gray-300 rounded w-32"></div>
+                <div className="h-6 bg-gray-300 rounded w-32"></div>
+                <div className="h-6 bg-gray-300 rounded w-20"></div>
+              </div>
+            </div>
+            {/* 테이블 행 스켈레톤 */}
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex space-x-4 mb-3">
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+              </div>
+            ))}
+          </div>
+        )}
       </motion.div>
 
       {/* 주간 매출 섹션 */}
@@ -608,7 +643,17 @@ export default function ConcertTotalStatusPage() {
             )}
           </h2>
         </div>
-        <ConcertWeeklyChart data={weeklyData} />
+        {weeklyData && !isLoading ? (
+          <ConcertWeeklyChart data={weeklyData} />
+        ) : (
+          <div className="w-full h-[400px] bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gray-300 rounded-full mb-4 mx-auto animate-pulse"></div>
+              <div className="h-4 bg-gray-300 rounded w-32 mx-auto mb-2 animate-pulse"></div>
+              <div className="h-3 bg-gray-300 rounded w-24 mx-auto animate-pulse"></div>
+            </div>
+          </div>
+        )}
       </motion.div>
 
       {/* 주간 매출 테이블 */}
@@ -622,7 +667,32 @@ export default function ConcertTotalStatusPage() {
           <span className="inline-block w-1 h-6 bg-blue-500 rounded-full mr-3"></span>
           주간 매출 상세
         </h2>
-        <ConcertWeeklyTable data={weeklyData} />
+        {weeklyData && !isLoading ? (
+          <ConcertWeeklyTable data={weeklyData} />
+        ) : (
+          <div className="animate-pulse">
+            {/* 테이블 헤더 스켈레톤 */}
+            <div className="mb-4">
+              <div className="flex space-x-4">
+                <div className="h-6 bg-gray-300 rounded w-20"></div>
+                <div className="h-6 bg-gray-300 rounded w-32"></div>
+                <div className="h-6 bg-gray-300 rounded w-32"></div>
+                <div className="h-6 bg-gray-300 rounded w-32"></div>
+                <div className="h-6 bg-gray-300 rounded w-20"></div>
+              </div>
+            </div>
+            {/* 테이블 행 스켈레톤 */}
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex space-x-4 mb-3">
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+              </div>
+            ))}
+          </div>
+        )}
       </motion.div>
     </div>
   );
