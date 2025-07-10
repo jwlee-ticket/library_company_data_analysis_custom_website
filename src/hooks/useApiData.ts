@@ -83,6 +83,12 @@ export function useApiData(initialEndpoints: Record<string, ApiEndpoint> = {}): 
         error: errorMessage,
         duration: `${duration}ms`,
         timestamp: new Date().toISOString(),
+        url: endpoint.url,
+        errorType: error.name,
+        errorCode: error.code,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        responseData: error.response?.data,
         fullError: error,
         stack: error.stack
       });

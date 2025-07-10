@@ -6,6 +6,11 @@ const getBaseURL = () => {
     return process.env.NEXT_PUBLIC_API_BASE_URL;
   }
   
+  // 개발환경에서는 로컬 서버 사용
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:3001';
+  }
+  
   // 운영환경 기본값
   return 'http://35.208.29.100:3001';
 };
@@ -38,7 +43,17 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error: any) => {
-    console.error('❌ API 응답 에러:', error.response?.data || error.message);
+    console.error('❌ API 응답 에러:', {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      config: {
+        url: error.config?.url,
+        method: error.config?.method,
+        baseURL: error.config?.baseURL
+      }
+    });
     return Promise.reject(error);
   }
 );
@@ -102,6 +117,8 @@ export interface ConcertMonthlyData {
   monthlySalesAmount: string;
 }
 
+
+
 // 콘서트 API 클래스
 export class ConcertAPI {
   // 일일 매출 데이터
@@ -145,6 +162,8 @@ export class ConcertAPI {
     const response = await apiClient.get<ConcertMonthlyData[]>('/concert/monthly');
     return response.data;
   }
+
+
 }
 
 // 환경 정보 유틸리티

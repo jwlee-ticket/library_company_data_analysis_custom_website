@@ -19,11 +19,6 @@ ChartJS.register(
   Legend
 );
 
-interface Week {
-  id: number;
-  label: string;
-}
-
 interface Concert {
   id: number;
   title: string;
@@ -38,7 +33,7 @@ interface WeeklyData {
 
 interface ConcertWeeklyChartProps {
   data: {
-    weeks: Week[];
+    weeks: { id: number; label: string }[];
     data: WeeklyData[];
   };
 }
@@ -64,7 +59,7 @@ export default function ConcertWeeklyChart({ data }: ConcertWeeklyChartProps) {
         week.concerts.find(concert => concert.title === concertTitle)?.revenue || 0
       ),
       backgroundColor: colors[index % colors.length],
-      borderRadius: 4,
+      stack: 'stack',
     })),
   };
 
@@ -94,12 +89,13 @@ export default function ConcertWeeklyChart({ data }: ConcertWeeklyChartProps) {
     },
     scales: {
       x: {
+        stacked: true,
         grid: {
           display: false,
         },
       },
       y: {
-        beginAtZero: true,
+        stacked: true,
         ticks: {
           callback: function(value) {
             if (typeof value !== 'number') return value;
