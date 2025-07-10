@@ -58,7 +58,7 @@ export default function ConcertWeeklyChart({ data }: ConcertWeeklyChartProps) {
   const sortedData = sortedWeeks.map(week => 
     data.data.find(item => item.weekId === week.id)
   ).filter(Boolean) as WeeklyData[]; // undefined 제거
-  
+
   const chartData = {
     labels: sortedData.map((_, index) => {
       // 실제 존재하는 데이터에 해당하는 주 라벨 찾기

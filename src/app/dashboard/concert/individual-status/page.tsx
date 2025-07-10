@@ -22,6 +22,7 @@ export default function ConcertIndividualStatusPage() {
     startDate: '',
     endDate: ''
   });
+  const [isConcertListMinimized, setIsConcertListMinimized] = useState(false);
 
   // 필터 적용 로딩 상태
   const [isFilterLoading, setIsFilterLoading] = useState(false);
@@ -33,25 +34,51 @@ export default function ConcertIndividualStatusPage() {
   const allApisFailure = Object.keys(responses).length > 0 && 
     Object.values(responses).every(r => r.status === 'error');
 
-  // 콘서트 목록 추출 (Daily 데이터에서)
+  // 콘서트 목록 추출 (Daily 데이터에서, BEP 데이터의 종료날짜로 정렬)
   const concertOptions = useMemo(() => {
-    if (!responses.daily.data) return [];
+    if (!responses.daily.data || !responses.bep.data) return [];
     
     const uniqueConcerts = responses.daily.data.reduce((acc, item) => {
       if (!acc.find(c => c.liveId === item.liveId)) {
+        // BEP 데이터에서 해당 콘서트의 종료날짜 찾기
+        const bepData = responses.bep.data?.find(bep => bep.liveId === item.liveId);
         acc.push({
           liveId: item.liveId,
-          liveName: item.liveName
+          liveName: item.liveName,
+          salesEndDate: bepData?.salesEndDate || '9999-12-31' // 기본값
         });
       }
       return acc;
-    }, [] as { liveId: string; liveName: string }[]);
+    }, [] as { liveId: string; liveName: string; salesEndDate: string }[]);
 
-    return uniqueConcerts.map(concert => ({
+    // 종료날짜가 가장 늦은 순서로 정렬 (내림차순)
+    const sortedConcerts = uniqueConcerts.sort((a, b) => 
+      new Date(b.salesEndDate).getTime() - new Date(a.salesEndDate).getTime()
+    );
+
+    return sortedConcerts.map(concert => ({
       value: concert.liveId,
-      label: concert.liveName
+      label: `${concert.liveName} (${new Date(concert.salesEndDate).toLocaleDateString('ko-KR', { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit' 
+      })})`
     }));
-  }, [responses.daily.data]);
+  }, [responses.daily.data, responses.bep.data]);
+
+  // 콘서트 선택 핸들러
+  const handleConcertSelect = (concertId: string) => {
+    setSelectedConcert(concertId);
+    setIsConcertListMinimized(true); // 콘서트 선택 시 목록 최소화
+  };
+
+  // 콘서트 목록 토글 핸들러
+  const toggleConcertList = () => {
+    setIsConcertListMinimized(!isConcertListMinimized);
+  };
+
+  // 선택된 콘서트 정보 가져오기
+  const selectedConcertInfo = concertOptions.find(concert => concert.value === selectedConcert);
 
   // 통합 날짜 범위 핸들러
   const handleDateRangeChange = async (startDate: string, endDate: string) => {
@@ -172,38 +199,129 @@ export default function ConcertIndividualStatusPage() {
         </div>
       </motion.div>
 
-      {/* 콘서트 선택 필터 */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className={isFilterLoading ? 'opacity-50 pointer-events-none' : ''}
-      >
-        <Select
-          value={selectedConcert}
-          onValueChange={setSelectedConcert}
-          options={concertOptions}
-          placeholder="콘서트 선택"
-        />
-      </motion.div>
-
-      {/* 콘서트 미선택 시 안내 메시지 */}
-      {!selectedConcert && (
+      {/* 콘서트 목록 테이블 - 최소화/확장 가능 */}
+      {concertOptions.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center"
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="bg-white rounded-xl shadow-lg overflow-hidden"
         >
-          <div className="text-blue-600 mb-2">
-            <svg className="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+          {/* 헤더 - 항상 표시 */}
+          <div 
+            onClick={toggleConcertList}
+            className="flex items-center justify-between p-4 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+          >
+            <div className="flex items-center">
+              <span className="inline-block w-1 h-6 bg-blue-500 rounded-full mr-3"></span>
+              <h3 className="text-lg font-semibold text-gray-900">
+                {selectedConcert && isConcertListMinimized 
+                  ? `선택된 콘서트: ${selectedConcertInfo?.label.split(' (')[0]}` 
+                  : '콘서트 목록'
+                }
+              </h3>
+              <span className="ml-2 text-sm font-normal text-gray-500">
+                ({concertOptions.length}개)
+              </span>
+            </div>
+            
+            <div className="flex items-center">
+              {selectedConcert && isConcertListMinimized && (
+                <span className="mr-3 text-sm text-gray-500">
+                  {selectedConcertInfo?.label.split(' (')[1]?.replace(')', '')}
+                </span>
+              )}
+              <motion.div
+                animate={{ rotate: isConcertListMinimized ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </motion.div>
+            </div>
           </div>
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">콘서트를 선택해주세요</h3>
-          <p className="text-blue-700">
-            위의 드롭다운에서 분석하고 싶은 콘서트를 선택하면 해당 콘서트의 상세 현황을 확인할 수 있습니다.
-          </p>
+
+          {/* 테이블 내용 - 확장 시에만 표시 */}
+          <motion.div
+            initial={false}
+            animate={{ 
+              height: isConcertListMinimized ? 0 : 'auto',
+              opacity: isConcertListMinimized ? 0 : 1 
+            }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="p-6">
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        No.
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        콘서트명
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        판매 종료일
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {concertOptions.map((concert, index) => {
+                      const concertName = concert.label.split(' (')[0];
+                      const endDate = concert.label.split(' (')[1]?.replace(')', '');
+                      const isSelected = selectedConcert === concert.value;
+                      
+                      return (
+                        <motion.tr
+                          key={concert.value}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.05 }}
+                          onClick={() => handleConcertSelect(concert.value)}
+                          className={`cursor-pointer transition-all duration-200 ${
+                            isSelected 
+                              ? 'bg-blue-50 border-l-4 border-blue-500' 
+                              : 'hover:bg-blue-50 hover:border-l-4 hover:border-blue-300 hover:shadow-sm'
+                          }`}
+                        >
+                          <td className="px-6 py-4 text-sm text-gray-500 group-hover:text-blue-600">
+                            {index + 1}
+                          </td>
+                          <td className={`px-6 py-4 text-sm font-medium transition-colors duration-200 ${
+                            isSelected 
+                              ? 'text-blue-700' 
+                              : 'text-gray-900 hover:text-blue-700'
+                          }`}>
+                            {concertName}
+                            {isSelected && (
+                              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                선택됨
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-500 hover:text-blue-600 transition-colors duration-200">
+                            {endDate}
+                          </td>
+                        </motion.tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center text-sm text-gray-600">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  콘서트는 판매 종료일 기준으로 최신순으로 정렬되어 있습니다. 행을 클릭하여 선택하세요.
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </motion.div>
       )}
 
