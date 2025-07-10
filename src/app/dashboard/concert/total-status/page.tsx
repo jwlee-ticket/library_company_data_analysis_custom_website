@@ -10,6 +10,7 @@ import ConcertWeeklyTable from '@/components/dashboard/concert/ConcertWeeklyTabl
 import ApiDataViewer from '@/components/debug/ApiDataViewer';
 import ErrorView from '@/components/ui/ErrorView';
 import { useConcertApi } from '@/hooks/useConcertApi';
+import { ConcertMonthlyData } from '@/lib/api';
 
 // 더미 데이터
 const DUMMY_CONCERTS = [
@@ -93,6 +94,120 @@ export default function ConcertTotalStatusPage() {
   const allApisFailure = Object.keys(responses).length > 0 && 
     Object.values(responses).every(r => r.status === 'error');
 
+  // API 데이터 변환 함수
+  const getSalesData = () => {
+    const overviewResponse = responses.overview;
+    
+    // API 데이터가 성공적으로 로드된 경우
+    if (overviewResponse?.status === 'success' && overviewResponse.data && overviewResponse.data.length > 0) {
+      const apiData = overviewResponse.data[0]; // 첫 번째 항목 사용
+      
+      console.log('📊 매출 데이터 바인딩:', {
+        원본데이터: apiData,
+        변환된데이터: {
+          어제매출: apiData.yesterdaySales,
+          누적매출: apiData.accumulatedSales,
+          주간매출: apiData.weeklySales,
+          일평균매출: apiData.dailyAvgSales
+        }
+      });
+      
+      const transformedData = {
+        yesterday: {
+          total: parseInt(apiData.yesterdaySales?.replace(/,/g, '') || '0') || 0,
+          target: 100000000, // 목표값은 별도 API나 설정에서 가져와야 함
+        },
+        accumulated: {
+          total: parseInt(apiData.accumulatedSales?.replace(/,/g, '') || '0') || 0,
+          target: 3000000000, // 목표값은 별도 API나 설정에서 가져와야 함
+        },
+        weekly: {
+          total: parseInt(apiData.weeklySales?.replace(/,/g, '') || '0') || 0,
+          target: 500000000, // 목표값은 별도 API나 설정에서 가져와야 함
+        },
+        weeklyAverage: {
+          total: parseInt(apiData.dailyAvgSales?.replace(/,/g, '') || '0') || 0,
+          target: 71428571, // 목표값은 별도 API나 설정에서 가져와야 함
+        },
+      };
+      
+      console.log('✅ 매출 데이터 변환 완료:', transformedData);
+      return transformedData;
+    }
+    
+    // API 데이터가 없거나 실패한 경우 더미 데이터 사용
+    console.log('⚠️ API 데이터 없음, 더미 데이터 사용:', {
+      status: overviewResponse?.status,
+      hasData: !!overviewResponse?.data,
+      dataLength: overviewResponse?.data?.length
+    });
+    
+    return DUMMY_SALES_DATA;
+  };
+
+  const salesData = getSalesData();
+
+  // 월간 매출 데이터 변환 함수
+  const getMonthlyData = () => {
+    const monthlyResponse = responses.monthly;
+    
+    // API 데이터가 성공적으로 로드된 경우
+    if (monthlyResponse?.status === 'success' && monthlyResponse.data && monthlyResponse.data.length > 0) {
+      const apiData = monthlyResponse.data;
+      
+      console.log('📊 월간 매출 데이터 바인딩:', {
+        원본데이터: apiData,
+        데이터개수: apiData.length
+      });
+      
+      // 월별로 그룹화
+      const monthlyGroups: Record<string, any[]> = {};
+      apiData.forEach((item: ConcertMonthlyData) => {
+        const month = item.recordMonth;
+        if (!monthlyGroups[month]) {
+          monthlyGroups[month] = [];
+        }
+        monthlyGroups[month].push({
+          id: item.liveId,
+          title: item.liveName,
+          revenue: parseInt(item.monthlySalesAmount?.replace(/,/g, '') || '0') || 0
+        });
+      });
+      
+      // 월별 총합 계산 및 정렬
+      const dates = Object.keys(monthlyGroups).sort();
+      const data = dates.map(date => {
+        const concerts = monthlyGroups[date];
+        const total = concerts.reduce((sum, concert) => sum + concert.revenue, 0);
+        
+        return {
+          date,
+          total,
+          concerts
+        };
+      });
+      
+      const transformedData = {
+        dates,
+        data
+      };
+      
+      console.log('✅ 월간 매출 데이터 변환 완료:', transformedData);
+      return transformedData;
+    }
+    
+    // API 데이터가 없거나 실패한 경우 더미 데이터 사용
+    console.log('⚠️ 월간 API 데이터 없음, 더미 데이터 사용:', {
+      status: monthlyResponse?.status,
+      hasData: !!monthlyResponse?.data,
+      dataLength: monthlyResponse?.data?.length
+    });
+    
+    return DUMMY_MONTHLY_DATA;
+  };
+
+  const monthlyData = getMonthlyData();
+
   // 전체 페이지 에러 화면
   if (allApisFailure) {
     return (
@@ -159,7 +274,7 @@ export default function ConcertTotalStatusPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <ConcertSalesCards data={DUMMY_SALES_DATA} />
+        <ConcertSalesCards data={salesData} />
       </motion.div>
 
       {/* 월간 매출 섹션 */}
@@ -173,7 +288,7 @@ export default function ConcertTotalStatusPage() {
           <span className="inline-block w-1 h-6 bg-purple-500 rounded-full mr-3"></span>
           월간 매출 현황
         </h2>
-        <ConcertMonthlyChart data={DUMMY_MONTHLY_DATA} />
+        <ConcertMonthlyChart data={monthlyData} />
       </motion.div>
 
       {/* 월간 매출 테이블 */}
@@ -187,7 +302,7 @@ export default function ConcertTotalStatusPage() {
           <span className="inline-block w-1 h-6 bg-pink-500 rounded-full mr-3"></span>
           월간 매출 상세
         </h2>
-        <ConcertMonthlyTable data={DUMMY_MONTHLY_DATA} />
+        <ConcertMonthlyTable data={monthlyData} />
       </motion.div>
 
       {/* 주간 매출 섹션 */}

@@ -95,6 +95,13 @@ export interface ConcertMarketingCalendar {
   etc: string | null;
 }
 
+export interface ConcertMonthlyData {
+  liveId: string;
+  liveName: string;
+  recordMonth: string;
+  monthlySalesAmount: string;
+}
+
 // 콘서트 API 클래스
 export class ConcertAPI {
   // 일일 매출 데이터
@@ -130,6 +137,12 @@ export class ConcertAPI {
   // 마케팅 캘린더
   static async getMarketingCalendar(): Promise<ConcertMarketingCalendar[]> {
     const response = await apiClient.get<ConcertMarketingCalendar[]>('/concert/marketing-calendar');
+    return response.data;
+  }
+
+  // 월간 매출 데이터
+  static async getMonthlyData(): Promise<ConcertMonthlyData[]> {
+    const response = await apiClient.get<ConcertMonthlyData[]>('/concert/monthly');
     return response.data;
   }
 }

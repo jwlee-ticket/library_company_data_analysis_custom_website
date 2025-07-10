@@ -43,6 +43,11 @@ export function useConcertApi(): UseConcertApiReturn {
       name: '마케팅 일정', 
       method: () => ConcertAPI.getMarketingCalendar(),
       url: '/concert/marketing-calendar'
+    },
+    monthly: { 
+      name: '월간 매출', 
+      method: () => ConcertAPI.getMonthlyData(),
+      url: '/concert/monthly'
     }
   };
 
