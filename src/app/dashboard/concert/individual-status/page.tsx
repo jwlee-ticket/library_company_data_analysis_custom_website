@@ -323,32 +323,14 @@ export default function ConcertIndividualStatusPage() {
                 </span>
               )}
             </h2>
-            {filteredWeeklyData.length > 0 && !isLoading ? (
-              <ConcertWeeklySalesTable data={filteredWeeklyData} />
-            ) : isLoading ? (
-              <div className="animate-pulse">
-                <div className="h-6 bg-gray-200 rounded w-48 mb-4"></div>
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex space-x-4">
-                      <div className="h-4 bg-gray-200 rounded w-24"></div>
-                      <div className="h-4 bg-gray-200 rounded w-32"></div>
-                      <div className="h-4 bg-gray-200 rounded w-32"></div>
-                      <div className="h-4 bg-gray-200 rounded w-32"></div>
-                      <div className="h-4 bg-gray-200 rounded w-24"></div>
-                      <div className="h-4 bg-gray-200 rounded w-20"></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            {filteredDailyData.length > 0 && !isLoading ? (
+              <ConcertWeeklySalesTable 
+                dailyData={filteredDailyData} 
+                weeklyData={filteredWeeklyData} 
+              />
             ) : (
               <div className="text-center py-8 text-gray-500">
                 <p>주간 매출 데이터가 없습니다.</p>
-                {responses.weekly.status === 'error' && (
-                  <p className="text-sm mt-1 text-red-500">
-                    API 호출 실패: {responses.weekly.error}
-                  </p>
-                )}
               </div>
             )}
           </motion.div>
@@ -380,7 +362,7 @@ export default function ConcertIndividualStatusPage() {
                 timestamp: new Date().toISOString(),
                 url: '/api/concert/daily',
               },
-              '주간 매출': {
+              '주간 노트 (세일즈/마케팅/기타)': {
                 endpoint: '/api/concert/weekly',
                 status: responses.weekly.status === 'idle' ? 'loading' : responses.weekly.status,
                 data: responses.weekly.data,

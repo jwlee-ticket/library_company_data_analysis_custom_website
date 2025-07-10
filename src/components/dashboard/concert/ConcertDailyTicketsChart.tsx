@@ -50,6 +50,9 @@ export default function ConcertDailyTicketsChart({ data }: ConcertDailyTicketsCh
   const maxValue = Math.max(...filteredData.map(item => item.dailySalesTicketNo));
   const yAxisMax = maxValue * 1.2; // 20% 여유공간
 
+  // 총 판매 매수 계산
+  const totalTickets = filteredData.reduce((sum, item) => sum + item.dailySalesTicketNo, 0);
+
   const chartData = {
     labels: filteredData.map(item => {
       const date = new Date(item.recordDate);
@@ -151,7 +154,18 @@ export default function ConcertDailyTicketsChart({ data }: ConcertDailyTicketsCh
   };
 
   return (
-    <div className="w-full h-[400px]">
+    <div className="w-full h-[400px] relative">
+      {/* 총 판매 매수 표시 */}
+      <div className="absolute top-2 right-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md border">
+        <div className="text-xs text-gray-500 mb-1">총 판매 매수</div>
+        <div className="text-lg font-bold text-indigo-600">
+          {totalTickets.toLocaleString()}매
+        </div>
+        <div className="text-xs text-gray-400">
+          {filteredData.length}일간
+        </div>
+      </div>
+      
       <Line data={chartData} options={options} />
     </div>
   );

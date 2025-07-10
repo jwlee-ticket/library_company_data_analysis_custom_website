@@ -50,6 +50,9 @@ export default function ConcertDailySalesChart({ data }: ConcertDailySalesChartP
   const maxValue = Math.max(...filteredData.map(item => item.dailySalesAmount));
   const yAxisMax = maxValue * 1.2; // 20% 여유공간
 
+  // 총 매출 계산
+  const totalSales = filteredData.reduce((sum, item) => sum + item.dailySalesAmount, 0);
+
   const chartData = {
     labels: filteredData.map(item => {
       const date = new Date(item.recordDate);
@@ -158,7 +161,21 @@ export default function ConcertDailySalesChart({ data }: ConcertDailySalesChartP
   };
 
   return (
-    <div className="w-full h-[400px]">
+    <div className="w-full h-[400px] relative">
+      {/* 총 매출 표시 */}
+      <div className="absolute top-2 right-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md border">
+        <div className="text-xs text-gray-500 mb-1">총 매출</div>
+        <div className="text-lg font-bold text-pink-600">
+          {totalSales >= 100000000 
+            ? `${(totalSales / 100000000).toFixed(1)}억원`
+            : `${(totalSales / 10000).toLocaleString()}만원`
+          }
+        </div>
+        <div className="text-xs text-gray-400">
+          {filteredData.length}일간
+        </div>
+      </div>
+      
       <Line data={chartData} options={options} />
     </div>
   );

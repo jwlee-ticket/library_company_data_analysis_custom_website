@@ -33,11 +33,11 @@ export interface ConcertWeeklyData {
   liveId: string;
   liveName: string;
   recordWeek: string;
-  weeklySalesTicketNo: number;
-  weeklySalesAmount: number;
-  noteSalesMarketing: string;
-  notePromotion: string;
-  noteEtc: string;
+  weeklySalesTicketNo: number; // 사용하지 않음
+  weeklySalesAmount: number;   // 사용하지 않음
+  noteSalesMarketing: string;  // 세일즈 노트 (사용)
+  notePromotion: string;       // 마케팅/프로모션 노트 (사용)
+  noteEtc: string;             // 기타 노트 (사용)
 }
 
 // API 응답 상태 타입
@@ -151,7 +151,7 @@ export function useConcertIndividualApi() {
       await Promise.all([
         fetchBepData(),
         fetchDailyData(),
-        fetchWeeklyData(), // 주간 매출 API 활성화
+        fetchWeeklyData(), // 노트 정보를 위한 Weekly API 호출
       ]);
       
     } finally {
