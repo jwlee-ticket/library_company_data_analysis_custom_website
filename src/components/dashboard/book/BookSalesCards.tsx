@@ -8,7 +8,7 @@ interface SalesData {
   changeRate?: number;
 }
 
-interface ConcertSalesCardsProps {
+interface BookSalesCardsProps {
   data: {
     yesterday: SalesData;
     accumulated: SalesData;
@@ -101,7 +101,7 @@ function SalesCard({
   );
 }
 
-export default function ConcertSalesCards({ data }: ConcertSalesCardsProps) {
+export default function BookSalesCards({ data }: BookSalesCardsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <SalesCard
@@ -112,7 +112,7 @@ export default function ConcertSalesCards({ data }: ConcertSalesCardsProps) {
         changeRate={data.yesterday.changeRate}
         color="border-slate-100"
         delay={0.1}
-        tooltip="전일 콘서트 매출 총액입니다. 목표 대비 달성률과 전일 대비 증감률을 확인할 수 있습니다."
+        tooltip="전일 도서 매출 총액입니다. 목표 대비 달성률과 전일 대비 증감률을 확인할 수 있습니다."
         changeLabel="전일 대비"
       />
       <SalesCard

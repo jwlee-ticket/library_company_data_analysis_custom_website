@@ -1,8 +1,3 @@
-interface Week {
-  id: number;
-  label: string;
-}
-
 interface Concert {
   id: number;
   title: string;
@@ -17,7 +12,7 @@ interface WeeklyData {
 
 interface ConcertWeeklyTableProps {
   data: {
-    weeks: Week[];
+    weeks: { id: number; label: string }[];
     data: WeeklyData[];
   };
 }
