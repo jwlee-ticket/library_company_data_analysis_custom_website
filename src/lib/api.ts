@@ -121,46 +121,67 @@ export interface ConcertMonthlyData {
 
 // 콘서트 API 클래스
 export class ConcertAPI {
-  // 일일 매출 데이터
+  // 일일 매출 데이터 (프록시 사용)
   static async getDailyData(): Promise<ConcertDailyData[]> {
-    const response = await apiClient.get<ConcertDailyData[]>('/concert/daily');
-    return response.data;
+    const response = await fetch('/api/concert/daily');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
   }
 
-  // 전체 개요 (대시보드용)
+  // 전체 개요 (대시보드용) - 프록시 사용
   static async getOverview(): Promise<ConcertOverview[]> {
-    const response = await apiClient.get<ConcertOverview[]>('/concert/overview');
-    return response.data;
+    const response = await fetch('/api/concert/overview');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
   }
 
-  // BEP 분석 (손익분기점)
+  // BEP 분석 (손익분기점) - 프록시 사용
   static async getBEP(): Promise<ConcertBEP[]> {
-    const response = await apiClient.get<ConcertBEP[]>('/concert/bep');
-    return response.data;
+    const response = await fetch('/api/concert/bep');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
   }
 
-  // 예상 수익
+  // 예상 수익 - 프록시 사용
   static async getEstimatedProfit(): Promise<ConcertEstimatedProfit[]> {
-    const response = await apiClient.get<ConcertEstimatedProfit[]>('/concert/estimated-profit');
-    return response.data;
+    const response = await fetch('/api/concert/estimated-profit');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
   }
 
-  // 목표 달성률
+  // 목표 달성률 - 프록시 사용
   static async getTargetSales(): Promise<ConcertTargetSales[]> {
-    const response = await apiClient.get<ConcertTargetSales[]>('/concert/target-sales');
-    return response.data;
+    const response = await fetch('/api/concert/target-sales');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
   }
 
-  // 마케팅 캘린더
+  // 마케팅 캘린더 - 프록시 사용
   static async getMarketingCalendar(): Promise<ConcertMarketingCalendar[]> {
-    const response = await apiClient.get<ConcertMarketingCalendar[]>('/concert/marketing-calendar');
-    return response.data;
+    const response = await fetch('/api/concert/marketing-calendar');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
   }
 
-  // 월간 매출 데이터
+  // 월간 매출 데이터 - 프록시 사용
   static async getMonthlyData(): Promise<ConcertMonthlyData[]> {
-    const response = await apiClient.get<ConcertMonthlyData[]>('/concert/monthly');
-    return response.data;
+    const response = await fetch('/api/concert/monthly');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
   }
 
 
