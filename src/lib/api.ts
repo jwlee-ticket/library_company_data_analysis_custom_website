@@ -121,10 +121,13 @@ export interface ConcertMonthlyData {
 
 // 콘서트 API 클래스
 export class ConcertAPI {
-  // 일일 매출 데이터
+  // 일일 매출 데이터 (프록시 사용)
   static async getDailyData(): Promise<ConcertDailyData[]> {
-    const response = await apiClient.get<ConcertDailyData[]>('/concert/daily');
-    return response.data;
+    const response = await fetch('/api/concert/daily');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
   }
 
   // 전체 개요 (대시보드용)
