@@ -151,8 +151,8 @@ export default function ConcertTotalStatusPage() {
   // 필터 적용 로딩 상태
   const [isFilterLoading, setIsFilterLoading] = useState(false);
   
-  // 개발환경에서만 데이터 뷰어 표시
-  const showDataViewer = process.env.NODE_ENV === 'development';
+  // 모든 환경에서 데이터 뷰어 표시
+  const showDataViewer = true;
 
   // 전체 페이지 에러 상태 체크 (모든 API가 실패한 경우)
   const allApisFailure = Object.keys(responses).length > 0 && 
@@ -205,6 +205,11 @@ export default function ConcertTotalStatusPage() {
     const overviewResponse = responses.overview;
     const targetResponse = responses.targetSales;
     const dailyResponse = responses.daily;
+    
+    // 로딩 중인 경우 null 반환 (깜빡임 방지)
+    if (isLoading) {
+      return null;
+    }
     
     // API 데이터가 성공적으로 로드된 경우
     if (overviewResponse?.status === 'success' && overviewResponse.data && overviewResponse.data.length > 0) {
@@ -270,7 +275,7 @@ export default function ConcertTotalStatusPage() {
           
           // 일평균 비교
           const previousWeekDailyAvg = previousWeekSales / 7;
-          avgChangeAmount = dailyAvgSales - previousWeekDailyAvg;
+          avgChangeAmount = Math.round(dailyAvgSales - previousWeekDailyAvg);
           avgChangeRate = (avgChangeAmount / previousWeekDailyAvg) * 100;
         }
       }
@@ -462,8 +467,8 @@ export default function ConcertTotalStatusPage() {
   if (allApisFailure) {
     return (
       <div className="p-6">
-        {/* 데이터 뷰어 (개발환경) */}
-        {showDataViewer && <ApiDataViewer responses={responses} />}
+              {/* 데이터 뷰어 (모든 환경) */}
+      {showDataViewer && <ApiDataViewer responses={responses} />}
         
         <div className="max-w-2xl mx-auto mt-20">
           <ErrorView
@@ -479,7 +484,7 @@ export default function ConcertTotalStatusPage() {
 
   return (
     <div className="p-6 space-y-8">
-      {/* 데이터 뷰어 (개발환경에서만) */}
+      {/* 데이터 뷰어 (모든 환경) */}
       {showDataViewer && <ApiDataViewer responses={responses} />}
       
       {/* 페이지 헤더 */}
@@ -534,7 +539,20 @@ export default function ConcertTotalStatusPage() {
         transition={{ duration: 0.5, delay: 0.2 }}
         className={isFilterLoading ? 'opacity-50 pointer-events-none' : ''}
       >
-        <ConcertSalesCards data={salesData} />
+        {salesData ? (
+          <ConcertSalesCards data={salesData} />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+                <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
+                <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+              </div>
+            ))}
+          </div>
+        )}
       </motion.div>
 
       {/* 월간 매출 섹션 */}
