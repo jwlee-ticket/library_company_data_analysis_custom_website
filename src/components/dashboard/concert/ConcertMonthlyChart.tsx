@@ -9,6 +9,7 @@ import {
   Legend,
   ChartOptions,
 } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(
   CategoryScale,
@@ -16,7 +17,8 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ChartDataLabels
 );
 
 interface Concert {
@@ -51,11 +53,17 @@ export default function ConcertMonthlyChart({ data }: ConcertMonthlyChartProps) 
     'rgba(16, 185, 129, 0.7)',  // 초록색
   ];
 
+  // 데이터 변환 (최신 날짜가 오른쪽에 오도록 정렬)
+  const sortedDates = [...data.dates].sort(); // 오름차순 정렬
+  const sortedData = sortedDates.map(date => 
+    data.data.find(item => item.date === date)
+  ).filter(Boolean) as MonthlyData[]; // undefined 제거
+  
   const chartData = {
-    labels: data.dates,
+    labels: sortedData.map(month => month.date), // 실제 존재하는 데이터의 날짜만 사용
     datasets: uniqueConcerts.map((concertTitle, index) => ({
       label: concertTitle,
-      data: data.data.map(month => 
+      data: sortedData.map(month => 
         month.concerts.find(concert => concert.title === concertTitle)?.revenue || 0
       ),
       backgroundColor: colors[index % colors.length],
@@ -86,6 +94,47 @@ export default function ConcertMonthlyChart({ data }: ConcertMonthlyChartProps) 
           },
         },
       },
+      datalabels: {
+        display: function(context) {
+          // 각 막대 그룹의 최상단에만 총합 표시
+          const datasetIndex = context.datasetIndex;
+          const datasets = context.chart.data.datasets;
+          const dataIndex = context.dataIndex;
+          const monthData = sortedData[dataIndex];
+          const total = monthData.total;
+          
+          // 0일 경우 표시하지 않음
+          if (total === 0) return false;
+          
+          return datasetIndex === datasets.length - 1;
+        },
+        align: 'top',
+        anchor: 'end',
+        color: '#374151',
+        font: {
+          size: 11,
+          weight: 'bold',
+        },
+        padding: 8, // 라벨과 막대 사이 여백
+        formatter: function(value, context) {
+          // 해당 월의 총 매출 계산
+          const dataIndex = context.dataIndex;
+          const monthData = sortedData[dataIndex];
+          const total = monthData.total;
+          
+          // 0일 경우 표시하지 않음
+          if (total === 0) return null;
+          
+          // 억 단위로 표시 (₩ 제거)
+          if (total >= 100000000) {
+            return `${(total / 100000000).toFixed(1)}억`;
+          }
+          if (total >= 10000) {
+            return `${(total / 10000).toFixed(0)}만`;
+          }
+          return `${total.toLocaleString()}`;
+        },
+      },
     },
     scales: {
       x: {
@@ -96,6 +145,11 @@ export default function ConcertMonthlyChart({ data }: ConcertMonthlyChartProps) 
       },
       y: {
         stacked: true,
+        suggestedMax: (() => {
+          // 최대값에 20% 여유 공간 추가
+          const max = Math.max(...sortedData.map(item => item.total));
+          return max * 1.2;
+        })(),
         ticks: {
           callback: function(value) {
             if (typeof value !== 'number') return value;
