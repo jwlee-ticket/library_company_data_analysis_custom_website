@@ -54,9 +54,9 @@ export default function ConcertProfitabilityTable({ data }: ConcertProfitability
             const estAdditionalSales = safeNumber(item.estAdditionalSales);
             const estFinalRemaining = safeNumber(item.estFinalRemaining);
             
-            // 최종 판매율 계산: (전체좌석 - 최종잔여예상) / 전체좌석 * 100
+            // 최종 판매율 계산: (전체좌석 - 잔여) / 전체좌석 * 100
             const finalSalesRate = totalSeats > 0 
-              ? ((totalSeats - estFinalRemaining) / totalSeats) * 100 
+              ? ((totalSeats - remainingSeats) / totalSeats) * 100 
               : 0;
             
             // BEP 달성률

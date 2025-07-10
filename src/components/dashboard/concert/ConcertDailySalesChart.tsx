@@ -1,9 +1,10 @@
-import { Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
@@ -15,7 +16,8 @@ import { ConcertDailyData } from '@/hooks/useConcertIndividualApi';
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
@@ -60,15 +62,21 @@ export default function ConcertDailySalesChart({ data }: ConcertDailySalesChartP
       {
         label: '일간 매출',
         data: filteredData.map(item => item.dailySalesAmount),
-        backgroundColor: 'rgba(236, 72, 153, 0.7)',
         borderColor: 'rgba(236, 72, 153, 1)',
-        borderWidth: 1,
-        borderRadius: 4,
+        backgroundColor: 'rgba(236, 72, 153, 0.1)',
+        borderWidth: 3,
+        pointBackgroundColor: 'rgba(236, 72, 153, 1)',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        fill: true,
+        tension: 0.4, // 부드러운 곡선
       },
     ],
   };
 
-  const options: ChartOptions<'bar'> = {
+  const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -82,12 +90,19 @@ export default function ConcertDailySalesChart({ data }: ConcertDailySalesChartP
             return `매출: ${value.toLocaleString()}원`;
           },
         },
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        borderColor: 'rgba(236, 72, 153, 1)',
+        borderWidth: 1,
       },
       datalabels: {
         display: true,
-        anchor: 'end',
-        align: 'top',
-        color: '#6B7280',
+        backgroundColor: 'rgba(236, 72, 153, 0.8)',
+        borderColor: '#fff',
+        borderWidth: 1,
+        borderRadius: 4,
+        color: '#fff',
         font: {
           size: 10,
           weight: 'bold',
@@ -107,7 +122,8 @@ export default function ConcertDailySalesChart({ data }: ConcertDailySalesChartP
     scales: {
       x: {
         grid: {
-          display: false,
+          display: true,
+          color: 'rgba(243, 244, 246, 0.5)',
         },
         ticks: {
           maxRotation: 45,
@@ -119,7 +135,7 @@ export default function ConcertDailySalesChart({ data }: ConcertDailySalesChartP
         beginAtZero: true,
         max: yAxisMax,
         grid: {
-          color: '#F3F4F6',
+          color: 'rgba(243, 244, 246, 0.8)',
         },
         ticks: {
           color: '#6B7280',
@@ -135,11 +151,15 @@ export default function ConcertDailySalesChart({ data }: ConcertDailySalesChartP
         },
       },
     },
+    interaction: {
+      intersect: false,
+      mode: 'index',
+    },
   };
 
   return (
     <div className="w-full h-[400px]">
-      <Bar data={chartData} options={options} />
+      <Line data={chartData} options={options} />
     </div>
   );
 } 
