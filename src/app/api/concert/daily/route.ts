@@ -1,35 +1,33 @@
 import { NextResponse } from 'next/server';
 
-// 콘서트 일일 매출 데이터 프록시 API
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://35.208.29.100:3001';
+
 export async function GET() {
   try {
-    console.log('🔄 프록시 요청: /concert/daily');
+    console.log('🔍 Daily API 요청 시작:', `${API_BASE_URL}/concert/daily`);
     
-    const response = await fetch('http://35.208.29.100:3001/concert/daily', {
+    const response = await fetch(`${API_BASE_URL}/concert/daily`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      // 캐시 비활성화 (실시간 데이터)
-      cache: 'no-store'
+      // 캐시 비활성화
+      cache: 'no-store',
     });
 
     if (!response.ok) {
-      console.error('❌ 백엔드 API 에러:', response.status, response.statusText);
-      return NextResponse.json(
-        { error: '백엔드 서버 연결 실패', status: response.status },
-        { status: response.status }
-      );
+      console.error('❌ Daily API 응답 오류:', response.status, response.statusText);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('✅ 프록시 응답 성공:', data.length, '개 항목');
-
+    console.log('✅ Daily API 응답 성공:', data?.length || 0, '개 항목');
+    
     return NextResponse.json(data);
-  } catch (error: any) {
-    console.error('❌ 프록시 에러:', error.message);
+  } catch (error) {
+    console.error('❌ Daily API 프록시 오류:', error);
     return NextResponse.json(
-      { error: '서버 내부 오류', message: error.message },
+      { error: 'Daily 데이터를 가져오는데 실패했습니다.' },
       { status: 500 }
     );
   }
