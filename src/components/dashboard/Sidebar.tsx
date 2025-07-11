@@ -84,8 +84,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
     concert: false,
-    theater: false,
-    musical: false,
+    play: false,
   });
 
   // useState를 useEffect로 수정
@@ -93,10 +92,8 @@ export default function Sidebar() {
     const path = pathname || '';
     if (path.includes('/concert')) {
       setOpenMenus(prev => ({ ...prev, concert: true }));
-    } else if (path.includes('/theater')) {
-      setOpenMenus(prev => ({ ...prev, theater: true }));
-    } else if (path.includes('/musical')) {
-      setOpenMenus(prev => ({ ...prev, musical: true }));
+    } else if (path.includes('/play')) {
+      setOpenMenus(prev => ({ ...prev, play: true }));
     }
   }, [pathname]); // pathname이 변경될 때마다 실행
 
@@ -109,24 +106,14 @@ export default function Sidebar() {
     { name: '개별현황', href: '/dashboard/concert/individual-status' },
   ];
 
-  const theaterItems = [
-    { name: '통합 티켓 판매합계 : 총계', href: '/dashboard/theater/total-sales' },
-    { name: '통합 주간별 티켓 매수', href: '/dashboard/theater/weekly-tickets' },
-    { name: '월별 통합 매출', href: '/dashboard/theater/monthly-revenue' },
-    { name: '기간별 통합 매출', href: '/dashboard/theater/period-revenue' },
-    { name: '주간별 통합 매출', href: '/dashboard/theater/weekly-revenue' },
-    { name: '일간별 판매현황', href: '/dashboard/theater/daily-sales' },
-    { name: '캐스트별 매출', href: '/dashboard/theater/cast-revenue' },
-  ];
-
-  const musicalItems = [
-    { name: '통합 티켓 판매합계 : 총계', href: '/dashboard/musical/total-sales' },
-    { name: '통합 주간별 티켓 매수', href: '/dashboard/musical/weekly-tickets' },
-    { name: '월별 통합 매출', href: '/dashboard/musical/monthly-revenue' },
-    { name: '기간별 통합 매출', href: '/dashboard/musical/period-revenue' },
-    { name: '주간별 통합 매출', href: '/dashboard/musical/weekly-revenue' },
-    { name: '일간별 판매현황', href: '/dashboard/musical/daily-sales' },
-    { name: '캐스트별 매출', href: '/dashboard/musical/cast-revenue' },
+  const playItems = [
+    { name: '통합 티켓 판매합계 : 총계', href: '/dashboard/play/total-sales' },
+    { name: '통합 주간별 티켓 매수', href: '/dashboard/play/weekly-tickets' },
+    { name: '월별 통합 매출', href: '/dashboard/play/monthly-revenue' },
+    { name: '기간별 통합 매출', href: '/dashboard/play/period-revenue' },
+    { name: '주간별 통합 매출', href: '/dashboard/play/weekly-revenue' },
+    { name: '일간별 판매현황', href: '/dashboard/play/daily-sales' },
+    { name: '캐스트별 매출', href: '/dashboard/play/cast-revenue' },
   ];
 
   const isHome = pathname === '/dashboard';
@@ -164,18 +151,10 @@ export default function Sidebar() {
         />
         
         <Dropdown
-          title="연극 (ToDo)"
-          items={theaterItems}
-          isOpen={openMenus.theater}
-          onToggle={() => toggleMenu('theater')}
-          currentPath={pathname}
-        />
-        
-        <Dropdown
-          title="뮤지컬 (ToDo)"
-          items={musicalItems}
-          isOpen={openMenus.musical}
-          onToggle={() => toggleMenu('musical')}
+          title="연극 & 뮤지컬 (ToDo)"
+          items={playItems}
+          isOpen={openMenus.play}
+          onToggle={() => toggleMenu('play')}
           currentPath={pathname}
         />
       </nav>
