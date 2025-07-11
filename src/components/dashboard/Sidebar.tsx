@@ -152,11 +152,11 @@ export default function Sidebar() {
             }
           `}
         >
-          전체
+          전체 (ToDo)
         </Link>
         
         <Dropdown
-          title="콘서트"
+          title="콘서트 (In Progress)"
           items={concertItems}
           isOpen={openMenus.concert}
           onToggle={() => toggleMenu('concert')}
@@ -164,7 +164,7 @@ export default function Sidebar() {
         />
         
         <Dropdown
-          title="연극"
+          title="연극 (ToDo)"
           items={theaterItems}
           isOpen={openMenus.theater}
           onToggle={() => toggleMenu('theater')}
@@ -172,7 +172,7 @@ export default function Sidebar() {
         />
         
         <Dropdown
-          title="뮤지컬"
+          title="뮤지컬 (ToDo)"
           items={musicalItems}
           isOpen={openMenus.musical}
           onToggle={() => toggleMenu('musical')}

@@ -75,6 +75,14 @@ export default function ConcertMonthlyChart({ data }: ConcertMonthlyChartProps) 
     return undefined; // 4개 이상일 때는 제한 없음
   };
   
+  // 디버깅 로그 추가
+  console.log('📊 월간 차트 막대 크기 설정:', {
+    dataCount,
+    maxBarThickness: getMaxBarThickness(),
+    categoryPercentage: getCategoryPercentage(),
+    적용여부: dataCount <= 3 ? '적용됨' : '적용안됨'
+  });
+  
   const chartData = {
     labels: sortedData.map(month => month.date), // 실제 존재하는 데이터의 날짜만 사용
     datasets: uniqueConcerts.map((concertTitle, index) => ({
@@ -84,6 +92,8 @@ export default function ConcertMonthlyChart({ data }: ConcertMonthlyChartProps) 
       ),
       backgroundColor: colors[index % colors.length],
       stack: 'stack',
+      // 막대 최대 크기 설정 (데이터 개수가 적을 때만)
+      ...(dataCount <= 3 && { maxBarThickness: getMaxBarThickness() }),
     })),
   };
 
@@ -158,6 +168,11 @@ export default function ConcertMonthlyChart({ data }: ConcertMonthlyChartProps) 
         grid: {
           display: false,
         },
+        // 카테고리 퍼센티지 설정
+        ...(dataCount <= 3 && { 
+          categoryPercentage: getCategoryPercentage(),
+          barPercentage: 0.9,
+        }),
       },
       y: {
         stacked: true,
@@ -186,17 +201,7 @@ export default function ConcertMonthlyChart({ data }: ConcertMonthlyChartProps) 
     <div className="w-full h-[400px]">
       <Bar 
         data={chartData} 
-        options={{
-          ...options,
-          // 막대 최대 크기 설정 (데이터 개수가 적을 때만)
-          ...(dataCount <= 3 && {
-            elements: {
-              bar: {
-                maxBarThickness: getMaxBarThickness(),
-              },
-            },
-          }),
-        } as any}
+        options={options}
       />
     </div>
   );

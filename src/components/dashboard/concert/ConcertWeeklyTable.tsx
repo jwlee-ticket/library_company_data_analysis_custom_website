@@ -29,25 +29,25 @@ export default function ConcertWeeklyTable({ data }: ConcertWeeklyTableProps) {
         <table className="min-w-full divide-y divide-gray-200">
           <thead>
             <tr>
-              <th className="px-6 py-3 bg-green-50 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
+              <th className="px-6 py-3 bg-blue-50 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">
                 총계
               </th>
               {uniqueConcerts.map((title) => (
                 <th
                   key={title}
-                  className="px-6 py-3 bg-green-50 text-left text-xs font-medium text-green-700 uppercase tracking-wider"
+                  className="px-6 py-3 bg-blue-50 text-left text-xs font-medium text-blue-700 uppercase tracking-wider"
                 >
                   {title}
                 </th>
               ))}
-              <th className="px-6 py-3 bg-green-50 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
+              <th className="px-6 py-3 bg-blue-50 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">
                 전체 합계
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            <tr className="bg-green-50 hover:bg-green-100 transition-colors">
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-900">
+            <tr className="bg-blue-50 hover:bg-blue-100 transition-colors">
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-900">
                 주간 총계
               </td>
               {uniqueConcerts.map((title) => {
@@ -58,13 +58,13 @@ export default function ConcertWeeklyTable({ data }: ConcertWeeklyTableProps) {
                 return (
                   <td
                     key={title}
-                    className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-800"
+                    className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-800"
                   >
                     {total.toLocaleString()}원
                   </td>
                 );
               })}
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-900">
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-900">
                 {data.data.reduce((sum, week) => sum + week.total, 0).toLocaleString()}원
               </td>
             </tr>

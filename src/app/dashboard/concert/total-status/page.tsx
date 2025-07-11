@@ -1,18 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ConcertSalesCards from '@/components/dashboard/concert/ConcertSalesCards';
 import ConcertMonthlyChart from '@/components/dashboard/concert/ConcertMonthlyChart';
 import ConcertMonthlyTable from '@/components/dashboard/concert/ConcertMonthlyTable';
 import ConcertWeeklyChart from '@/components/dashboard/concert/ConcertWeeklyChart';
 import ConcertWeeklyTable from '@/components/dashboard/concert/ConcertWeeklyTable';
+import ConcertTargetSalesTable from '@/components/dashboard/concert/ConcertTargetSalesTable';
 import ApiDataViewer from '@/components/debug/ApiDataViewer';
 import ErrorView from '@/components/ui/ErrorView';
 import UnifiedDateFilter from '@/components/ui/UnifiedDateFilter';
 
 import { useConcertApi } from '@/hooks/useConcertApi';
-import { ConcertMonthlyData, ConcertDailyData } from '@/lib/api';
+import { ConcertMonthlyData, ConcertDailyData, ConcertTargetSales } from '@/lib/api';
 
 // 더미 데이터
 const DUMMY_CONCERTS = [
@@ -151,6 +152,14 @@ export default function ConcertTotalStatusPage() {
   // 필터 적용 로딩 상태
   const [isFilterLoading, setIsFilterLoading] = useState(false);
   
+  // 클라이언트 측 시간 표시를 위한 상태
+  const [currentTime, setCurrentTime] = useState<string>('');
+  
+  // 클라이언트에서만 시간 설정 (Hydration 오류 방지)
+  useEffect(() => {
+    setCurrentTime(new Date().toLocaleString('ko-KR'));
+  }, []);
+  
   // 모든 환경에서 데이터 뷰어 표시
   const showDataViewer = true;
 
@@ -200,6 +209,49 @@ export default function ConcertTotalStatusPage() {
     });
   };
 
+  // 목표 매출 데이터 변환 함수
+  const getTargetSalesData = () => {
+    const targetSalesResponse = responses.targetSales;
+    
+    // API 데이터가 성공적으로 로드된 경우
+    if (targetSalesResponse?.status === 'success' && targetSalesResponse.data && targetSalesResponse.data.length > 0) {
+      console.log('✅ 목표 매출 데이터 변환 완료:', targetSalesResponse.data);
+      return targetSalesResponse.data as ConcertTargetSales[];
+    }
+    
+    // API 데이터가 없거나 실패한 경우 더미 데이터 사용
+    console.log('⚠️ 목표 매출 API 데이터 없음, 더미 데이터 사용');
+    return [
+      {
+        liveName: "히사이시조 영화음악 콘서트_2025_서울(예술의전당)",
+        targetSales: "50,000,000",
+        salesAcc: "156,419,000",
+        targetRatio: "3.13"
+      },
+      {
+        liveName: "[2025LOF] 재패니메이션 인 콘서트_2025 전설의 시작",
+        targetSales: "62,000,000",
+        salesAcc: "37,902,500",
+        targetRatio: "0.61"
+      }
+    ] as ConcertTargetSales[];
+  };
+
+  const targetSalesData = getTargetSalesData();
+
+  // 목표 매출 총계 계산 함수
+  const getTargetSalesTotals = () => {
+    if (!targetSalesData || targetSalesData.length === 0) {
+      return { totalTarget: 3000000000, totalCurrent: 0, achievementRate: 0 };
+    }
+
+    const totalTarget = targetSalesData.reduce((sum, item) => sum + parseInt(item.targetSales.replace(/,/g, '')), 0);
+    const totalCurrent = targetSalesData.reduce((sum, item) => sum + parseInt(item.salesAcc.replace(/,/g, '')), 0);
+    const achievementRate = totalTarget > 0 ? (totalCurrent / totalTarget) * 100 : 0;
+
+    return { totalTarget, totalCurrent, achievementRate };
+  };
+
   // API 데이터 변환 함수 (백엔드 가이드 적용)
   const getSalesData = () => {
     const overviewResponse = responses.overview;
@@ -221,16 +273,11 @@ export default function ConcertTotalStatusPage() {
       const weeklySales = parseInt(overviewData.weeklySales?.replace(/,/g, '') || '0') || 0;
       const dailyAvgSales = parseInt(overviewData.dailyAvgSales?.replace(/,/g, '') || '0') || 0;
       
-      // 목표 매출 계산
-      let totalTarget = 3000000000; // 기본값
-      let dailyTarget = Math.round(totalTarget / 365);
-      
-      if (targetResponse?.status === 'success' && targetResponse.data && targetResponse.data.length > 0) {
-        totalTarget = targetResponse.data.reduce((sum: number, item: any) => 
-          sum + (parseInt(item.targetSales?.replace(/,/g, '') || '0') || 0), 0
-        );
-        dailyTarget = Math.round(totalTarget / 365);
-      }
+      // 목표 매출 계산 (목표 매출 총계 사용)
+      const targetTotals = getTargetSalesTotals();
+      const totalTarget = targetTotals.totalTarget;
+      const dailyTarget = Math.round(totalTarget / 365);
+      const achievementRate = targetTotals.achievementRate;
       
       // 증감율 계산 (daily 데이터 사용)
       let yesterdayChangeRate = 0;
@@ -290,6 +337,7 @@ export default function ConcertTotalStatusPage() {
         accumulated: {
           total: accumulatedSales,
           target: totalTarget,
+          achievementRate: achievementRate,
         },
         weekly: {
           total: weeklySales,
@@ -516,7 +564,7 @@ export default function ConcertTotalStatusPage() {
               콘서트 통합 현황
             </h1>
             <p className="text-gray-500">
-              최근 업데이트: {new Date().toLocaleString('ko-KR')}
+              최근 업데이트: {currentTime || '로딩 중...'}
               {isLoading && (
                 <span className="ml-2 inline-flex items-center">
                   <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mr-1"></span>
@@ -572,6 +620,43 @@ export default function ConcertTotalStatusPage() {
         )}
       </motion.div>
 
+      {/* 목표 매출 달성 현황 섹션 */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
+        className={`bg-white rounded-xl shadow-lg p-6 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
+      >
+        <h2 className="text-xl font-bold mb-6 flex items-center">
+          <span className="inline-block w-1 h-6 bg-purple-500 rounded-full mr-3"></span>
+          목표 매출 달성 현황
+        </h2>
+        {targetSalesData && !isLoading ? (
+          <ConcertTargetSalesTable data={targetSalesData} />
+        ) : (
+          <div className="animate-pulse">
+            {/* 테이블 헤더 스켈레톤 */}
+            <div className="mb-4">
+              <div className="flex space-x-4">
+                <div className="h-6 bg-gray-300 rounded w-40"></div>
+                <div className="h-6 bg-gray-300 rounded w-32"></div>
+                <div className="h-6 bg-gray-300 rounded w-32"></div>
+                <div className="h-6 bg-gray-300 rounded w-20"></div>
+              </div>
+            </div>
+            {/* 테이블 행 스켈레톤 */}
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex space-x-4 mb-3">
+                <div className="h-4 bg-gray-200 rounded w-40"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+              </div>
+            ))}
+          </div>
+        )}
+      </motion.div>
+
       {/* 월간 매출 섹션 */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -581,7 +666,7 @@ export default function ConcertTotalStatusPage() {
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold flex items-center">
-            <span className="inline-block w-1 h-6 bg-purple-500 rounded-full mr-3"></span>
+            <span className="inline-block w-1 h-6 bg-purple-600 rounded-full mr-3"></span>
             월간 매출 현황
             {dateRange.startDate && dateRange.endDate && (
               <span className="ml-2 text-sm font-normal text-gray-500">
@@ -681,7 +766,7 @@ export default function ConcertTotalStatusPage() {
         className={`bg-white rounded-xl shadow-lg p-6 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
       >
         <h2 className="text-xl font-bold mb-6 flex items-center">
-          <span className="inline-block w-1 h-6 bg-blue-500 rounded-full mr-3"></span>
+          <span className="inline-block w-1 h-6 bg-indigo-600 rounded-full mr-3"></span>
           주간 매출 상세
         </h2>
         {weeklyData && !isLoading ? (

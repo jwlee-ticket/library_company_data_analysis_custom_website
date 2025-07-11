@@ -6,6 +6,7 @@ interface SalesData {
   target: number;
   changeAmount?: number;
   changeRate?: number;
+  achievementRate?: number;
 }
 
 interface ConcertSalesCardsProps {
@@ -23,6 +24,7 @@ function SalesCard({
   target, 
   changeAmount,
   changeRate,
+  achievementRate,
   color,
   delay,
   tooltip,
@@ -33,6 +35,7 @@ function SalesCard({
   target: number;
   changeAmount?: number;
   changeRate?: number;
+  achievementRate?: number;
   color: string;
   delay: number;
   tooltip: string;
@@ -84,6 +87,8 @@ function SalesCard({
               </span>
             </div>
           )}
+
+
         </div>
 
         <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
