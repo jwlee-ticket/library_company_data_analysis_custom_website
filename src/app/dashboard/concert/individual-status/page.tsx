@@ -23,6 +23,12 @@ export default function ConcertIndividualStatusPage() {
     endDate: ''
   });
   const [isConcertListMinimized, setIsConcertListMinimized] = useState(false);
+  
+  // 섹션 최소화 상태
+  const [isProfitabilityMinimized, setIsProfitabilityMinimized] = useState(false);
+  const [isDailySalesMinimized, setIsDailySalesMinimized] = useState(false);
+  const [isDailyTicketsMinimized, setIsDailyTicketsMinimized] = useState(false);
+  const [isWeeklySalesMinimized, setIsWeeklySalesMinimized] = useState(false);
 
   // 필터 적용 로딩 상태
   const [isFilterLoading, setIsFilterLoading] = useState(false);
@@ -75,6 +81,23 @@ export default function ConcertIndividualStatusPage() {
   // 콘서트 목록 토글 핸들러
   const toggleConcertList = () => {
     setIsConcertListMinimized(!isConcertListMinimized);
+  };
+
+  // 섹션 토글 핸들러
+  const toggleProfitability = () => {
+    setIsProfitabilityMinimized(!isProfitabilityMinimized);
+  };
+
+  const toggleDailySales = () => {
+    setIsDailySalesMinimized(!isDailySalesMinimized);
+  };
+
+  const toggleDailyTickets = () => {
+    setIsDailyTicketsMinimized(!isDailyTicketsMinimized);
+  };
+
+  const toggleWeeklySales = () => {
+    setIsWeeklySalesMinimized(!isWeeklySalesMinimized);
   };
 
   // 선택된 콘서트 정보 가져오기
@@ -333,34 +356,70 @@ export default function ConcertIndividualStatusPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className={`bg-white rounded-xl shadow-lg p-6 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
+            className={`bg-white rounded-xl shadow-lg overflow-hidden ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
           >
-            <h2 className="text-xl font-bold mb-6 flex items-center">
-              <span className="inline-block w-1 h-6 bg-purple-500 rounded-full mr-3"></span>
-              수익성 추정
-            </h2>
-            {filteredBepData.length > 0 && !isLoading ? (
-              <ConcertProfitabilityTable data={filteredBepData} />
-            ) : (
-              <div className="animate-pulse">
-                <div className="h-6 bg-gray-200 rounded w-48 mb-4"></div>
-                <div className="space-y-3">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="flex space-x-4">
-                      <div className="h-4 bg-gray-200 rounded w-16"></div>
-                      <div className="h-4 bg-gray-200 rounded w-20"></div>
-                      <div className="h-4 bg-gray-200 rounded w-20"></div>
-                      <div className="h-4 bg-gray-200 rounded w-20"></div>
-                      <div className="h-4 bg-gray-200 rounded w-20"></div>
-                      <div className="h-4 bg-gray-200 rounded w-24"></div>
-                      <div className="h-4 bg-gray-200 rounded w-24"></div>
-                      <div className="h-4 bg-gray-200 rounded w-20"></div>
-                      <div className="h-4 bg-gray-200 rounded w-16"></div>
-                    </div>
-                  ))}
-                </div>
+            {/* 헤더 - 항상 표시 */}
+            <div 
+              onClick={toggleProfitability}
+              className="flex items-center justify-between p-6 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+            >
+              <div className="flex items-center">
+                <span className="inline-block w-1 h-6 bg-purple-500 rounded-full mr-3"></span>
+                <h2 className="text-xl font-bold text-gray-900">
+                  수익성 추정
+                </h2>
               </div>
-            )}
+              
+              <div className="flex items-center">
+                <span className="mr-3 text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded">
+                  전체기간으로 고정
+                </span>
+                <motion.div
+                  animate={{ rotate: isProfitabilityMinimized ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* 테이블 내용 - 확장 시에만 표시 */}
+            <motion.div
+              initial={false}
+              animate={{ 
+                height: isProfitabilityMinimized ? 0 : 'auto',
+                opacity: isProfitabilityMinimized ? 0 : 1 
+              }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="p-6">
+                {filteredBepData.length > 0 && !isLoading ? (
+                  <ConcertProfitabilityTable data={filteredBepData} />
+                ) : (
+                  <div className="animate-pulse">
+                    <div className="h-6 bg-gray-200 rounded w-48 mb-4"></div>
+                    <div className="space-y-3">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} className="flex space-x-4">
+                          <div className="h-4 bg-gray-200 rounded w-16"></div>
+                          <div className="h-4 bg-gray-200 rounded w-20"></div>
+                          <div className="h-4 bg-gray-200 rounded w-20"></div>
+                          <div className="h-4 bg-gray-200 rounded w-20"></div>
+                          <div className="h-4 bg-gray-200 rounded w-20"></div>
+                          <div className="h-4 bg-gray-200 rounded w-24"></div>
+                          <div className="h-4 bg-gray-200 rounded w-24"></div>
+                          <div className="h-4 bg-gray-200 rounded w-20"></div>
+                          <div className="h-4 bg-gray-200 rounded w-16"></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
           </motion.div>
 
           {/* 일간 매출 그래프 */}
@@ -368,30 +427,59 @@ export default function ConcertIndividualStatusPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className={`bg-white rounded-xl shadow-lg p-6 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
+            className={`bg-white rounded-xl shadow-lg overflow-hidden ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold flex items-center">
+            {/* 헤더 - 항상 표시 */}
+            <div 
+              onClick={toggleDailySales}
+              className="flex items-center justify-between p-6 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+            >
+              <div className="flex items-center">
                 <span className="inline-block w-1 h-6 bg-pink-500 rounded-full mr-3"></span>
-                일간 매출
-                {dateRange.startDate && dateRange.endDate && (
-                  <span className="ml-2 text-sm font-normal text-gray-500">
-                    (필터 적용됨)
-                  </span>
-                )}
-              </h2>
-            </div>
-            {filteredDailyData.length > 0 && !isLoading ? (
-              <ConcertDailySalesChart data={filteredDailyData} />
-            ) : (
-              <div className="w-full h-[400px] bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-gray-300 rounded-full mb-4 mx-auto animate-pulse"></div>
-                  <div className="h-4 bg-gray-300 rounded w-32 mx-auto mb-2 animate-pulse"></div>
-                  <div className="h-3 bg-gray-300 rounded w-24 mx-auto animate-pulse"></div>
-                </div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  일간 매출
+                  {dateRange.startDate && dateRange.endDate && (
+                    <span className="ml-2 text-sm font-normal text-gray-500">
+                      (필터 적용됨)
+                    </span>
+                  )}
+                </h2>
               </div>
-            )}
+              
+              <motion.div
+                animate={{ rotate: isDailySalesMinimized ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </motion.div>
+            </div>
+
+            {/* 차트 내용 - 확장 시에만 표시 */}
+            <motion.div
+              initial={false}
+              animate={{ 
+                height: isDailySalesMinimized ? 0 : 'auto',
+                opacity: isDailySalesMinimized ? 0 : 1 
+              }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="p-6">
+                {filteredDailyData.length > 0 && !isLoading ? (
+                  <ConcertDailySalesChart data={filteredDailyData} />
+                ) : (
+                  <div className="w-full h-[400px] bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gray-300 rounded-full mb-4 mx-auto animate-pulse"></div>
+                      <div className="h-4 bg-gray-300 rounded w-32 mx-auto mb-2 animate-pulse"></div>
+                      <div className="h-3 bg-gray-300 rounded w-24 mx-auto animate-pulse"></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
           </motion.div>
 
           {/* 일간 판매 매수 그래프 */}
@@ -399,30 +487,59 @@ export default function ConcertIndividualStatusPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className={`bg-white rounded-xl shadow-lg p-6 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
+            className={`bg-white rounded-xl shadow-lg overflow-hidden ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold flex items-center">
-                <span className="inline-block w-1 h-6 bg-indigo-500 rounded-full mr-3"></span>
-                일간 판매 매수
-                {dateRange.startDate && dateRange.endDate && (
-                  <span className="ml-2 text-sm font-normal text-gray-500">
-                    (필터 적용됨)
-                  </span>
-                )}
-              </h2>
-            </div>
-            {filteredDailyData.length > 0 && !isLoading ? (
-              <ConcertDailyTicketsChart data={filteredDailyData} />
-            ) : (
-              <div className="w-full h-[400px] bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-gray-300 rounded-full mb-4 mx-auto animate-pulse"></div>
-                  <div className="h-4 bg-gray-300 rounded w-32 mx-auto mb-2 animate-pulse"></div>
-                  <div className="h-3 bg-gray-300 rounded w-24 mx-auto animate-pulse"></div>
-                </div>
+            {/* 헤더 - 항상 표시 */}
+            <div 
+              onClick={toggleDailyTickets}
+              className="flex items-center justify-between p-6 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+            >
+              <div className="flex items-center">
+                <span className="inline-block w-1 h-6 bg-pink-500 rounded-full mr-3"></span>
+                <h2 className="text-xl font-bold text-gray-900">
+                  일간 판매 매수
+                  {dateRange.startDate && dateRange.endDate && (
+                    <span className="ml-2 text-sm font-normal text-gray-500">
+                      (필터 적용됨)
+                    </span>
+                  )}
+                </h2>
               </div>
-            )}
+              
+              <motion.div
+                animate={{ rotate: isDailyTicketsMinimized ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </motion.div>
+            </div>
+
+            {/* 차트 내용 - 확장 시에만 표시 */}
+            <motion.div
+              initial={false}
+              animate={{ 
+                height: isDailyTicketsMinimized ? 0 : 'auto',
+                opacity: isDailyTicketsMinimized ? 0 : 1 
+              }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="p-6">
+                {filteredDailyData.length > 0 && !isLoading ? (
+                  <ConcertDailyTicketsChart data={filteredDailyData} />
+                ) : (
+                  <div className="w-full h-[400px] bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gray-300 rounded-full mb-4 mx-auto animate-pulse"></div>
+                      <div className="h-4 bg-gray-300 rounded w-32 mx-auto mb-2 animate-pulse"></div>
+                      <div className="h-3 bg-gray-300 rounded w-24 mx-auto animate-pulse"></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
           </motion.div>
 
           {/* 주간 매출 테이블 */}
@@ -430,27 +547,58 @@ export default function ConcertIndividualStatusPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className={`bg-white rounded-xl shadow-lg p-6 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
+            className={`bg-white rounded-xl shadow-lg overflow-hidden ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
           >
-            <h2 className="text-xl font-bold mb-6 flex items-center">
-              <span className="inline-block w-1 h-6 bg-blue-500 rounded-full mr-3"></span>
-              주간 매출 상세
-              {dateRange.startDate && dateRange.endDate && (
-                <span className="ml-2 text-sm font-normal text-gray-500">
-                  (필터 적용됨)
-                </span>
-              )}
-            </h2>
-            {filteredDailyData.length > 0 && !isLoading ? (
-              <ConcertWeeklySalesTable 
-                dailyData={filteredDailyData} 
-                weeklyData={filteredWeeklyData} 
-              />
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <p>주간 매출 데이터가 없습니다.</p>
+            {/* 헤더 - 항상 표시 */}
+            <div 
+              onClick={toggleWeeklySales}
+              className="flex items-center justify-between p-6 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+            >
+              <div className="flex items-center">
+                <span className="inline-block w-1 h-6 bg-blue-500 rounded-full mr-3"></span>
+                <h2 className="text-xl font-bold text-gray-900">
+                  주간 매출 상세
+                  {dateRange.startDate && dateRange.endDate && (
+                    <span className="ml-2 text-sm font-normal text-gray-500">
+                      (필터 적용됨)
+                    </span>
+                  )}
+                </h2>
               </div>
-            )}
+              
+              <motion.div
+                animate={{ rotate: isWeeklySalesMinimized ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </motion.div>
+            </div>
+
+            {/* 테이블 내용 - 확장 시에만 표시 */}
+            <motion.div
+              initial={false}
+              animate={{ 
+                height: isWeeklySalesMinimized ? 0 : 'auto',
+                opacity: isWeeklySalesMinimized ? 0 : 1 
+              }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="p-6">
+                {filteredDailyData.length > 0 && !isLoading ? (
+                  <ConcertWeeklySalesTable 
+                    dailyData={filteredDailyData} 
+                    weeklyData={filteredWeeklyData} 
+                  />
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>주간 매출 데이터가 없습니다.</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
           </motion.div>
         </>
       )}
