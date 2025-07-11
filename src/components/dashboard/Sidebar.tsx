@@ -107,7 +107,7 @@ export default function Sidebar() {
   ];
 
   const playItems = [
-    { name: '통합 티켓 판매합계 : 총계', href: '/dashboard/play/total-sales' },
+    { name: '통합 티켓 판매합계', href: '/dashboard/play/total-sales' },
     { name: '통합 주간별 티켓 매수', href: '/dashboard/play/weekly-tickets' },
     { name: '월별 통합 매출', href: '/dashboard/play/monthly-revenue' },
     { name: '기간별 통합 매출', href: '/dashboard/play/period-revenue' },
@@ -122,7 +122,7 @@ export default function Sidebar() {
     <div className="w-64 h-screen bg-gray-800 text-white p-6 shadow-xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-          Library Dashboard
+          LibraryCompany Dashboard
         </h1>
         <div className="mt-2 h-0.5 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full" />
       </div>
@@ -139,11 +139,11 @@ export default function Sidebar() {
             }
           `}
         >
-          전체 (ToDo)
+          전체
         </Link>
         
         <Dropdown
-          title="콘서트 (In Progress)"
+          title="콘서트"
           items={concertItems}
           isOpen={openMenus.concert}
           onToggle={() => toggleMenu('concert')}
@@ -151,7 +151,7 @@ export default function Sidebar() {
         />
         
         <Dropdown
-          title="연극 & 뮤지컬 (ToDo)"
+          title="연극 & 뮤지컬"
           items={playItems}
           isOpen={openMenus.play}
           onToggle={() => toggleMenu('play')}
