@@ -59,6 +59,22 @@ export default function ConcertMonthlyChart({ data }: ConcertMonthlyChartProps) 
     data.data.find(item => item.date === date)
   ).filter(Boolean) as MonthlyData[]; // undefined 제거
   
+  // 데이터 개수에 따른 동적 크기 조정
+  const dataCount = sortedData.length;
+  const getCategoryPercentage = () => {
+    if (dataCount === 1) return 0.3; // 막대가 1개일 때는 30%만 차지
+    if (dataCount === 2) return 0.5; // 막대가 2개일 때는 50%
+    if (dataCount === 3) return 0.7; // 막대가 3개일 때는 70%
+    return 0.8; // 4개 이상일 때는 기본값
+  };
+  
+  const getMaxBarThickness = () => {
+    if (dataCount === 1) return 120; // 막대가 1개일 때 최대 120px
+    if (dataCount === 2) return 100; // 막대가 2개일 때 최대 100px
+    if (dataCount === 3) return 80;  // 막대가 3개일 때 최대 80px
+    return undefined; // 4개 이상일 때는 제한 없음
+  };
+  
   const chartData = {
     labels: sortedData.map(month => month.date), // 실제 존재하는 데이터의 날짜만 사용
     datasets: uniqueConcerts.map((concertTitle, index) => ({
@@ -168,7 +184,20 @@ export default function ConcertMonthlyChart({ data }: ConcertMonthlyChartProps) 
 
   return (
     <div className="w-full h-[400px]">
-      <Bar data={chartData} options={options} />
+      <Bar 
+        data={chartData} 
+        options={{
+          ...options,
+          // 막대 최대 크기 설정 (데이터 개수가 적을 때만)
+          ...(dataCount <= 3 && {
+            elements: {
+              bar: {
+                maxBarThickness: getMaxBarThickness(),
+              },
+            },
+          }),
+        } as any}
+      />
     </div>
   );
 } 

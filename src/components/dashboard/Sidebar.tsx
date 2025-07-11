@@ -135,7 +135,7 @@ export default function Sidebar() {
     <div className="w-64 h-screen bg-gray-800 text-white p-6 shadow-xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-          공연 대시보드
+          Library Dashboard
         </h1>
         <div className="mt-2 h-0.5 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full" />
       </div>

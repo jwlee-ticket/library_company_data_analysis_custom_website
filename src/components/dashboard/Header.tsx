@@ -12,8 +12,7 @@ export default function Header() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">
-                라이브러리컴퍼니
-                <span className="ml-2 text-sm font-normal text-gray-500">판매 데이터 대시보드</span>
+                공연 데이터 대시보드
               </h1>
             </div>
           </div>

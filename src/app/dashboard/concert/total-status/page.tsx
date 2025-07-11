@@ -398,9 +398,20 @@ export default function ConcertTotalStatusPage() {
         적용된날짜범위: dateRange
       });
       
+      // 오늘 날짜
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정
+      
       // 주간 데이터로 집계 (테이블용)
       const weeklyTable = apiData.reduce((acc: any, item: ConcertDailyData) => {
         const weekKey = item.recordWeek;
+        
+        // 주간 시작일이 오늘 날짜보다 이후인 경우 제외
+        const weekStartDate = new Date(weekKey);
+        if (weekStartDate > today) {
+          console.log('🚫 미래 주간 데이터 제외:', weekKey);
+          return acc;
+        }
         
         if (!acc[weekKey]) {
           acc[weekKey] = {
@@ -452,7 +463,13 @@ export default function ConcertTotalStatusPage() {
         data
       };
       
-      console.log('✅ 주간 매출 데이터 변환 완료:', transformedData);
+      console.log('✅ 주간 매출 데이터 변환 완료 (미래 데이터 제외):', {
+        전체주간수: Object.keys(weeklyTable).length,
+        표시될주간수: sortedWeekKeys.length,
+        오늘날짜: today.toISOString().split('T')[0],
+        주간범위: sortedWeekKeys.length > 0 ? `${sortedWeekKeys[sortedWeekKeys.length - 1]} ~ ${sortedWeekKeys[0]}` : '데이터 없음'
+      });
+      
       return transformedData;
     }
     
