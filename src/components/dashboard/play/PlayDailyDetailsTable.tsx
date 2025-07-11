@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { PlayDailyDetail } from '@/hooks/usePlayApi';
+import { PlayDailyDetail } from '@/lib/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
 interface PlayDailyDetailsTableProps {

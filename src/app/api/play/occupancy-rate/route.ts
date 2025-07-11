@@ -1,0 +1,36 @@
+import { NextResponse } from 'next/server';
+
+// 연극/뮤지컬 유료 점유율 데이터 프록시 API
+export async function GET() {
+  try {
+    console.log('🔄 프록시 요청: /play/occupancy-rate');
+    
+    const response = await fetch('http://35.208.29.100:3001/play/occupancy-rate', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // 캐시 비활성화 (실시간 데이터)
+      cache: 'no-store'
+    });
+
+    if (!response.ok) {
+      console.error('❌ 백엔드 API 에러:', response.status, response.statusText);
+      return NextResponse.json(
+        { error: '백엔드 서버 연결 실패', status: response.status },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    console.log('✅ 프록시 응답 성공:', Array.isArray(data) ? `${data.length}개 항목` : '단일 객체');
+
+    return NextResponse.json(data);
+  } catch (error: any) {
+    console.error('❌ 프록시 에러:', error.message);
+    return NextResponse.json(
+      { error: '서버 내부 오류', message: error.message },
+      { status: 500 }
+    );
+  }
+} 

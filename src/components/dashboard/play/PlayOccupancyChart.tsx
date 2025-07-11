@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { PlayOccupancyRate } from '@/hooks/usePlayApi';
+import { PlayOccupancyRate } from '@/lib/api';
 
 interface PlayOccupancyChartProps {
   data: PlayOccupancyRate[];

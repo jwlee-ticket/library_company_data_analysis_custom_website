@@ -15,6 +15,7 @@ export default function PlayTotalSalesPage() {
     isLoading, 
     hasErrors, 
     retryAll,
+    retryEndpoint,
     getWeeklyOverviewData,
     getDailyDetailsData,
     getOccupancyRateData

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { PlayWeeklyOverview } from '@/hooks/usePlayApi';
+import { PlayWeeklyOverview } from '@/lib/api';
 import { formatCurrency, formatShareRate, getAchievementStatus } from '@/lib/utils';
 
 interface PlayWeeklyOverviewTableProps {

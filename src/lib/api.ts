@@ -188,6 +188,69 @@ export class ConcertAPI {
 }
 
 // 환경 정보 유틸리티
+// 연극/뮤지컬 API 타입 정의
+export interface PlayWeeklyOverview {
+  liveId?: string;
+  liveName?: string;
+  targetShare?: string;
+  avgPaidShare?: string;
+  totalTargetSales?: string;
+  totalActualSales?: string;
+  weekBeforeLastTotalActualSales?: string;
+}
+
+export interface PlayDailyDetail {
+  liveId?: string;
+  liveName?: string;
+  latestRecordDate?: string;
+  showTotalSeatNumber?: number;
+  dailySales?: number;
+  cast?: string;
+  paidSeatSales?: number;
+  paidSeatTot?: number;
+  paidSeatVip?: number;
+  paidSeatA?: number;
+}
+
+export interface PlayOccupancyRate {
+  "공연 ID"?: string;
+  "공연명"?: string;
+  "주 시작일"?: string;
+  "주 종료일"?: string;
+  "유료 객석 점유율(%)"?: number;
+  "해당 주 공연 횟수"?: number;
+}
+
+// 연극/뮤지컬 API 클래스
+export class PlayAPI {
+  // 주간 현황 데이터 (프록시 사용)
+  static async getWeeklyOverview(): Promise<PlayWeeklyOverview[]> {
+    const response = await fetch('/api/play/weekly-overview');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+
+  // 공연별 상세 정보 (프록시 사용)
+  static async getDailyDetails(): Promise<PlayDailyDetail[]> {
+    const response = await fetch('/api/play/daily-details');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+
+  // 유료 점유율 데이터 (프록시 사용)
+  static async getOccupancyRate(): Promise<PlayOccupancyRate[]> {
+    const response = await fetch('/api/play/occupancy-rate');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+}
+
 export const getEnvironmentInfo = () => {
   const baseURL = getBaseURL();
   const isLocal = baseURL.includes('localhost');
