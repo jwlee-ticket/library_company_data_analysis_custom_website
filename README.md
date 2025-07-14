@@ -44,6 +44,9 @@ npm run dev
 ```
 src/
 ├── app/
+│   ├── api/                # API Routes (프록시)
+│   │   ├── concert/        # 콘서트 API 엔드포인트들
+│   │   └── play/           # 연극 & 뮤지컬 API 엔드포인트들
 │   ├── dashboard/           # 대시보드 메인
 │   │   ├── theater/        # 극장 관련 페이지들
 │   │   │   ├── cast-revenue/      # 캐스트 수익 분석
@@ -53,6 +56,14 @@ src/
 │   │   │   ├── period-revenue/    # 기간별 수익 비교
 │   │   │   ├── weekly-tickets/    # 주간 티켓 판매
 │   │   │   └── total-sales/       # 총 판매 현황
+│   │   ├── play/           # 연극 & 뮤지컬 관련 페이지들
+│   │   │   ├── cast-revenue/      # 캐스트 수익 분석
+│   │   │   ├── daily-sales/       # 일일 판매 현황
+│   │   │   ├── weekly-revenue/    # 주간 수익 분석
+│   │   │   ├── monthly-revenue/   # 월간 수익 분석
+│   │   │   ├── period-revenue/    # 기간별 수익 비교
+│   │   │   ├── weekly-tickets/    # 주간 티켓 판매
+│   │   │   └── total-sales/       # 총 매출 현황 (통합)
 │   │   └── concert/        # 콘서트 관련 페이지들
 │   │       ├── individual-status/ # 개별 콘서트 상태
 │   │       └── total-status/      # 전체 콘서트 현황
@@ -63,11 +74,20 @@ src/
 │   │   ├── Sidebar.tsx     # 사이드바 네비게이션
 │   │   ├── Header.tsx      # 헤더
 │   │   ├── Footer.tsx      # 푸터
+│   │   ├── concert/        # 콘서트 관련 컴포넌트들
+│   │   ├── play/           # 연극 & 뮤지컬 관련 컴포넌트들
+│   │   ├── theater/        # 극장 관련 컴포넌트들
 │   │   ├── *Chart.tsx      # 각종 차트 컴포넌트들
 │   │   ├── *Table.tsx      # 테이블 컴포넌트들
 │   │   └── *Card.tsx       # 카드 컴포넌트들
+│   ├── debug/              # 디버깅용 컴포넌트들
 │   └── ui/                 # 재사용 가능한 UI 컴포넌트들
+├── hooks/                  # 커스텀 React 훅들
+│   ├── useApiData.ts       # API 데이터 관리 훅
+│   ├── useConcertApi.ts    # 콘서트 API 훅
+│   └── usePlayApi.ts       # 연극 & 뮤지컬 API 훅
 └── lib/
+    ├── api.ts              # API 관련 타입 및 클래스
     └── utils.ts            # 유틸리티 함수들
 ```
 
@@ -79,6 +99,14 @@ src/
 - 기간별 수익 비교
 - 티켓 판매 현황 및 점유율
 
+### 연극 & 뮤지컬 데이터 분석
+- 통합 매출 현황 (연극/뮤지컬 구분)
+- 공연별 상세 매출 분석
+- 유료 점유율 현황 모니터링
+- 캐스트별 수익 분석
+- 일일/주간/월간 수익 데이터
+- 기간별 성과 비교
+
 ### 콘서트 데이터 분석
 - 개별 콘서트 상태 모니터링
 - 전체 콘서트 현황 대시보드
@@ -87,6 +115,12 @@ src/
 - Chart.js를 활용한 다양한 차트
 - 반응형 테이블
 - 인터랙티브 대시보드
+
+### API 통합
+- Next.js API Routes를 통한 프록시 구조
+- 외부 API와의 안전한 연동
+- 실시간 데이터 업데이트
+- 에러 핸들링 및 로딩 상태 관리
 
 ## 🔧 개발 명령어
 
