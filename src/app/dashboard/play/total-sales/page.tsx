@@ -109,17 +109,13 @@ export default function PlayTotalSalesPage() {
   
   // 카드 데이터 변환 함수 (새로운 API 우선 사용)
   const transformSalesData = () => {
-    console.log('🔄 카드 데이터 변환 시작:', { summaryData, monthlyData, revenueData });
-    
     // 1순위: Summary API 데이터 사용
     if (summaryData) {
-      console.log('✅ Summary API 데이터 사용');
       return transformFromSummaryData(summaryData);
     }
     
     // 2순위: Monthly Summary API 데이터 사용
     if (monthlyData && monthlyData.length > 0) {
-      console.log('✅ Monthly Summary API 데이터 사용');
       return transformFromMonthlyData(monthlyData, revenueData);
     }
     
@@ -128,12 +124,10 @@ export default function PlayTotalSalesPage() {
     const dailyData = dailyDetailsData;
     
     if (weeklyData || dailyData) {
-      console.log('✅ 기존 API 데이터 사용');
       return transformFromLegacyData(weeklyData, dailyData);
     }
     
     // 4순위: 더미 데이터 사용
-    console.log('⚠️ 더미 데이터 사용');
     return getDummyCardsData();
   };
 
@@ -404,35 +398,7 @@ export default function PlayTotalSalesPage() {
 
   const salesCardsData = transformSalesData();
 
-  // 데이터 구조 로깅 (디버깅용)
-  useEffect(() => {
-    console.group('📊 Play API 데이터 구조 분석');
-    
-    // 새로운 API 데이터 로깅
-    if (summaryData) {
-      console.log('✅ Summary API:', summaryData);
-    }
-    if (monthlyData && monthlyData.length > 0) {
-      console.log('✅ Monthly Summary API:', monthlyData);
-    }
-    if (revenueData) {
-      console.log('✅ Revenue Analysis API:', revenueData);
-    }
-    
-    // 기존 API 데이터 로깅
-    if (weeklyOverviewData) {
-      console.log('📈 Weekly Overview:', weeklyOverviewData);
-    }
-    if (dailyDetailsData) {
-      console.log('📋 Daily Details (first 3):', dailyDetailsData.slice(0, 3));
-    }
-    if (occupancyRateData) {
-      console.log('🎭 Occupancy Rate:', occupancyRateData);
-    }
-    
-    console.log('🔄 변환된 카드 데이터:', salesCardsData);
-    console.groupEnd();
-  }, [summaryData, monthlyData, revenueData, weeklyOverviewData, dailyDetailsData, occupancyRateData, salesCardsData]);
+
 
   // 카드 로딩 상태 체크
   const isCardsLoading = () => {
@@ -462,21 +428,17 @@ export default function PlayTotalSalesPage() {
 
   // 공연별 매출 상세 데이터 변환 함수 (새로운 API 우선 사용)
   const transformPerformanceDetails = () => {
-    console.log('🔄 공연별 매출 상세 데이터 변환 시작');
-    
     // 새로운 API 데이터 접근
     const monthlyByPerformanceData = getMonthlyByPerformanceData();
     const castRevenueData = getCastRevenueData();
     
     // 1순위: Monthly By Performance API 사용
     if (monthlyByPerformanceData && monthlyByPerformanceData.length > 0) {
-      console.log('✅ Monthly By Performance API 데이터 사용');
       return transformFromMonthlyByPerformanceData(monthlyByPerformanceData);
     }
     
     // 2순위: Cast Revenue API 사용
     if (castRevenueData && castRevenueData.length > 0) {
-      console.log('✅ Cast Revenue API 데이터 사용');
       return transformFromCastRevenueData(castRevenueData);
     }
     
@@ -485,12 +447,10 @@ export default function PlayTotalSalesPage() {
     const weeklyData = weeklyOverviewData?.[0];
     
     if (dailyData && weeklyData) {
-      console.log('✅ 기존 API 데이터 사용');
       return transformFromLegacyPerformanceData(dailyData, weeklyData);
     }
     
     // 4순위: 더미 데이터 사용
-    console.log('⚠️ 공연별 상세 데이터 없음, 더미 데이터 사용');
     return DUMMY_PERFORMANCE_DETAILS;
   };
 
@@ -606,21 +566,17 @@ export default function PlayTotalSalesPage() {
 
   // 유료 점유율 현황 데이터 변환 함수 (새로운 API 우선 사용)
   const transformOccupancyStatus = () => {
-    console.log('🔄 유료 점유율 현황 데이터 변환 시작');
-    
     // 새로운 API 데이터 접근
     const allShowtimeData = getAllShowtimeData();
     const castRevenueData = getCastRevenueData();
     
     // 1순위: AllShowtime API 사용
     if (allShowtimeData && allShowtimeData.length > 0) {
-      console.log('✅ AllShowtime API 데이터 사용');
       return transformFromAllShowtimeData(allShowtimeData);
     }
     
     // 2순위: CastRevenue API 사용
     if (castRevenueData && castRevenueData.length > 0) {
-      console.log('✅ CastRevenue API 데이터 사용');
       return transformFromCastRevenueForOccupancy(castRevenueData);
     }
     
@@ -629,12 +585,10 @@ export default function PlayTotalSalesPage() {
     const occupancyData = occupancyRateData;
     
     if (dailyData) {
-      console.log('✅ 기존 API 데이터 사용');
       return transformFromLegacyOccupancyData(dailyData);
     }
     
     // 4순위: 더미 데이터 사용
-    console.log('⚠️ 점유율 데이터 없음, 더미 데이터 사용');
     return DUMMY_OCCUPANCY_STATUS;
   };
 
@@ -782,41 +736,11 @@ export default function PlayTotalSalesPage() {
            (dailyDetailsData && weeklyOverviewData);
   };
 
-  // 공연별 매출 상세 데이터 로깅
-  useEffect(() => {
-    if (performanceDetailsData && performanceDetailsData.length > 0) {
-      console.log('🎭 변환된 공연별 매출 상세 데이터:', performanceDetailsData);
-    }
-  }, [performanceDetailsData]);
+
 
   const occupancyStatusData = transformOccupancyStatus();
 
-  // 유료 점유율 현황 데이터 로깅
-  useEffect(() => {
-    console.group('🎫 유료 점유율 현황 데이터 분석');
-    
-    // 새로운 API 데이터 로깅
-    const allShowtimeData = getAllShowtimeData();
-    const castRevenueData = getCastRevenueData();
-    
-    if (allShowtimeData && allShowtimeData.length > 0) {
-      console.log('✅ AllShowtime API:', allShowtimeData.slice(0, 3));
-    }
-    if (castRevenueData && castRevenueData.length > 0) {
-      console.log('✅ CastRevenue API:', castRevenueData.slice(0, 3));
-    }
-    
-    // 기존 API 데이터 로깅
-    if (dailyDetailsData && dailyDetailsData.length > 0) {
-      console.log('📋 Daily Details (for occupancy):', dailyDetailsData.slice(0, 3));
-    }
-    if (occupancyRateData && occupancyRateData.length > 0) {
-      console.log('📈 Occupancy Rate:', occupancyRateData.slice(0, 3));
-    }
-    
-    console.log('🎫 변환된 유료 점유율 현황 데이터:', occupancyStatusData);
-    console.groupEnd();
-  }, [responses.allShowtime, responses.castRevenue, responses.dailyDetails, responses.occupancyRate]);
+
 
   // 유료 점유율 현황 로딩 상태 체크
   const isOccupancyStatusLoading = () => {

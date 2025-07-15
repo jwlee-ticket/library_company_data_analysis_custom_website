@@ -75,13 +75,7 @@ export default function ConcertMonthlyChart({ data }: ConcertMonthlyChartProps) 
     return undefined; // 4개 이상일 때는 제한 없음
   };
   
-  // 디버깅 로그 추가
-  console.log('📊 월간 차트 막대 크기 설정:', {
-    dataCount,
-    maxBarThickness: getMaxBarThickness(),
-    categoryPercentage: getCategoryPercentage(),
-    적용여부: dataCount <= 3 ? '적용됨' : '적용안됨'
-  });
+
   
   const chartData = {
     labels: sortedData.map(month => month.date), // 실제 존재하는 데이터의 날짜만 사용

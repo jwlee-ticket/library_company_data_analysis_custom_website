@@ -251,7 +251,6 @@ export default function ConcertTotalStatusPage() {
     }
     
     // API 데이터가 없거나 실패한 경우 더미 데이터 사용
-    console.log('⚠️ 목표 매출 API 데이터 없음, 더미 데이터 사용');
     return [
       {
         liveName: "히사이시조 영화음악 콘서트_2025_서울(예술의전당)",
@@ -384,17 +383,10 @@ export default function ConcertTotalStatusPage() {
         },
       };
       
-      console.log('✅ 매출 데이터 변환 완료 (백엔드 가이드 적용):', transformedData);
       return transformedData;
     }
     
     // API 데이터가 없거나 실패한 경우 더미 데이터 사용
-    console.log('⚠️ API 데이터 없음, 더미 데이터 사용:', {
-      status: overviewResponse?.status,
-      hasData: !!overviewResponse?.data,
-      dataLength: overviewResponse?.data?.length
-    });
-    
     return DUMMY_SALES_DATA;
   };
 
@@ -454,7 +446,6 @@ export default function ConcertTotalStatusPage() {
     }
     
     // API 데이터가 없거나 실패한 경우 더미 데이터 사용
-    console.log('⚠️ 월간 API 데이터 없음, 더미 데이터 사용');
     return DUMMY_MONTHLY_DATA;
   };
 
@@ -553,7 +544,6 @@ export default function ConcertTotalStatusPage() {
     }
     
     // API 데이터가 없거나 실패한 경우 더미 데이터 사용
-    console.log('⚠️ 주간 API 데이터 없음, 더미 데이터 사용');
     return DUMMY_WEEKLY_DATA;
   };
 
