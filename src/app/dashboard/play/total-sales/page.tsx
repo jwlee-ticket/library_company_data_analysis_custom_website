@@ -95,18 +95,18 @@ export default function PlayTotalSalesPage() {
       const actualTotalSales = totals.totalSales;
       const actualDailySales = totals.latestDaySales;
       
-      const weeklyEstimate = actualTotalSales * 0.25; // 월 매출의 25% 추정
-      const weeklyTarget = totals.totalTarget * 0.25;
+      const weeklyEstimate = Math.floor(actualTotalSales * 0.25); // 월 매출의 25% 추정 (소수점 제거)
+      const weeklyTarget = Math.floor(totals.totalTarget * 0.25);
       
-      // 변화율 계산 (실제 데이터가 0이면 0으로 표시)
-      const changeAmount = actualDailySales * 0.05;
+      // 변화율 계산 (실제 데이터가 0이면 0으로 표시, 모든 금액은 정수)
+      const changeAmount = Math.floor(actualDailySales * 0.05);
       const changeRate = actualDailySales > 0 ? 5.0 : 0;
       
       return {
         yesterday: {
           total: actualDailySales,
           target: totals.latestDayTarget,
-          changeAmount: changeAmount,
+          changeAmount: changeAmount, // 정수로 변환됨
           changeRate: changeRate
         },
         accumulated: {
@@ -114,15 +114,15 @@ export default function PlayTotalSalesPage() {
           target: totals.totalTarget
         },
         weekly: {
-          total: weeklyEstimate,
-          target: weeklyTarget,
-          changeAmount: weeklyEstimate * 0.03,
+          total: weeklyEstimate, // 정수로 변환됨
+          target: weeklyTarget, // 정수로 변환됨
+          changeAmount: Math.floor(weeklyEstimate * 0.03), // 정수로 변환
           changeRate: weeklyEstimate > 0 ? 3.0 : 0
         },
         weeklyAverage: {
-          total: weeklyEstimate / 7,
-          target: weeklyTarget / 7,
-          changeAmount: (weeklyEstimate * 0.03) / 7,
+          total: Math.floor(weeklyEstimate / 7), // 정수로 변환
+          target: Math.floor(weeklyTarget / 7), // 정수로 변환
+          changeAmount: Math.floor((weeklyEstimate * 0.03) / 7), // 정수로 변환
           changeRate: weeklyEstimate > 0 ? 3.0 : 0
         }
       };
@@ -184,12 +184,12 @@ export default function PlayTotalSalesPage() {
       return [];
     }
     
-    // 안전한 숫자 변환 함수
+    // 안전한 숫자 변환 함수 (정수로 반환)
     const toNumber = (value: any): number => {
-      if (typeof value === 'number') return value;
+      if (typeof value === 'number') return Math.floor(value);
       if (typeof value === 'string') {
         const parsed = parseFloat(value);
-        return isNaN(parsed) ? 0 : parsed;
+        return isNaN(parsed) ? 0 : Math.floor(parsed);
       }
       return 0;
     };
