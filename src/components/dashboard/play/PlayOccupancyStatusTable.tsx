@@ -78,7 +78,7 @@ export default function PlayOccupancyStatusTable({ data }: PlayOccupancyStatusTa
     <div className="space-y-6">
       {/* 전체 총계 */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
+        <table className="w-full divide-y divide-gray-200 play-table">
           <thead>
             <tr>
               <th className="px-6 py-3 bg-blue-50 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">
@@ -138,7 +138,7 @@ export default function PlayOccupancyStatusTable({ data }: PlayOccupancyStatusTa
 
       {/* 카테고리별 소계 */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
+        <table className="w-full divide-y divide-gray-200">
           <thead>
             <tr>
               <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -225,7 +225,7 @@ export default function PlayOccupancyStatusTable({ data }: PlayOccupancyStatusTa
 
       {/* 공연별 상세 */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
+        <table className="w-full divide-y divide-gray-200">
           <thead>
             <tr>
               <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">

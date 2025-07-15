@@ -11,83 +11,7 @@ import UnifiedDateFilter from '@/components/ui/UnifiedDateFilter';
 
 import { usePlayApi } from '@/hooks/usePlayApi';
 
-// 더미 매출 카드 데이터 (목표 달성 수준으로 조정)
-const DUMMY_SALES_DATA = {
-  integrated: {
-    yesterday: {
-      total: 165000000,
-      target: 150000000,
-      changeAmount: 8000000,
-      changeRate: 6.8,
-    },
-    accumulated: {
-      total: 4200000000,
-      target: 4000000000,
-    },
-    weekly: {
-      total: 750000000,
-      target: 700000000,
-      changeAmount: 35000000,
-      changeRate: 6.4,
-    },
-    weeklyAverage: {
-      total: 107142857,
-      target: 100000000,
-      changeAmount: 5000000,
-      changeRate: 6.4,
-    },
-  },
-  theater: {
-    yesterday: {
-      total: 68000000,
-      target: 60000000,
-      changeAmount: 3000000,
-      changeRate: 7.1,
-    },
-    accumulated: {
-      total: 1580000000,
-      target: 1500000000,
-    },
-    weekly: {
-      total: 295000000,
-      target: 280000000,
-      changeAmount: 15000000,
-      changeRate: 7.7,
-    },
-    weeklyAverage: {
-      total: 42142857,
-      target: 40000000,
-      changeAmount: 2142857,
-      changeRate: 7.7,
-    },
-  },
-  musical: {
-    yesterday: {
-      total: 97000000,
-      target: 90000000,
-      changeAmount: 5000000,
-      changeRate: 6.7,
-    },
-    accumulated: {
-      total: 2620000000,
-      target: 2500000000,
-    },
-    weekly: {
-      total: 455000000,
-      target: 420000000,
-      changeAmount: 20000000,
-      changeRate: 5.7,
-    },
-    weeklyAverage: {
-      total: 65000000,
-      target: 60000000,
-      changeAmount: 2857143,
-      changeRate: 5.7,
-    },
-  },
-};
-
-// 더미 공연별 매출 상세 데이터
+// 더미 데이터 (API 데이터 없을 때 사용)
 const DUMMY_PERFORMANCE_DETAILS = [
   {
     category: '연극' as const,
@@ -100,26 +24,6 @@ const DUMMY_PERFORMANCE_DETAILS = [
     totalAchievementRate: 90.0,
   },
   {
-    category: '연극' as const,
-    performanceName: '로미오와 줄리엣',
-    todaySales: 12000000,
-    todayTargetSales: 15000000,
-    todayAchievementRate: 80.0,
-    totalSales: 380000000,
-    totalTargetSales: 400000000,
-    totalAchievementRate: 95.0,
-  },
-  {
-    category: '연극' as const,
-    performanceName: '맥베스',
-    todaySales: 18000000,
-    todayTargetSales: 27000000,
-    todayAchievementRate: 66.7,
-    totalSales: 370000000,
-    totalTargetSales: 600000000,
-    totalAchievementRate: 61.7,
-  },
-  {
     category: '뮤지컬' as const,
     performanceName: '레미제라블',
     todaySales: 25000000,
@@ -129,29 +33,8 @@ const DUMMY_PERFORMANCE_DETAILS = [
     totalTargetSales: 900000000,
     totalAchievementRate: 88.9,
   },
-  {
-    category: '뮤지컬' as const,
-    performanceName: '오페라의 유령',
-    todaySales: 30000000,
-    todayTargetSales: 35000000,
-    todayAchievementRate: 85.7,
-    totalSales: 750000000,
-    totalTargetSales: 850000000,
-    totalAchievementRate: 88.2,
-  },
-  {
-    category: '뮤지컬' as const,
-    performanceName: '캣츠',
-    todaySales: 25000000,
-    todayTargetSales: 25000000,
-    todayAchievementRate: 100.0,
-    totalSales: 450000000,
-    totalTargetSales: 750000000,
-    totalAchievementRate: 60.0,
-  },
 ];
 
-// 더미 유료 점유율 데이터
 const DUMMY_OCCUPANCY_STATUS = [
   {
     performanceName: '햄릿',
@@ -162,22 +45,6 @@ const DUMMY_OCCUPANCY_STATUS = [
     category: '연극' as const,
   },
   {
-    performanceName: '로미오와 줄리엣',
-    paid: 160,
-    unpaid: 40,
-    target: 180,
-    achievementRate: 88.9,
-    category: '연극' as const,
-  },
-  {
-    performanceName: '맥베스',
-    paid: 140,
-    unpaid: 60,
-    target: 220,
-    achievementRate: 63.6,
-    category: '연극' as const,
-  },
-  {
     performanceName: '레미제라블',
     paid: 280,
     unpaid: 20,
@@ -185,27 +52,11 @@ const DUMMY_OCCUPANCY_STATUS = [
     achievementRate: 93.3,
     category: '뮤지컬' as const,
   },
-  {
-    performanceName: '오페라의 유령',
-    paid: 250,
-    unpaid: 30,
-    target: 280,
-    achievementRate: 89.3,
-    category: '뮤지컬' as const,
-  },
-  {
-    performanceName: '캣츠',
-    paid: 190,
-    unpaid: 35,
-    target: 250,
-    achievementRate: 76.0,
-    category: '뮤지컬' as const,
-  },
 ];
 
 export default function PlayTotalSalesPage() {
   // API 훅 사용
-  const { responses, isLoading, hasErrors, retryAll } = usePlayApi();
+  const { responses, isLoading, hasErrors, retryAll, getWeeklyOverviewData, getDailyDetailsData, getOccupancyRateData } = usePlayApi();
   
   // 통합 날짜 범위 상태
   const [dateRange, setDateRange] = useState({
@@ -230,6 +81,251 @@ export default function PlayTotalSalesPage() {
   
   // 모든 환경에서 데이터 뷰어 표시
   const showDataViewer = true;
+
+  // API 데이터 접근
+  const weeklyOverviewData = getWeeklyOverviewData();
+  const dailyDetailsData = getDailyDetailsData();
+  const occupancyRateData = getOccupancyRateData();
+
+  // 데이터 구조 로깅 (디버깅용)
+  useEffect(() => {
+    if (weeklyOverviewData && dailyDetailsData && occupancyRateData) {
+      console.group('📊 API 데이터 구조 분석');
+      console.log('Weekly Overview:', weeklyOverviewData);
+      console.log('Daily Details (first 3):', dailyDetailsData.slice(0, 3));
+      console.log('Occupancy Rate:', occupancyRateData);
+      console.groupEnd();
+    }
+  }, [weeklyOverviewData, dailyDetailsData, occupancyRateData]);
+
+  // 카드 데이터 변환 함수 (콘서트 페이지 패턴 적용)
+  const transformSalesData = () => {
+    const weeklyData = weeklyOverviewData?.[0];
+    const dailyData = dailyDetailsData;
+    
+    if (!weeklyData || !dailyData) {
+      console.log('⚠️ API 데이터 없음, 더미 데이터 사용');
+      return {
+        integrated: {
+          yesterday: { total: 165000000, target: 150000000, changeAmount: 8000000, changeRate: 6.8 },
+          accumulated: { total: 4200000000, target: 4000000000 },
+          weekly: { total: 750000000, target: 700000000, changeAmount: 35000000, changeRate: 6.4 },
+          weeklyAverage: { total: 107142857, target: 100000000, changeAmount: 5000000, changeRate: 6.4 },
+        },
+        theater: {
+          yesterday: { total: 68000000, target: 60000000, changeAmount: 3000000, changeRate: 7.1 },
+          accumulated: { total: 1580000000, target: 1500000000 },
+          weekly: { total: 295000000, target: 280000000, changeAmount: 15000000, changeRate: 7.7 },
+          weeklyAverage: { total: 42142857, target: 40000000, changeAmount: 2142857, changeRate: 7.7 },
+        },
+        musical: {
+          yesterday: { total: 97000000, target: 90000000, changeAmount: 5000000, changeRate: 6.7 },
+          accumulated: { total: 2620000000, target: 2500000000 },
+          weekly: { total: 455000000, target: 420000000, changeAmount: 20000000, changeRate: 5.7 },
+          weeklyAverage: { total: 65000000, target: 60000000, changeAmount: 2857143, changeRate: 5.7 },
+        },
+      };
+    }
+
+    // API 데이터로 변환
+    const totalPaidSales = dailyData.reduce((sum, item) => sum + (item.paidSeatSales || 0), 0);
+    const totalTargetSales = parseInt(weeklyData.totalTargetSales?.replace(/,/g, '') || '0') || 0;
+    const totalActualSales = parseInt(weeklyData.totalActualSales?.replace(/,/g, '') || '0') || 0;
+    const weekBeforeLastSales = parseInt(weeklyData.weekBeforeLastTotalActualSales?.replace(/,/g, '') || '0') || 0;
+    
+    // 변화율 계산
+    const calculateChangeRate = (current: number, previous: number) => {
+      return previous > 0 ? ((current - previous) / previous) * 100 : 0;
+    };
+    
+    const changeRate = calculateChangeRate(totalActualSales, weekBeforeLastSales);
+    const changeAmount = totalActualSales - weekBeforeLastSales;
+    
+    // 연극/뮤지컬 분할 (현재는 뮤지컬 데이터만 있으므로 비율로 분할)
+    const theaterRatio = 0.4;
+    const musicalRatio = 0.6;
+    
+    const integrated = {
+      yesterday: {
+        total: totalPaidSales * 0.1, // 일일 매출 추정
+        target: totalTargetSales * 0.1,
+        changeAmount: changeAmount * 0.1,
+        changeRate: changeRate,
+      },
+      accumulated: {
+        total: totalPaidSales,
+        target: totalTargetSales,
+      },
+      weekly: {
+        total: totalPaidSales * 0.7, // 주간 매출 추정
+        target: totalTargetSales * 0.7,
+        changeAmount: changeAmount * 0.7,
+        changeRate: changeRate,
+      },
+      weeklyAverage: {
+        total: (totalPaidSales * 0.7) / 7,
+        target: (totalTargetSales * 0.7) / 7,
+        changeAmount: (changeAmount * 0.7) / 7,
+        changeRate: changeRate,
+      },
+    };
+    
+    const theater = {
+      yesterday: {
+        total: integrated.yesterday.total * theaterRatio,
+        target: integrated.yesterday.target * theaterRatio,
+        changeAmount: integrated.yesterday.changeAmount * theaterRatio,
+        changeRate: integrated.yesterday.changeRate,
+      },
+      accumulated: {
+        total: integrated.accumulated.total * theaterRatio,
+        target: integrated.accumulated.target * theaterRatio,
+      },
+      weekly: {
+        total: integrated.weekly.total * theaterRatio,
+        target: integrated.weekly.target * theaterRatio,
+        changeAmount: integrated.weekly.changeAmount * theaterRatio,
+        changeRate: integrated.weekly.changeRate,
+      },
+      weeklyAverage: {
+        total: integrated.weeklyAverage.total * theaterRatio,
+        target: integrated.weeklyAverage.target * theaterRatio,
+        changeAmount: integrated.weeklyAverage.changeAmount * theaterRatio,
+        changeRate: integrated.weeklyAverage.changeRate,
+      },
+    };
+    
+    const musical = {
+      yesterday: {
+        total: integrated.yesterday.total * musicalRatio,
+        target: integrated.yesterday.target * musicalRatio,
+        changeAmount: integrated.yesterday.changeAmount * musicalRatio,
+        changeRate: integrated.yesterday.changeRate,
+      },
+      accumulated: {
+        total: integrated.accumulated.total * musicalRatio,
+        target: integrated.accumulated.target * musicalRatio,
+      },
+      weekly: {
+        total: integrated.weekly.total * musicalRatio,
+        target: integrated.weekly.target * musicalRatio,
+        changeAmount: integrated.weekly.changeAmount * musicalRatio,
+        changeRate: integrated.weekly.changeRate,
+      },
+      weeklyAverage: {
+        total: integrated.weeklyAverage.total * musicalRatio,
+        target: integrated.weeklyAverage.target * musicalRatio,
+        changeAmount: integrated.weeklyAverage.changeAmount * musicalRatio,
+        changeRate: integrated.weeklyAverage.changeRate,
+      },
+    };
+    
+    console.log('✅ Play 카드 데이터 변환 완료:', { integrated, theater, musical });
+    return { integrated, theater, musical };
+  };
+
+  const salesCardsData = transformSalesData();
+
+  // 공연별 매출 상세 데이터 변환 함수
+  const transformPerformanceDetails = () => {
+    const dailyData = dailyDetailsData;
+    const weeklyData = weeklyOverviewData?.[0];
+    
+    if (!dailyData || !weeklyData) {
+      console.log('⚠️ 공연별 상세 데이터 없음, 더미 데이터 사용');
+      return DUMMY_PERFORMANCE_DETAILS;
+    }
+
+    // 공연별로 그룹화
+    const performanceGroups = dailyData.reduce((groups, item) => {
+      const key = item.liveId || 'unknown';
+      if (!groups[key]) {
+        groups[key] = {
+          liveId: item.liveId || '',
+          liveName: item.liveName || '알 수 없는 공연',
+          performances: []
+        };
+      }
+      groups[key].performances.push(item);
+      return groups;
+    }, {} as Record<string, { liveId: string; liveName: string; performances: any[] }>);
+
+    // 각 공연별 상세 정보 계산
+    const result = Object.values(performanceGroups).map(group => {
+      const totalSales = group.performances.reduce((sum, perf) => sum + (perf.paidSeatSales || 0), 0);
+      const todaySales = group.performances.length > 0 ? (group.performances[0].paidSeatSales || 0) : 0;
+      const targetSales = parseInt(weeklyData.totalTargetSales?.replace(/,/g, '') || '0') || 0;
+      const todayTargetSales = targetSales / 30; // 월간 목표를 일일로 추정
+      
+      const category = group.liveName.includes('뮤지컬') ? '뮤지컬' : '연극';
+      const performanceName = group.liveName.replace(/^뮤지컬〈|〉$/g, '');
+      
+      return {
+        category: category as '연극' | '뮤지컬',
+        performanceName,
+        todaySales,
+        todayTargetSales,
+        todayAchievementRate: todayTargetSales > 0 ? (todaySales / todayTargetSales) * 100 : 0,
+        totalSales,
+        totalTargetSales: targetSales,
+        totalAchievementRate: targetSales > 0 ? (totalSales / targetSales) * 100 : 0,
+      };
+    });
+
+    console.log('✅ 공연별 매출 상세 데이터 변환 완료:', result);
+    return result;
+  };
+
+  // 유료 점유율 현황 데이터 변환 함수
+  const transformOccupancyStatus = () => {
+    const dailyData = dailyDetailsData;
+    const occupancyData = occupancyRateData;
+    
+    if (!dailyData) {
+      console.log('⚠️ 점유율 데이터 없음, 더미 데이터 사용');
+      return DUMMY_OCCUPANCY_STATUS;
+    }
+
+    // 공연별로 그룹화
+    const performanceGroups = dailyData.reduce((groups, item) => {
+      const key = item.liveId || 'unknown';
+      if (!groups[key]) {
+        groups[key] = {
+          liveId: item.liveId || '',
+          liveName: item.liveName || '알 수 없는 공연',
+          performances: []
+        };
+      }
+      groups[key].performances.push(item);
+      return groups;
+    }, {} as Record<string, { liveId: string; liveName: string; performances: any[] }>);
+
+    // 각 공연별 점유율 정보 계산
+    const result = Object.values(performanceGroups).map(group => {
+      const totalPaidSeats = group.performances.reduce((sum, perf) => sum + (perf.paidSeatTot || 0), 0);
+      const totalSeats = group.performances.length > 0 ? (group.performances[0].showTotalSeatNumber || 0) : 0;
+      const totalInviteSeats = totalSeats - totalPaidSeats; // 무료 좌석 추정
+      const targetSeats = Math.floor(totalSeats * 0.8); // 80% 목표로 추정
+      
+      const category = group.liveName.includes('뮤지컬') ? '뮤지컬' : '연극';
+      const performanceName = group.liveName.replace(/^뮤지컬〈|〉$/g, '');
+      
+      return {
+        performanceName,
+        paid: totalPaidSeats,
+        unpaid: totalInviteSeats,
+        target: targetSeats,
+        achievementRate: targetSeats > 0 ? (totalPaidSeats / targetSeats) * 100 : 0,
+        category: category as '연극' | '뮤지컬',
+      };
+    });
+
+    console.log('✅ 유료 점유율 현황 데이터 변환 완료:', result);
+    return result;
+  };
+
+  const performanceDetailsData = transformPerformanceDetails();
+  const occupancyStatusData = transformOccupancyStatus();
 
   // 전체 페이지 에러 상태 체크 (모든 API가 실패한 경우)
   const allApisFailure = Object.keys(responses).length > 0 && 
@@ -334,17 +430,66 @@ export default function PlayTotalSalesPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
         className={isFilterLoading ? 'opacity-50 pointer-events-none' : ''}
       >
-        <PlaySalesCards data={DUMMY_SALES_DATA} />
+        {salesCardsData && !isLoading ? (
+          <PlaySalesCards data={salesCardsData} />
+        ) : (
+          <div className="space-y-8">
+            {/* 스켈레톤 UI - 통합 섹션 */}
+            <div className="space-y-4">
+              <div className="h-6 bg-gray-200 rounded w-20 animate-pulse"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+                    <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
+                    <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* 스켈레톤 UI - 연극 섹션 */}
+            <div className="space-y-4">
+              <div className="h-6 bg-gray-200 rounded w-20 animate-pulse"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+                    <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
+                    <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* 스켈레톤 UI - 뮤지컬 섹션 */}
+            <div className="space-y-4">
+              <div className="h-6 bg-gray-200 rounded w-20 animate-pulse"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+                    <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
+                    <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </motion.div>
 
       {/* 공연별 매출 상세 섹션 */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.15 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
         className={`bg-white rounded-xl shadow-lg overflow-hidden ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
       >
         {/* 헤더 - 항상 표시 */}
@@ -382,7 +527,32 @@ export default function PlayTotalSalesPage() {
           className="overflow-hidden"
         >
           <div className="p-6">
-            <PlayPerformanceDetailsTable data={DUMMY_PERFORMANCE_DETAILS} />
+            {performanceDetailsData && !isLoading ? (
+              <PlayPerformanceDetailsTable data={performanceDetailsData} />
+            ) : (
+              <div className="animate-pulse">
+                {/* 테이블 헤더 스켈레톤 */}
+                <div className="mb-4">
+                  <div className="flex space-x-4">
+                    <div className="h-6 bg-gray-300 rounded w-20"></div>
+                    <div className="h-6 bg-gray-300 rounded w-32"></div>
+                    <div className="h-6 bg-gray-300 rounded w-32"></div>
+                    <div className="h-6 bg-gray-300 rounded w-32"></div>
+                    <div className="h-6 bg-gray-300 rounded w-20"></div>
+                  </div>
+                </div>
+                {/* 테이블 행 스켈레톤 */}
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="flex space-x-4 mb-3">
+                    <div className="h-4 bg-gray-200 rounded w-20"></div>
+                    <div className="h-4 bg-gray-200 rounded w-32"></div>
+                    <div className="h-4 bg-gray-200 rounded w-32"></div>
+                    <div className="h-4 bg-gray-200 rounded w-32"></div>
+                    <div className="h-4 bg-gray-200 rounded w-20"></div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </motion.div>
       </motion.div>
@@ -391,7 +561,7 @@ export default function PlayTotalSalesPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
         className={`bg-white rounded-xl shadow-lg overflow-hidden ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
       >
         {/* 헤더 - 항상 표시 */}
@@ -429,7 +599,36 @@ export default function PlayTotalSalesPage() {
           className="overflow-hidden"
         >
           <div className="p-6">
-            <PlayOccupancyStatusTable data={DUMMY_OCCUPANCY_STATUS} />
+            {occupancyStatusData && !isLoading ? (
+              <PlayOccupancyStatusTable data={occupancyStatusData} />
+            ) : (
+              <div className="animate-pulse">
+                {/* 테이블 헤더 스켈레톤 */}
+                <div className="mb-4">
+                  <div className="flex space-x-4">
+                    <div className="h-6 bg-gray-300 rounded w-24"></div>
+                    <div className="h-6 bg-gray-300 rounded w-20"></div>
+                    <div className="h-6 bg-gray-300 rounded w-20"></div>
+                    <div className="h-6 bg-gray-300 rounded w-20"></div>
+                    <div className="h-6 bg-gray-300 rounded w-24"></div>
+                    <div className="h-6 bg-gray-300 rounded w-20"></div>
+                    <div className="h-6 bg-gray-300 rounded w-24"></div>
+                  </div>
+                </div>
+                {/* 테이블 행 스켈레톤 */}
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="flex space-x-4 mb-3">
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                    <div className="h-4 bg-gray-200 rounded w-20"></div>
+                    <div className="h-4 bg-gray-200 rounded w-20"></div>
+                    <div className="h-4 bg-gray-200 rounded w-20"></div>
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                    <div className="h-4 bg-gray-200 rounded w-20"></div>
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </motion.div>
       </motion.div>

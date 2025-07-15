@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
  
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
-}
+} 
 
 // 📊 Play API 데이터 변환 유틸리티 함수들
 

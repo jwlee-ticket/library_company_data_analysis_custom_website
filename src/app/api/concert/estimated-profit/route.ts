@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://35.208.29.100:3001';
+
 // 콘서트 예상 수익 데이터 프록시 API
 export async function GET() {
   try {
     console.log('🔄 프록시 요청: /concert/estimated-profit');
     
-    const response = await fetch('http://35.208.29.100:3001/concert/estimated-profit', {
+    const response = await fetch(`${API_BASE_URL}/concert/estimated-profit`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

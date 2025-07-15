@@ -221,6 +221,86 @@ export interface PlayOccupancyRate {
   "해당 주 공연 횟수"?: number;
 }
 
+// 신규 API 타입들
+export interface PlayAllShowtime {
+  liveId_?: string;
+  liveName?: string;
+  latestRecordDate?: Date;
+  bep?: number;
+  id?: number;
+  recordDate?: Date;
+  liveId?: string;
+  showDateTime?: Date;
+  cast?: string;
+  paidSeatSales?: number;
+  paidSeatTot?: number;
+  paidSeatVip?: number;
+  paidSeatA?: number;
+  paidSeatS?: number;
+  paidSeatR?: number;
+  paidBadSeatA?: number;
+  paidBadSeatS?: number;
+  paidBadSeatR?: number;
+  paidDisableSeat?: number;
+  inviteSeatTot?: number;
+  inviteSeatVip?: number;
+  inviteSeatA?: number;
+  inviteSeatS?: number;
+  inviteSeatR?: number;
+  inviteBadSeatA?: number;
+  inviteBadSeatS?: number;
+  inviteBadSeatR?: number;
+  inviteDisableSeat?: number;
+  depositShare?: number;
+  paidShare?: number;
+  freeShare?: number;
+  playUploadId?: number;
+}
+
+export interface PlayMonthlySummary {
+  month_str?: string;
+  total_revenue?: number;
+  absolute_change?: number;
+  percentage_change?: number;
+  note?: string;
+}
+
+export interface PlayMonthlyByPerformance {
+  month?: string;
+  performance_name?: string;
+  total_revenue?: number;
+  absolute_change?: number;
+  percentage_change?: number;
+}
+
+export interface PlayRevenueAnalysis {
+  liveId?: string;
+  liveName?: string;
+  category?: string;
+  total_sales?: number;
+  total_target?: number;
+  total_sales_target_ratio?: number;
+  latest_day_sales?: number;
+  latest_day_target?: number;
+  latest_day_sales_target_ratio?: number;
+  latestRecordDate?: string;
+}
+
+export interface PlayCastRevenue {
+  liveId?: string;
+  liveName?: string;
+  cast?: string;
+  totalpaidseatsales?: number;
+  showcount?: number;
+}
+
+export interface PlaySummary {
+  weeklyOverview?: PlayWeeklyOverview[];
+  dailyDetails?: PlayDailyDetail[];
+  occupancyRate?: PlayOccupancyRate[];
+  timestamp?: string;
+}
+
 // 연극/뮤지컬 API 클래스
 export class PlayAPI {
   // 주간 현황 데이터 (프록시 사용)
@@ -244,6 +324,61 @@ export class PlayAPI {
   // 유료 점유율 데이터 (프록시 사용)
   static async getOccupancyRate(): Promise<PlayOccupancyRate[]> {
     const response = await fetch('/api/play/occupancy-rate');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+
+  // 신규 API 메소드들
+  // 전체 공연 일정 조회
+  static async getAllShowtime(): Promise<PlayAllShowtime[]> {
+    const response = await fetch('/api/play/all-showtime');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+
+  // 월별 전체 매출 조회
+  static async getMonthlySummary(): Promise<PlayMonthlySummary[]> {
+    const response = await fetch('/api/play/monthly-summary');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+
+  // 월별 공연별 매출 조회
+  static async getMonthlyByPerformance(): Promise<PlayMonthlyByPerformance[]> {
+    const response = await fetch('/api/play/monthly-by-performance');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+
+  // 매출 분석 조회
+  static async getRevenueAnalysis(): Promise<PlayRevenueAnalysis[]> {
+    const response = await fetch('/api/play/revenue-analysis');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+
+  // 캐스트별 매출 조회
+  static async getCastRevenue(): Promise<PlayCastRevenue[]> {
+    const response = await fetch('/api/play/cast-revenue');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+
+  // 통합 대시보드 데이터 조회
+  static async getSummary(): Promise<PlaySummary> {
+    const response = await fetch('/api/play/summary');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

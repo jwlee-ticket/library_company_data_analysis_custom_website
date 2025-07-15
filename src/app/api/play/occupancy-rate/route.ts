@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://35.208.29.100:3001';
+
 // 연극/뮤지컬 유료 점유율 데이터 프록시 API
 export async function GET() {
   try {
     console.log('🔄 프록시 요청: /play/occupancy-rate');
     
-    const response = await fetch('http://35.208.29.100:3001/play/occupancy-rate', {
+    const response = await fetch(`${API_BASE_URL}/api/play/occupancy-rate`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
