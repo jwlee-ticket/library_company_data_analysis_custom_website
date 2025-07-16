@@ -104,6 +104,7 @@ export default function Sidebar() {
   const concertItems = [
     { name: '통합현황', href: '/dashboard/concert/total-status' },
     { name: '개별현황', href: '/dashboard/concert/individual-status' },
+    { name: '마케팅 & 매출', href: '/dashboard/concert/marketing-sales' },
   ];
 
   const playItems = [

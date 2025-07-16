@@ -13,6 +13,7 @@ import {
   CoreScaleOptions,
   Tick,
 } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Bar } from 'react-chartjs-2';
 import { motion } from 'framer-motion';
 
@@ -22,7 +23,8 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ChartDataLabels
 );
 
 interface MonthlyData {
@@ -56,6 +58,23 @@ export default function MonthlyRevenueChart({ title, monthlyData }: MonthlyReven
             family: "'Pretendard', sans-serif",
           },
           usePointStyle: true,
+        },
+      },
+      datalabels: {
+        display: true,
+        anchor: 'end' as const,
+        align: 'top' as const,
+        formatter: (value: number) => {
+          return value.toLocaleString() + '원';
+        },
+        font: {
+          size: 11,
+          family: "'Pretendard', sans-serif",
+          weight: 'bold' as const,
+        },
+        color: '#374151',
+        padding: {
+          top: 4,
         },
       },
       title: {
@@ -113,6 +132,7 @@ export default function MonthlyRevenueChart({ title, monthlyData }: MonthlyReven
       y: {
         type: 'linear' as const,
         beginAtZero: true,
+        grace: '10%',
         grid: {
           color: 'rgba(0, 0, 0, 0.05)',
           display: true,
