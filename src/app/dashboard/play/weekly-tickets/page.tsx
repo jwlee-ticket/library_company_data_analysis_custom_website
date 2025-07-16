@@ -125,17 +125,17 @@ export default function PlayWeeklyTicketsPage() {
     // 공연별 주간 데이터 그룹핑
     const performanceGroups = new Map<string, {name: string, weeks: Map<string, OccupancyRateData>}>();
     
-    occupancy.forEach(item => {
-      const liveId = item.liveId;
-      const liveName = item.liveName;
-      const weekKey = `${item.weekStartDate} ~ ${item.weekEndDate}`;
-      
-      if (!performanceGroups.has(liveId)) {
-        performanceGroups.set(liveId, {name: liveName, weeks: new Map()});
-      }
-      
-      performanceGroups.get(liveId)!.weeks.set(weekKey, item);
-    });
+         occupancy.forEach(item => {
+       const liveId = item.liveId;
+       const liveName = item.liveName;
+       const weekKey = item.weekStartDate; // 시작 날짜만 사용
+       
+       if (!performanceGroups.has(liveId)) {
+         performanceGroups.set(liveId, {name: liveName, weeks: new Map()});
+       }
+       
+       performanceGroups.get(liveId)!.weeks.set(weekKey, item);
+     });
 
     // PerformanceData 형태로 변환
     const transformedData: PerformanceData[] = [];
