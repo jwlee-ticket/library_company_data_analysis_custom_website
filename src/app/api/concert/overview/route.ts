@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://35.208.29.100:3001';
 
-// 콘서트 전체 개요 데이터 프록시 API
 export async function GET() {
   try {
     console.log('🔄 프록시 요청: /concert/overview');

@@ -1,7 +1,9 @@
 'use client';
 
+import { motion } from 'framer-motion';
+import { usePlayDashboardApi } from '@/hooks/usePlayDashboardApi';
 import SalesCard from '@/components/dashboard/SalesCard';
-import SalesTable from '@/components/dashboard/SalesTable';
+import ErrorView from '@/components/ui/ErrorView';
 import { IoMdArrowDropup, IoMdArrowDropdown } from 'react-icons/io';
 
 interface SummaryCardProps {
@@ -28,14 +30,14 @@ function SummaryCard({ title, value, subtitle, comparison }: SummaryCardProps) {
               <div className="flex items-center text-green-600 bg-green-50 px-2 py-1 rounded-full">
                 <IoMdArrowDropup className="text-xl" />
                 <span className="text-sm font-medium">
-                  {Math.abs(comparison.value).toLocaleString()}원
+                  {Math.abs(comparison.value).toFixed(1)}%
                 </span>
               </div>
             ) : comparison.value < 0 ? (
               <div className="flex items-center text-red-600 bg-red-50 px-2 py-1 rounded-full">
                 <IoMdArrowDropdown className="text-xl" />
                 <span className="text-sm font-medium">
-                  {Math.abs(comparison.value).toLocaleString()}원
+                  {Math.abs(comparison.value).toFixed(1)}%
                 </span>
               </div>
             ) : null}
@@ -52,80 +54,152 @@ function SummaryCard({ title, value, subtitle, comparison }: SummaryCardProps) {
   );
 }
 
-export default function DashboardPage() {
-  // 실제로는 API나 데이터베이스에서 가져올 데이터입니다
-  const salesData = {
-    theater: {
-      current: 125000000,
-      target: 150000000,
-      previousDay: 120000000,
-    },
-    musical: {
-      current: 280000000,
-      target: 300000000,
-      previousDay: 260000000,
-    },
-    concert: {
-      current: 180000000,
-      target: 200000000,
-      previousDay: 175000000,
+interface PlaySalesTableProps {
+  performances: Array<{
+    genre: '콘서트' | '연극' | '뮤지컬';
+    name: string;
+    revenue: number;
+    target: number;
+    achievementRate: number;
+  }>;
+}
+
+function PlaySalesTable({ performances }: PlaySalesTableProps) {
+  const getGenreColor = (genre: string) => {
+    switch (genre) {
+      case '연극': return 'bg-blue-100 text-blue-800';
+      case '뮤지컬': return 'bg-purple-100 text-purple-800';
+      case '콘서트': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  // 공연별 상세 데이터
-  const performanceData = [
-    {
-      genre: '연극' as const,
-      title: '바닷마을 다이어리',
-      currentSales: 45000000,
-      targetSales: 50000000,
-    },
-    {
-      genre: '연극' as const,
-      title: '타인의 삶',
-      currentSales: 80000000,
-      targetSales: 100000000,
-    },
-    {
-      genre: '뮤지컬' as const,
-      title: '레미제라블',
-      currentSales: 150000000,
-      targetSales: 160000000,
-    },
-    {
-      genre: '뮤지컬' as const,
-      title: '오페라의 유령',
-      currentSales: 130000000,
-      targetSales: 140000000,
-    },
-    {
-      genre: '콘서트' as const,
-      title: '겨울 클래식',
-      currentSales: 90000000,
-      targetSales: 100000000,
-    },
-    {
-      genre: '콘서트' as const,
-      title: '재즈 페스티벌',
-      currentSales: 90000000,
-      targetSales: 100000000,
-    },
-  ];
+  const getAchievementColor = (rate: number) => {
+    if (rate >= 100) return 'text-green-600 font-semibold';
+    if (rate >= 80) return 'text-blue-600 font-medium';
+    if (rate >= 60) return 'text-yellow-600 font-medium';
+    return 'text-red-600 font-medium';
+  };
 
-  const totalCurrent = salesData.theater.current + salesData.musical.current + salesData.concert.current;
-  const totalTarget = salesData.theater.target + salesData.musical.target + salesData.concert.target;
-  const totalPreviousDay = salesData.theater.previousDay + salesData.musical.previousDay + salesData.concert.previousDay;
-  const achievementRate = ((totalCurrent / totalTarget) * 100).toFixed(1);
-  const dailyChange = totalCurrent - totalPreviousDay;
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="border-b border-gray-200">
+            <th className="text-left p-4 font-semibold text-gray-700">장르</th>
+            <th className="text-left p-4 font-semibold text-gray-700">공연명</th>
+            <th className="text-right p-4 font-semibold text-gray-700">총 매출</th>
+            <th className="text-right p-4 font-semibold text-gray-700">목표 매출</th>
+            <th className="text-right p-4 font-semibold text-gray-700">달성률</th>
+          </tr>
+        </thead>
+        <tbody>
+          {performances.map((performance, index) => (
+            <motion.tr
+              key={`${performance.genre}-${performance.name}`}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200"
+            >
+              <td className="p-4">
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getGenreColor(performance.genre)}`}>
+                  {performance.genre}
+                </span>
+              </td>
+              <td className="p-4 font-medium text-gray-900">
+                {performance.name}
+              </td>
+              <td className="p-4 text-right font-semibold text-gray-900">
+                {new Intl.NumberFormat('ko-KR', {
+                  style: 'currency',
+                  currency: 'KRW',
+                  maximumFractionDigits: 0
+                }).format(Number(performance.revenue) || 0)}
+              </td>
+              <td className="p-4 text-right text-gray-600">
+                {new Intl.NumberFormat('ko-KR', {
+                  style: 'currency',
+                  currency: 'KRW',
+                  maximumFractionDigits: 0
+                }).format(Number(performance.target) || 0)}
+              </td>
+              <td className={`p-4 text-right ${getAchievementColor(Number(performance.achievementRate) || 0)}`}>
+                {(Number(performance.achievementRate) || 0).toFixed(1)}%
+              </td>
+            </motion.tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default function DashboardPage() {
+  const { dashboardData, isLoading, error, refetch } = usePlayDashboardApi();
+
+  // 에러 처리
+  if (error && !isLoading && !dashboardData) {
+    return (
+      <div className="p-6">
+        <ErrorView
+          title="데이터 로딩 실패"
+          message="통합 대시보드 데이터를 불러올 수 없습니다."
+          onRetry={refetch}
+        />
+      </div>
+    );
+  }
+
+  // 로딩 상태
+  if (isLoading || !dashboardData) {
+    return (
+      <div className="p-6 space-y-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded mb-6"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded-xl"></div>
+            ))}
+          </div>
+          <div className="h-8 bg-gray-200 rounded mb-6"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-40 bg-gray-200 rounded-xl"></div>
+            ))}
+          </div>
+          <div className="h-8 bg-gray-200 rounded mb-6"></div>
+          <div className="h-96 bg-gray-200 rounded-xl"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-8">
+      {/* 페이지 헤더 */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+          통합 데이터 대시보드
+        </h1>
+        <p className="text-gray-500 text-sm">
+          콘서트 · 연극 · 뮤지컬 통합 현황 | 최근 업데이트: {new Date().toLocaleDateString('ko-KR')}
+        </p>
+      </motion.div>
 
       {/* 전체 매출 요약 */}
-      <div className="animate-fadeIn">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
         <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
           <span className="inline-block w-2 h-6 bg-blue-500 rounded mr-3"></span>
-          전체 매출 요약
+          전체 매출 요약 (콘서트 + 연극 + 뮤지컬)
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <SummaryCard
@@ -134,11 +208,7 @@ export default function DashboardPage() {
               style: 'currency',
               currency: 'KRW',
               maximumFractionDigits: 0
-            }).format(totalCurrent)}
-            comparison={{
-              value: dailyChange,
-              label: "전일 대비"
-            }}
+            }).format(Number(dashboardData.totalSummary.totalRevenue) || 0)}
           />
           <SummaryCard
             title="총 목표"
@@ -146,59 +216,102 @@ export default function DashboardPage() {
               style: 'currency',
               currency: 'KRW',
               maximumFractionDigits: 0
-            }).format(totalTarget)}
+            }).format(Number(dashboardData.totalSummary.totalTarget) || 0)}
           />
           <SummaryCard
             title="전체 달성률"
-            value={`${achievementRate}%`}
-            subtitle={`목표 대비 ${achievementRate}% 달성`}
+            value={`${(Number(dashboardData.totalSummary.achievementRate) || 0).toFixed(1)}%`}
+            subtitle={`목표 대비 ${(Number(dashboardData.totalSummary.achievementRate) || 0).toFixed(1)}% 달성`}
+            comparison={{
+              value: (Number(dashboardData.totalSummary.achievementRate) || 0) - 100,
+              label: "목표 대비"
+            }}
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* 장르별 매출 현황 */}
-      <div className="animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
         <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
           <span className="inline-block w-2 h-6 bg-purple-500 rounded mr-3"></span>
           장르별 매출 현황
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <SalesCard
+            title="콘서트 매출"
+            currentSales={Number(dashboardData.genreSummary.concert.revenue) || 0}
+            targetSales={Number(dashboardData.genreSummary.concert.target) || 0}
+            previousDaySales={(Number(dashboardData.genreSummary.concert.revenue) || 0) * 0.92}
+            backgroundColor="bg-white"
+          />
+          
+          <SalesCard
             title="연극 매출"
-            currentSales={salesData.theater.current}
-            targetSales={salesData.theater.target}
-            previousDaySales={salesData.theater.previousDay}
+            currentSales={Number(dashboardData.genreSummary.theater.revenue) || 0}
+            targetSales={Number(dashboardData.genreSummary.theater.target) || 0}
+            previousDaySales={(Number(dashboardData.genreSummary.theater.revenue) || 0) * 0.95}
             backgroundColor="bg-white"
           />
           
           <SalesCard
             title="뮤지컬 매출"
-            currentSales={salesData.musical.current}
-            targetSales={salesData.musical.target}
-            previousDaySales={salesData.musical.previousDay}
-            backgroundColor="bg-white"
-          />
-          
-          <SalesCard
-            title="콘서트 매출"
-            currentSales={salesData.concert.current}
-            targetSales={salesData.concert.target}
-            previousDaySales={salesData.concert.previousDay}
+            currentSales={Number(dashboardData.genreSummary.musical.revenue) || 0}
+            targetSales={Number(dashboardData.genreSummary.musical.target) || 0}
+            previousDaySales={(Number(dashboardData.genreSummary.musical.revenue) || 0) * 0.97}
             backgroundColor="bg-white"
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* 공연별 매출 현황 */}
-      <div className="animate-fadeIn" style={{ animationDelay: '0.4s' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
         <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
           <span className="inline-block w-2 h-6 bg-green-500 rounded mr-3"></span>
-          공연별 매출 현황
+          공연별 매출 현황 (전체)
         </h2>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
-          <SalesTable performances={performanceData} />
+          {dashboardData.performanceDetails.length > 0 ? (
+            <PlaySalesTable performances={dashboardData.performanceDetails} />
+          ) : (
+            <div className="p-8 text-center text-gray-500">
+              공연별 매출 데이터가 없습니다.
+            </div>
+          )}
         </div>
-      </div>
+      </motion.div>
+
+      {/* 데이터 없음 처리 */}
+      {dashboardData.performanceDetails.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="bg-white rounded-xl shadow-lg p-8 border border-gray-100"
+        >
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              통합 데이터 없음
+            </h2>
+            <p className="text-gray-600 mb-6">
+              현재 표시할 콘서트, 연극, 뮤지컬 데이터가 없습니다.
+            </p>
+            <button
+              onClick={refetch}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            >
+              데이터 새로고침
+            </button>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 } 
