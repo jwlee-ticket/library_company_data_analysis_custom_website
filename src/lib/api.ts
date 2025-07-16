@@ -200,25 +200,48 @@ export interface PlayWeeklyOverview {
 }
 
 export interface PlayDailyDetail {
-  liveId?: string;
-  liveName?: string;
-  latestRecordDate?: string;
-  showTotalSeatNumber?: number;
-  dailySales?: number;
-  cast?: string;
-  paidSeatSales?: number;
-  paidSeatTot?: number;
-  paidSeatVip?: number;
-  paidSeatA?: number;
+  id?: number;                            // 고유 ID
+  liveId?: string;                        // 공연 ID
+  liveName?: string;                      // 공연명
+  latestRecordDate?: string;              // 최신 기록일
+  showTotalSeatNumber?: number;           // 총 좌석수
+  dailySales?: number;                    // 일일 매출
+  start_date?: string;                    // 공연 시작일
+  end_date?: string;                      // 공연 종료일
+  recordDate?: string;                    // 기록일
+  showDateTime?: string;                  // 공연 일시
+  cast?: string;                          // 캐스트
+  
+  // 유료 좌석 정보
+  paidSeatSales?: number | string;        // 유료 좌석 매출
+  paidSeatTot?: number | string;          // 총 유료 좌석수
+  paidSeatVip?: number;                   // VIP 유료 좌석수
+  paidSeatA?: number;                     // A석 유료 좌석수
+  paidSeatS?: number;                     // S석 유료 좌석수
+  paidSeatR?: number;                     // R석 유료 좌석수
+  
+  // 초대권 좌석 정보
+  inviteSeatTot?: number;                 // 총 초대권 좌석수
+  inviteSeatVip?: number;                 // VIP 초대권 좌석수
+  inviteSeatA?: number;                   // A석 초대권 좌석수
+  inviteSeatS?: number;                   // S석 초대권 좌석수
+  inviteSeatR?: number;                   // R석 초대권 좌석수
+  
+  // 점유율 정보
+  depositShare?: string;                  // 예매 점유율
+  paidShare?: string;                     // 유료 점유율
+  freeShare?: string;                     // 무료 점유율
+  
+  playUploadId?: number;                  // 업로드 ID
 }
 
 export interface PlayOccupancyRate {
-  "공연 ID"?: string;
-  "공연명"?: string;
-  "주 시작일"?: string;
-  "주 종료일"?: string;
-  "유료 객석 점유율(%)"?: number;
-  "해당 주 공연 횟수"?: number;
+  liveId?: string;                    // 공연 ID
+  liveName?: string;                  // 공연명
+  weekStartDate?: string;             // 주 시작일 (YYYY-MM-DD)
+  weekEndDate?: string;               // 주 종료일 (YYYY-MM-DD)
+  paidSharePercentage?: number | string; // 유료 객석 점유율 (%) - API에서 문자열로 반환될 수 있음
+  weeklyShowCount?: number | string;     // 해당 주 공연 횟수 - API에서 문자열로 반환될 수 있음
 }
 
 // 신규 API 타입들
@@ -287,11 +310,11 @@ export interface PlayRevenueAnalysis {
 }
 
 export interface PlayCastRevenue {
-  liveId?: string;
-  liveName?: string;
-  cast?: string;
-  totalpaidseatsales?: number;
-  showcount?: number;
+  liveId?: string;                        // 공연 ID
+  liveName?: string;                      // 공연명
+  cast?: string;                          // 캐스트 조합
+  totalpaidseatsales?: string | number;   // 총 유료 좌석 매출 (문자열로 반환)
+  showcount?: string | number;            // 공연 횟수 (문자열로 반환)
 }
 
 export interface PlaySummary {

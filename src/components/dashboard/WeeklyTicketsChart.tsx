@@ -11,6 +11,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart } from 'react-chartjs-2';
 import { motion } from 'framer-motion';
 
@@ -22,7 +23,8 @@ ChartJS.register(
   PointElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ChartDataLabels
 );
 
 interface WeeklyData {
@@ -42,6 +44,11 @@ interface WeeklyTicketsChartProps {
 }
 
 export default function WeeklyTicketsChart({ selectedPerformance }: WeeklyTicketsChartProps) {
+  // 최대값 계산하여 여유공간 확보
+  const maxSoldTickets = Math.max(...selectedPerformance.weeklyData.map(item => item.soldTickets));
+  const maxAvailableTickets = Math.max(...selectedPerformance.weeklyData.map(item => item.maxTickets));
+  const yAxisMax = Math.max(maxSoldTickets, maxAvailableTickets) * 1.15; // 15% 여유공간
+
   const options = {
     responsive: true,
     plugins: {
@@ -86,10 +93,66 @@ export default function WeeklyTicketsChart({ selectedPerformance }: WeeklyTicket
         displayColors: true,
         usePointStyle: true,
       },
+      datalabels: {
+        display: function(context: any) {
+          // 모든 데이터셋에 라벨 표시, 0인 값은 제외
+          if (!context.parsed || typeof context.parsed.y !== 'number') {
+            return false;
+          }
+          return context.parsed.y > 0;
+        },
+        backgroundColor: function(context: any) {
+          // 막대 그래프는 파란색, 라인 그래프는 빨간색 배경
+          return context.datasetIndex === 0 
+            ? 'rgba(59, 130, 246, 0.9)' 
+            : 'rgba(239, 68, 68, 0.9)';
+        },
+        borderColor: '#fff',
+        borderWidth: 2,
+        borderRadius: 6,
+        color: '#fff',
+        font: {
+          weight: 'bold' as const,
+          size: 11,
+          family: "'Pretendard', sans-serif",
+        },
+        padding: {
+          top: 6,
+          bottom: 6,
+          left: 8,
+          right: 8,
+        },
+        anchor: function(context: any) {
+          // 막대 그래프는 end, 라인 그래프는 end
+          return 'end' as const;
+        },
+        align: function(context: any) {
+          // 막대 그래프는 위쪽, 라인 그래프는 위쪽
+          return context.datasetIndex === 0 ? 'top' as const : 'top' as const;
+        },
+        offset: function(context: any) {
+          return context.datasetIndex === 0 ? 8 : 12;
+        },
+        formatter: (value: number, context: any) => {
+          if (!value || value === 0) return '';
+          
+          // 최대값 계산하여 작은 값은 표시하지 않음
+          const allData = selectedPerformance.weeklyData;
+          const maxSoldTickets = Math.max(...allData.map(item => item.soldTickets));
+          const maxAvailableTickets = Math.max(...allData.map(item => item.maxTickets));
+          const maxValue = context.datasetIndex === 0 ? maxSoldTickets : maxAvailableTickets;
+          
+          // 최대값의 5% 미만인 값은 표시하지 않음 (가독성 향상)
+          if (maxValue > 0 && value < maxValue * 0.05) return '';
+          
+          return value.toLocaleString() + '매';
+        },
+      },
     },
     scales: {
       y: {
         beginAtZero: true,
+        max: yAxisMax,
         grid: {
           color: 'rgba(0, 0, 0, 0.05)',
           drawBorder: false,
@@ -146,10 +209,10 @@ export default function WeeklyTicketsChart({ selectedPerformance }: WeeklyTicket
         type: 'bar' as const,
         label: '판매 매수',
         data: selectedPerformance.weeklyData.map(data => data.soldTickets),
-        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+        backgroundColor: 'rgba(59, 130, 246, 0.7)',
         borderColor: 'rgb(59, 130, 246)',
-        borderWidth: 1.5,
-        borderRadius: 4,
+        borderWidth: 2,
+        borderRadius: 6,
         order: 2,
       },
       {
@@ -157,14 +220,14 @@ export default function WeeklyTicketsChart({ selectedPerformance }: WeeklyTicket
         label: '판매 가능 매수',
         data: selectedPerformance.weeklyData.map(data => data.maxTickets),
         borderColor: 'rgb(239, 68, 68)',
-        borderWidth: 2,
+        borderWidth: 3,
         fill: false,
         tension: 0.3,
         pointBackgroundColor: 'rgb(239, 68, 68)',
         pointBorderColor: '#fff',
-        pointBorderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
+        pointBorderWidth: 3,
+        pointRadius: 6,
+        pointHoverRadius: 8,
         order: 1,
       },
     ],
@@ -180,4 +243,4 @@ export default function WeeklyTicketsChart({ selectedPerformance }: WeeklyTicket
       <Chart type="bar" data={data} options={options} />
     </motion.div>
   );
-} 
+}

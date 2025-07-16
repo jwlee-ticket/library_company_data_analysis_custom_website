@@ -60,6 +60,9 @@ export default function PlayWeeklyTicketsPage() {
     startDate: '',
     endDate: ''
   });
+  
+  // 필터 적용 로딩 상태
+  const [isFilterLoading, setIsFilterLoading] = useState(false);
 
   // 변환된 데이터
   const [performancesData, setPerformancesData] = useState<PerformanceData[]>([]);
@@ -186,6 +189,24 @@ export default function PlayWeeklyTicketsPage() {
     loadData();
   };
 
+  // 통합 날짜 범위 핸들러
+  const handleDateRangeChange = async (startDate: string, endDate: string) => {
+    setIsFilterLoading(true);
+    
+    // 시각적 피드백을 위한 짧은 지연
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    setDateRange({ startDate, endDate });
+    setIsFilterLoading(false);
+    
+    console.log('📅 통합 필터 적용:', { startDate, endDate });
+  };
+
+  const handleDateRangeReset = () => {
+    setDateRange({ startDate: '', endDate: '' });
+    console.log('🔄 필터 초기화');
+  };
+
   // 로딩 중
   if (isLoading) {
     return (
@@ -231,14 +252,34 @@ export default function PlayWeeklyTicketsPage() {
       transition={{ duration: 0.5 }}
       className="p-6 space-y-8"
     >
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-          연극 & 뮤지컬 - 통합 주간별 티켓 매수
-        </h1>
-        <div className="text-sm text-gray-500">
-          최근 업데이트: {new Date().toLocaleDateString('ko-KR')}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-gradient-to-r from-blue-50 via-white to-purple-50 rounded-2xl p-6 border border-gray-100 shadow-sm"
+      >
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+              연극 & 뮤지컬 - 통합 주간별 티켓 매수
+            </h1>
+            <p className="text-sm text-gray-600">
+              주간별 티켓 판매 현황 및 공연별 상세 분석을 확인하세요
+            </p>
+          </div>
+          
+          {/* 통합 날짜 필터 */}
+          <div className="flex items-center space-x-4">
+            <UnifiedDateFilter
+              startDate={dateRange.startDate}
+              endDate={dateRange.endDate}
+              onDateRangeChange={handleDateRangeChange}
+              onReset={handleDateRangeReset}
+              isLoading={isFilterLoading}
+            />
+          </div>
         </div>
-      </div>
+      </motion.div>
 
             {/* API 응답 데이터 뷰어 */}
       <motion.div
