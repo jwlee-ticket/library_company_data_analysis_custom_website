@@ -412,20 +412,6 @@ export default function DashboardPage() {
               <p className="text-gray-600 mb-4">
                 콘서트 · 연극 · 뮤지컬 실시간 현황 • 최근 업데이트: {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit' })}
               </p>
-              
-              {/* 핵심 알림 */}
-              <div className="flex flex-wrap gap-3 mb-4">
-                {(Number(dashboardData.totalSummary.achievementRate) || 0) < 80 && (
-                  <div className="flex items-center px-3 py-1.5 bg-red-50 text-red-700 rounded-full text-sm font-medium border border-red-200">
-                    목표 달성률 {(Number(dashboardData.totalSummary.achievementRate) || 0).toFixed(1)}%
-                  </div>
-                )}
-                {dashboardData.performanceDetails.length > 0 && (
-                  <div className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200">
-                    {dashboardData.performanceDetails.length}개 공연 운영 중
-                  </div>
-                )}
-              </div>
             </div>
             
             <div className="lg:ml-6">

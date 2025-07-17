@@ -158,6 +158,20 @@ export default function Sidebar() {
           onToggle={() => toggleMenu('play')}
           currentPath={pathname}
         />
+        
+        <Link
+          href="/dashboard/sql-viewer"
+          className={`
+            block px-4 py-2.5 rounded-lg font-medium
+            transition-all duration-200 ease-in-out
+            ${pathname === '/dashboard/sql-viewer'
+              ? 'bg-blue-600/90 text-white shadow-sm' 
+              : 'text-gray-200 hover:bg-gray-700/50 hover:text-white'
+            }
+          `}
+        >
+          SQL Viewer
+        </Link>
       </nav>
     </div>
   );
