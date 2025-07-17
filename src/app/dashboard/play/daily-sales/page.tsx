@@ -24,99 +24,162 @@ export default function PlayDailySalesPage() {
   // 에러 처리
   if (hasErrors && !isLoading && !dailyDetailsData) {
     return (
-      <div className="p-6">
-        <ErrorView
-          title="데이터 로딩 실패"
-          message="일간별 판매현황 데이터를 불러올 수 없습니다."
-          onRetry={retryAll}
-        />
+      <div className="min-h-screen bg-gray-50/30">
+        <div className="p-8 max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">
+              연극 & 뮤지컬 - 일간별 판매현황
+            </h1>
+          </div>
+          
+          <div className="bg-white rounded-2xl shadow-sm border border-red-200 p-8">
+            <ErrorView
+              title="데이터 로딩 실패"
+              message="일간별 판매현황 데이터를 불러올 수 없습니다."
+              onRetry={retryAll}
+            />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-8">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between mb-8">
-        <motion.h1 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent"
-        >
-          연극 & 뮤지컬 - 일간별 판매현황
-        </motion.h1>
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-sm text-gray-500"
-        >
-          최근 업데이트: {new Date().toLocaleDateString('ko-KR')}
-        </motion.div>
-      </div>
-
-      {/* 로딩 상태 */}
-      {isLoading && (
+    <div className="min-h-screen bg-gray-50/30">
+      <div className="p-8 max-w-7xl mx-auto space-y-10">
+        {/* 페이지 헤더 */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-white rounded-xl shadow-lg p-8 border border-gray-100"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
         >
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">일간별 판매현황 데이터를 불러오는 중...</p>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-3">
+                연극 & 뮤지컬 - 일간별 판매현황
+              </h1>
+              <p className="text-gray-600">
+                일간별 상세 판매 현황 및 공연별 분석을 확인하세요
+              </p>
+            </div>
+            
+            <div className="text-sm text-gray-500 bg-gray-100 px-3 py-2 rounded-full">
+              최근 업데이트: {new Date().toLocaleDateString('ko-KR')}
+            </div>
           </div>
         </motion.div>
-      )}
 
-      {/* 공연 선택 필터 */}
-      {dailyDetailsData && dailyDetailsData.length > 0 && (
-        <PlayPerformanceSelector
-          data={dailyDetailsData}
-          selectedPerformance={selectedPerformance}
-          onPerformanceChange={setSelectedPerformance}
-        />
-      )}
-
-      {/* 일간별 판매현황 테이블 */}
-      {dailyDetailsData && dailyDetailsData.length > 0 && (
-        <PlayDailySalesTable
-          data={dailyDetailsData}
-          selectedPerformance={selectedPerformance}
-        />
-      )}
-
-      {/* 데이터가 없는 경우 */}
-      {!isLoading && !hasErrors && (!dailyDetailsData || dailyDetailsData.length === 0) && (
+        {/* API 응답 데이터 뷰어 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white rounded-xl shadow-lg p-8 border border-gray-100"
+          transition={{ duration: 0.4, delay: 0.1 }}
         >
-          <div className="text-center">
-            <div className="text-6xl mb-4">📊</div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              일간별 판매현황 데이터 없음
-            </h2>
-            <p className="text-gray-600 mb-6">
-              현재 연극과 뮤지컬의 일간별 판매현황 데이터가 없습니다.
-            </p>
-            <button
-              onClick={retryAll}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-            >
-              다시 시도
-            </button>
-          </div>
+          <ApiDataViewer responses={responses} />
         </motion.div>
-      )}
 
-      {/* 개발 환경에서만 API 데이터 뷰어 표시 */}
-      {process.env.NODE_ENV === 'development' && (
-        <ApiDataViewer responses={responses} />
-      )}
+        {/* 로딩 상태 */}
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12"
+          >
+            <div className="text-center">
+              <div className="w-12 h-12 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+              <p className="text-gray-600 font-medium text-lg">일간별 판매현황 데이터를 불러오는 중...</p>
+              <p className="text-gray-400 text-sm mt-2">잠시만 기다려 주세요</p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* 공연 선택 섹션 */}
+        {dailyDetailsData && dailyDetailsData.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="bg-white rounded-2xl shadow-sm border border-gray-100"
+          >
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center">
+                <div className="w-1 h-7 bg-blue-500 rounded-full mr-4"></div>
+                <h2 className="text-xl font-bold text-gray-900">공연 선택</h2>
+                <span className="ml-3 px-3 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-full">
+                  필터링
+                </span>
+              </div>
+            </div>
+            <div className="p-6">
+              <PlayPerformanceSelector
+                data={dailyDetailsData}
+                selectedPerformance={selectedPerformance}
+                onPerformanceChange={setSelectedPerformance}
+              />
+            </div>
+          </motion.section>
+        )}
+
+        {/* 일간별 판매 현황 섹션 */}
+        {dailyDetailsData && dailyDetailsData.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="bg-white rounded-2xl shadow-sm border border-gray-100"
+          >
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center">
+                <div className="w-1 h-7 bg-emerald-500 rounded-full mr-4"></div>
+                <h2 className="text-xl font-bold text-gray-900">일간별 판매 현황</h2>
+                <span className="ml-3 px-3 py-1 bg-emerald-50 text-emerald-700 text-sm font-medium rounded-full">
+                  상세 분석
+                </span>
+              </div>
+            </div>
+            <div className="p-6">
+              <PlayDailySalesTable
+                data={dailyDetailsData}
+                selectedPerformance={selectedPerformance}
+              />
+            </div>
+          </motion.section>
+        )}
+
+        {/* 데이터가 없는 경우 */}
+        {!isLoading && !hasErrors && (!dailyDetailsData || dailyDetailsData.length === 0) && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12"
+          >
+            <div className="text-center space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-xl font-bold text-gray-800">
+                  일간별 판매현황 데이터 없음
+                </h2>
+                <p className="text-gray-600">
+                  현재 연극과 뮤지컬의 일간별 판매현황 데이터가 없습니다.
+                </p>
+                <p className="text-gray-400 text-sm">
+                  데이터가 로드되면 여기에 표시됩니다.
+                </p>
+              </div>
+              
+              <motion.button
+                onClick={retryAll}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium shadow-sm"
+              >
+                다시 시도
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 } 
