@@ -554,19 +554,23 @@ export default function ConcertTotalStatusPage() {
     return (
       <div className="min-h-screen bg-gray-50/30">
         <div className="p-8 max-w-7xl mx-auto">
-          {/* 데이터 뷰어 (모든 환경) */}
-          {showDataViewer && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="mb-8"
-            >
-              <ApiDataViewer responses={responses} />
-            </motion.div>
-          )}
-          
-          <div className="max-w-2xl mx-auto mt-20">
+          <div className="max-w-2xl mx-auto mt-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+              콘서트 통합 현황
+            </h1>
+            
+            {/* API 응답 데이터 뷰어 */}
+            {showDataViewer && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="mb-8"
+              >
+                <ApiDataViewer responses={responses} />
+              </motion.div>
+            )}
+            
             <ErrorView
               title="콘서트 데이터를 불러올 수 없습니다"
               message="모든 API 서버 연결에 실패했습니다. 네트워크 상태와 서버 상태를 확인해주세요."
@@ -582,17 +586,6 @@ export default function ConcertTotalStatusPage() {
   return (
     <div className="min-h-screen bg-gray-50/30">
       <div className="p-8 max-w-7xl mx-auto space-y-10">
-        {/* 데이터 뷰어 (모든 환경) */}
-        {showDataViewer && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <ApiDataViewer responses={responses} />
-          </motion.div>
-        )}
-        
         {/* 페이지 헤더 */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -642,11 +635,22 @@ export default function ConcertTotalStatusPage() {
           </div>
         </motion.div>
 
+        {/* API 응답 데이터 뷰어 */}
+        {showDataViewer && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <ApiDataViewer responses={responses} />
+          </motion.div>
+        )}
+
         {/* 매출 카드 섹션 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
           className={`transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
         >
           {salesData ? (
@@ -669,7 +673,7 @@ export default function ConcertTotalStatusPage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
         >
           {/* 헤더 - 항상 표시 */}
@@ -744,7 +748,7 @@ export default function ConcertTotalStatusPage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
           className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
         >
           {/* 헤더 - 항상 표시 */}
@@ -806,7 +810,7 @@ export default function ConcertTotalStatusPage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.25 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
           className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
         >
           {/* 헤더 - 항상 표시 */}
@@ -878,7 +882,7 @@ export default function ConcertTotalStatusPage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
+          transition={{ duration: 0.5, delay: 0.35 }}
           className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
         >
           {/* 헤더 - 항상 표시 */}
@@ -940,7 +944,7 @@ export default function ConcertTotalStatusPage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.35 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
           className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
         >
           {/* 헤더 - 항상 표시 */}

@@ -262,17 +262,6 @@ export default function PlayTotalSalesPage() {
   return (
     <div className="min-h-screen bg-gray-50/30">
       <div className="p-8 max-w-7xl mx-auto space-y-10">
-        {/* 데이터 뷰어 (모든 환경) */}
-        {showDataViewer && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <ApiDataViewer responses={responses} />
-          </motion.div>
-        )}
-        
         {/* 페이지 헤더 */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -322,11 +311,22 @@ export default function PlayTotalSalesPage() {
           </div>
         </motion.div>
 
+        {/* API 응답 데이터 뷰어 */}
+        {showDataViewer && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <ApiDataViewer responses={responses} />
+          </motion.div>
+        )}
+
         {/* 매출 카드 섹션 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           className={`transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
         >
           <div className="flex items-center mb-6">
@@ -376,7 +376,7 @@ export default function PlayTotalSalesPage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
         >
           {/* 헤더 - 항상 표시 */}
@@ -391,7 +391,7 @@ export default function PlayTotalSalesPage() {
                 공연별 매출 상세
               </h2>
               <span className="ml-3 px-3 py-1 bg-purple-50 text-purple-700 text-sm font-medium rounded-full">
-                {performanceDetailsData.length}개 공연
+                분석
               </span>
             </div>
             
@@ -454,7 +454,7 @@ export default function PlayTotalSalesPage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
           className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
         >
           {/* 헤더 - 항상 표시 */}
