@@ -189,6 +189,11 @@ export default function SqlViewerPage() {
     }
   };
 
+  // 페이지 로드 시 자동으로 스키마 정보 로드 (자동완성 지원용)
+  useEffect(() => {
+    loadSchema();
+  }, []);
+
   // 스키마 브라우저 토글 시 스키마 로드
   useEffect(() => {
     if (showSchemaBrowser && schema.length === 0) {
@@ -468,8 +473,12 @@ export default function SqlViewerPage() {
             <div className="relative">
               <label htmlFor="sql-query" className="block text-sm font-medium text-gray-700 mb-2">
                 SQL 쿼리 (SELECT 문만 허용)
-                {schema.length > 0 && (
+                {loadingSchema ? (
+                  <span className="ml-2 text-xs text-gray-500">자동완성 로딩 중...</span>
+                ) : schema.length > 0 ? (
                   <span className="ml-2 text-xs text-blue-600">자동완성 지원</span>
+                ) : (
+                  <span className="ml-2 text-xs text-red-500">자동완성 로드 실패</span>
                 )}
               </label>
               <div className="relative">
