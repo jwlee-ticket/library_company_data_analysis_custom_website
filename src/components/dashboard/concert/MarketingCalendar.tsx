@@ -19,12 +19,12 @@ interface MarketingCalendarProps {
 }
 
 export default function MarketingCalendar({ events, selectedMonth, onMonthChange }: MarketingCalendarProps) {
-  // 2025년 4월 캘린더 생성
+  // 선택된 월을 기준으로 캘린더 생성
   const generateCalendar = () => {
-    const year = 2025;
-    const month = 3; // 4월 (0부터 시작)
-    const firstDay = new Date(year, month, 1).getDay(); // 4월 1일의 요일
-    const daysInMonth = new Date(year, month + 1, 0).getDate(); // 4월의 총 일수
+    const year = selectedMonth.getFullYear();
+    const month = selectedMonth.getMonth();
+    const firstDay = new Date(year, month, 1).getDay(); // 해당 월 1일의 요일
+    const daysInMonth = new Date(year, month + 1, 0).getDate(); // 해당 월의 총 일수
     const days = [];
 
     // 이전 달 마지막 날들 채우기
@@ -178,6 +178,22 @@ export default function MarketingCalendar({ events, selectedMonth, onMonthChange
 
   const eventBars = calculateEventBars();
 
+  // 월 변경 핸들러
+  const handlePrevMonth = () => {
+    const prevMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1);
+    onMonthChange(prevMonth);
+  };
+
+  const handleNextMonth = () => {
+    const nextMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 1);
+    onMonthChange(nextMonth);
+  };
+
+  // 월 이름 포맷팅
+  const formatMonthYear = (date: Date) => {
+    return `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -189,13 +205,21 @@ export default function MarketingCalendar({ events, selectedMonth, onMonthChange
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-semibold text-gray-900">마케팅 캘린더</h3>
         <div className="flex items-center gap-2">
-          <button className="p-2 hover:bg-gray-100 rounded-lg">
+          <button 
+            onClick={handlePrevMonth}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
             <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <span className="text-lg font-medium text-gray-900 mx-4">2025년 4월</span>
-          <button className="p-2 hover:bg-gray-100 rounded-lg">
+          <span className="text-lg font-medium text-gray-900 mx-4 min-w-[120px] text-center">
+            {formatMonthYear(selectedMonth)}
+          </span>
+          <button 
+            onClick={handleNextMonth}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
             <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>

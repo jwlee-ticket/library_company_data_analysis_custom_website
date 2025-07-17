@@ -2,16 +2,11 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-// 간단한 SVG 아이콘 컴포넌트들
+
+// 간단한 SVG 아이콘 컴포넌트
 const ChevronDownIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-  </svg>
-);
-
-const ArrowPathIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
   </svg>
 );
 
@@ -50,7 +45,8 @@ export default function MarketingFilters({
     });
   };
 
-  const selectedConcertName = concerts.find(c => c.id === filters.selectedConcert)?.name || '콘서트를 선택하세요';
+  const selectedConcertName = concerts.find(c => c.id === filters.selectedConcert)?.name || 
+    (concerts.length === 0 ? '데이터를 불러오는 중...' : '콘서트를 선택하세요');
 
   return (
     <motion.div
@@ -65,9 +61,10 @@ export default function MarketingFilters({
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className={`flex items-center justify-between min-w-[200px] px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              disabled={concerts.length === 0}
+              className={`flex items-center justify-between min-w-[280px] px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                 !filters.selectedConcert ? 'text-gray-500' : 'text-gray-700'
-              }`}
+              } ${concerts.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <span className="truncate">{selectedConcertName}</span>
               <ChevronDownIcon 
@@ -75,7 +72,7 @@ export default function MarketingFilters({
               />
             </button>
 
-            {isDropdownOpen && (
+            {isDropdownOpen && concerts.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
