@@ -7,8 +7,11 @@ import { IoStatsChart } from 'react-icons/io5';
 
 const WeeklyTicketsChart = dynamic(() => import('@/components/dashboard/WeeklyTicketsChart'), {
   ssr: false,
-  loading: () => <div className="bg-white rounded-lg p-8 flex items-center justify-center">
-    <div className="text-gray-500">차트를 로딩 중...</div>
+  loading: () => <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex items-center justify-center">
+    <div className="flex items-center space-x-3">
+      <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      <span className="text-gray-600 font-medium">차트를 로딩 중...</span>
+    </div>
   </div>
 });
 
@@ -199,28 +202,40 @@ export default function PlayWeeklyTicketsPage() {
     setDateRange({ startDate, endDate });
     setIsFilterLoading(false);
     
-    console.log('📅 통합 필터 적용:', { startDate, endDate });
+    console.log('통합 필터 적용:', { startDate, endDate });
   };
 
   const handleDateRangeReset = () => {
     setDateRange({ startDate: '', endDate: '' });
-    console.log('🔄 필터 초기화');
+    console.log('필터 초기화');
   };
 
   // 로딩 중
   if (isLoading) {
     return (
-      <div className="p-6 space-y-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-            연극 & 뮤지컬 - 통합 주간별 티켓 매수
-          </h1>
-        </div>
-        
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
+      <div className="min-h-screen bg-gray-50/30">
+        <div className="p-8 max-w-7xl mx-auto space-y-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="flex items-center justify-between"
+          >
+            <h1 className="text-3xl font-bold text-gray-900">
+              연극 & 뮤지컬 - 주간별 티켓 판매
+            </h1>
+          </motion.div>
+          
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div className="animate-pulse space-y-6">
+              <div className="h-6 bg-gray-200 rounded-lg w-1/3"></div>
+              <div className="h-64 bg-gray-200 rounded-lg"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="h-20 bg-gray-200 rounded-lg"></div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -230,174 +245,202 @@ export default function PlayWeeklyTicketsPage() {
   // 에러 상태
   if (error) {
     return (
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-            연극 & 뮤지컬 - 통합 주간별 티켓 매수
-          </h1>
+      <div className="min-h-screen bg-gray-50/30">
+        <div className="p-8 max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">
+              연극 & 뮤지컬 - 주간별 티켓 판매
+            </h1>
+          </div>
+          
+          <div className="bg-white rounded-2xl shadow-sm border border-red-200 p-8">
+            <ErrorView 
+              message={error}
+              onRetry={handleRetry}
+            />
+          </div>
         </div>
-        
-        <ErrorView 
-          message={error}
-          onRetry={handleRetry}
-        />
       </div>
     );
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="p-6 space-y-8"
-    >
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="bg-gradient-to-r from-blue-50 via-white to-purple-50 rounded-2xl p-6 border border-gray-100 shadow-sm"
-      >
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
-              연극 & 뮤지컬 - 통합 주간별 티켓 매수
-            </h1>
-            <p className="text-sm text-gray-600">
-              주간별 티켓 판매 현황 및 공연별 상세 분석을 확인하세요
-            </p>
+    <div className="min-h-screen bg-gray-50/30">
+      <div className="p-8 max-w-7xl mx-auto space-y-10">
+        {/* 페이지 헤더 */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-3">
+                연극 & 뮤지컬 - 주간별 티켓 판매
+              </h1>
+              <p className="text-gray-600">
+                주간별 티켓 판매 현황 및 공연별 상세 분석을 확인하세요
+              </p>
+            </div>
+            
+            {/* 통합 날짜 필터 */}
+            <div className="flex items-center space-x-4">
+              <UnifiedDateFilter
+                startDate={dateRange.startDate}
+                endDate={dateRange.endDate}
+                onDateRangeChange={handleDateRangeChange}
+                onReset={handleDateRangeReset}
+                isLoading={isFilterLoading}
+              />
+            </div>
           </div>
-          
-          {/* 통합 날짜 필터 */}
-          <div className="flex items-center space-x-4">
-            <UnifiedDateFilter
-              startDate={dateRange.startDate}
-              endDate={dateRange.endDate}
-              onDateRangeChange={handleDateRangeChange}
-              onReset={handleDateRangeReset}
-              isLoading={isFilterLoading}
-            />
-          </div>
-        </div>
-      </motion.div>
+        </motion.div>
 
-            {/* API 응답 데이터 뷰어 */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <ApiDataViewer 
-          responses={{
-            'occupancyRate': {
-              endpoint: '/api/play/occupancy-rate',
-              status: 'success',
-              data: occupancyData,
-              timestamp: new Date().toISOString()
-            },
-            'allShowtime': {
-              endpoint: '/api/play/all-showtime', 
-              status: 'success',
-              data: showtimeData,
-              timestamp: new Date().toISOString()
-            }
-          }}
-        />
-      </motion.div>
-
-      {/* 데이터가 있는 경우만 테이블 표시 */}
-      {performancesData.length > 0 && (
+        {/* API 응답 데이터 뷰어 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
         >
-          <TheaterTicketsTable performances={performancesData} />
+          <ApiDataViewer 
+            responses={{
+              'occupancyRate': {
+                endpoint: '/api/play/occupancy-rate',
+                status: 'success',
+                data: occupancyData,
+                timestamp: new Date().toISOString()
+              },
+              'allShowtime': {
+                endpoint: '/api/play/all-showtime', 
+                status: 'success',
+                data: showtimeData,
+                timestamp: new Date().toISOString()
+              }
+            }}
+          />
         </motion.div>
-      )}
-      
-      {/* 공연 선택 및 차트 */}
-      {selectedPerformance && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="bg-white rounded-xl shadow-lg p-6 border border-gray-100"
-        >
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-              <IoStatsChart className="w-4 h-4 mr-2 text-blue-500" />
-              공연 상세 분석
-            </label>
-            <div className="relative">
-              <button
-                onClick={() => setIsSelectOpen(!isSelectOpen)}
-                className="relative w-full bg-white border border-gray-200 rounded-lg pl-4 pr-10 py-2.5 text-left
-                         shadow-sm transition duration-200 ease-in-out
-                         hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20"
-              >
-                <span className="block truncate text-gray-900">{selectedPerformance.title}</span>
-                <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <motion.svg
-                    animate={{ rotate: isSelectOpen ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="h-4 w-4 text-gray-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </motion.svg>
-                </span>
-              </button>
 
-              {/* Dropdown Menu */}
-              {isSelectOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg"
-                >
-                  <div className="py-1 max-h-60 overflow-auto">
-                    {performancesData.map((performance) => (
-                      <button
-                        key={performance.id}
-                        onClick={() => {
-                          setSelectedPerformance(performance);
-                          setIsSelectOpen(false);
-                        }}
-                        className={`
-                          w-full text-left px-4 py-2.5 text-sm
-                          transition duration-150 ease-in-out
-                          ${selectedPerformance.id === performance.id
-                            ? 'bg-blue-50 text-blue-700 font-medium'
-                            : 'text-gray-900 hover:bg-gray-50'
-                          }
-                        `}
-                      >
-                        {performance.title}
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
+        {/* 공연별 티켓 판매 테이블 */}
+        {performancesData.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className={`transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
+          >
+            <div className="flex items-center mb-6">
+              <div className="w-1 h-7 bg-blue-500 rounded-full mr-4"></div>
+              <h2 className="text-xl font-bold text-gray-900">공연별 티켓 판매 현황</h2>
+              <span className="ml-3 px-3 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-full">
+                {performancesData.length}개 공연
+              </span>
             </div>
-          </div>
+            <TheaterTicketsTable performances={performancesData} />
+          </motion.section>
+        )}
+        
+        {/* 공연 선택 및 차트 */}
+        {selectedPerformance && (
+          <motion.section 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className={`bg-white rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
+          >
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center mb-6">
+                <div className="w-1 h-7 bg-purple-500 rounded-full mr-4"></div>
+                <h2 className="text-xl font-bold text-gray-900">공연별 상세 분석</h2>
+                <span className="ml-3 px-3 py-1 bg-purple-50 text-purple-700 text-sm font-medium rounded-full">
+                  인터랙티브 차트
+                </span>
+              </div>
+              
+              <div className="relative">
+                <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                  <IoStatsChart className="w-4 h-4 mr-2 text-purple-500" />
+                  분석할 공연 선택
+                </label>
+                <motion.button
+                  onClick={() => setIsSelectOpen(!isSelectOpen)}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="relative w-full bg-white border border-gray-200 rounded-xl pl-4 pr-10 py-3 text-left
+                           shadow-sm transition-all duration-200 ease-in-out
+                           hover:border-purple-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-20"
+                >
+                  <span className="block truncate text-gray-900 font-medium">{selectedPerformance.title}</span>
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <motion.svg
+                      animate={{ rotate: isSelectOpen ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="h-5 w-5 text-gray-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </motion.svg>
+                  </span>
+                </motion.button>
 
-          <WeeklyTicketsChart selectedPerformance={selectedPerformance} />
-        </motion.div>
-      )}
+                {/* Dropdown Menu */}
+                {isSelectOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden"
+                  >
+                    <div className="py-1 max-h-60 overflow-auto">
+                      {performancesData.map((performance) => (
+                        <motion.button
+                          key={performance.id}
+                          onClick={() => {
+                            setSelectedPerformance(performance);
+                            setIsSelectOpen(false);
+                          }}
+                          whileHover={{ backgroundColor: 'rgb(249 250 251)' }}
+                          className={`
+                            w-full text-left px-4 py-3 text-sm
+                            transition-all duration-150 ease-in-out
+                            ${selectedPerformance.id === performance.id
+                              ? 'bg-purple-50 text-purple-700 font-semibold border-r-4 border-purple-500'
+                              : 'text-gray-900 hover:bg-gray-50'
+                            }
+                          `}
+                        >
+                          {performance.title}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            </div>
 
-      {/* 데이터가 없는 경우 */}
-      {performancesData.length === 0 && !isLoading && !error && (
-        <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-          <div className="text-gray-500">
-            주간별 티켓 데이터가 없습니다.
-          </div>
-        </div>
-      )}
-    </motion.div>
+            <div className="p-6">
+              <WeeklyTicketsChart selectedPerformance={selectedPerformance} />
+            </div>
+          </motion.section>
+        )}
+
+        {/* 데이터가 없는 경우 */}
+        {performancesData.length === 0 && !isLoading && !error && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center"
+          >
+            <div className="text-gray-500 space-y-2">
+              <p className="text-lg font-medium">주간별 티켓 데이터가 없습니다.</p>
+              <p className="text-sm">데이터가 로드되면 여기에 표시됩니다.</p>
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </div>
   );
 } 

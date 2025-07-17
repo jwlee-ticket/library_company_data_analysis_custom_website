@@ -260,242 +260,276 @@ export default function PlayTotalSalesPage() {
   };
 
   return (
-    <div className="p-6 space-y-8">
-      {/* 데이터 뷰어 (모든 환경) */}
-      {showDataViewer && <ApiDataViewer responses={responses} />}
-      
-      {/* 페이지 헤더 */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-              연극 & 뮤지컬 총 매출 현황
-            </h1>
-            <p className="text-gray-500">
-              최근 업데이트: {currentTime || '로딩 중...'}
-              {(responses.revenueAnalysis?.status === 'loading' || isFilterLoading) && (
-                <span className="ml-2 inline-flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mr-1"></span>
-                  데이터 로딩 중...
-                </span>
-              )}
-            </p>
-          </div>
-          
-          {/* 통합 날짜 필터 */}
-          <div className="flex items-center space-x-4">
-            <UnifiedDateFilter
-              startDate={dateRange.startDate}
-              endDate={dateRange.endDate}
-              onDateRangeChange={handleDateRangeChange}
-              onReset={handleDateRangeReset}
-              isLoading={isFilterLoading}
-            />
-            
-            {/* API 상태 표시 */}
-            {(responses.revenueAnalysis?.status === 'error' || responses.allShowtime?.status === 'error') && (
-              <button
-                onClick={retryAll}
-                className="px-3 py-1 bg-orange-100 text-orange-700 rounded-lg text-sm hover:bg-orange-200"
-              >
-                일부 데이터 로드 실패 - 재시도
-              </button>
-            )}
-          </div>
-        </div>
-      </motion.div>
-
-      {/* 매출 카드 섹션 */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className={isFilterLoading ? 'opacity-50 pointer-events-none' : ''}
-      >
-        {responses.revenueAnalysis?.status === 'loading' ? (
-          <div className="space-y-8">
-            {/* 스켈레톤 UI */}
-            {[1, 2, 3].map((section) => (
-              <div key={section} className="space-y-4">
-                <div className="h-6 bg-gray-200 rounded w-20 animate-pulse"></div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
-                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
-                      <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
-                      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : responses.revenueAnalysis?.status === 'error' ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-            <ErrorView
-              title="매출 데이터를 불러올 수 없습니다"
-              message="revenue-analysis API 연결에 실패했습니다."
-              onRetry={() => retryAll()}
-              showRetry={true}
-            />
-          </div>
-        ) : salesCardsData ? (
-          <PlaySalesCards data={salesCardsData} />
-        ) : (
-          <div className="h-32"></div> // 빈 화면
+    <div className="min-h-screen bg-gray-50/30">
+      <div className="p-8 max-w-7xl mx-auto space-y-10">
+        {/* 데이터 뷰어 (모든 환경) */}
+        {showDataViewer && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <ApiDataViewer responses={responses} />
+          </motion.div>
         )}
-      </motion.div>
-
-      {/* 공연별 매출 상세 섹션 */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className={`bg-white rounded-xl shadow-lg overflow-hidden ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
-      >
-        {/* 헤더 - 항상 표시 */}
-        <div 
-          onClick={togglePerformanceDetails}
-          className="flex items-center justify-between p-6 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+        
+        {/* 페이지 헤더 */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
         >
-          <div className="flex items-center">
-            <span className="inline-block w-1 h-6 bg-purple-500 rounded-full mr-3"></span>
-            <h2 className="text-xl font-bold text-gray-900">
-              공연별 매출 상세
-            </h2>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-3">
+                연극 & 뮤지컬 총 매출 현황
+              </h1>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <p className="text-gray-600">
+                  최근 업데이트: {currentTime || '로딩 중...'}
+                </p>
+                {(responses.revenueAnalysis?.status === 'loading' || isFilterLoading) && (
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mr-2"></div>
+                    <span className="text-sm text-blue-600 font-medium">데이터 로딩 중...</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* 통합 날짜 필터 및 상태 표시 */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <UnifiedDateFilter
+                startDate={dateRange.startDate}
+                endDate={dateRange.endDate}
+                onDateRangeChange={handleDateRangeChange}
+                onReset={handleDateRangeReset}
+                isLoading={isFilterLoading}
+              />
+              
+              {/* API 상태 표시 */}
+              {(responses.revenueAnalysis?.status === 'error' || responses.allShowtime?.status === 'error') && (
+                <motion.button
+                  onClick={retryAll}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-4 py-2 bg-orange-50 text-orange-700 rounded-xl text-sm font-medium hover:bg-orange-100 transition-colors duration-200 border border-orange-200"
+                >
+                  일부 데이터 로드 실패 - 재시도
+                </motion.button>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* 매출 카드 섹션 */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className={`transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
+        >
+          <div className="flex items-center mb-6">
+            <div className="w-1 h-7 bg-blue-500 rounded-full mr-4"></div>
+            <h2 className="text-xl font-bold text-gray-900">매출 현황 요약</h2>
+            <span className="ml-3 px-3 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-full">
+              실시간 데이터
+            </span>
           </div>
           
-          <div className="flex items-center">
+          {responses.revenueAnalysis?.status === 'loading' ? (
+            <div className="space-y-8">
+              {/* 스켈레톤 UI */}
+              {[1, 2, 3].map((section) => (
+                <div key={section} className="space-y-4">
+                  <div className="h-6 bg-gray-200 rounded-lg w-20 animate-pulse"></div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="bg-white rounded-2xl shadow-sm p-6 animate-pulse border border-gray-100">
+                        <div className="h-4 bg-gray-200 rounded-lg w-3/4 mb-3"></div>
+                        <div className="h-8 bg-gray-200 rounded-lg w-1/2 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
+                        <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : responses.revenueAnalysis?.status === 'error' ? (
+            <div className="bg-white rounded-2xl shadow-sm border border-red-200 p-8">
+              <ErrorView
+                title="매출 데이터를 불러올 수 없습니다"
+                message="revenue-analysis API 연결에 실패했습니다."
+                onRetry={() => retryAll()}
+                showRetry={true}
+              />
+            </div>
+          ) : salesCardsData ? (
+            <PlaySalesCards data={salesCardsData} />
+          ) : (
+            <div className="h-32"></div>
+          )}
+        </motion.section>
+
+        {/* 공연별 매출 상세 섹션 */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
+        >
+          {/* 헤더 - 항상 표시 */}
+          <motion.div 
+            onClick={togglePerformanceDetails}
+            className="flex items-center justify-between p-6 bg-gray-50/50 cursor-pointer hover:bg-gray-100/50 transition-all duration-200 group"
+            whileHover={{ backgroundColor: 'rgb(249 250 251 / 0.8)' }}
+          >
+            <div className="flex items-center">
+              <div className="w-1 h-7 bg-purple-500 rounded-full mr-4"></div>
+              <h2 className="text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors duration-200">
+                공연별 매출 상세
+              </h2>
+              <span className="ml-3 px-3 py-1 bg-purple-50 text-purple-700 text-sm font-medium rounded-full">
+                {performanceDetailsData.length}개 공연
+              </span>
+            </div>
+            
             <motion.div
               animate={{ rotate: isPerformanceDetailsMinimized ? 180 : 0 }}
               transition={{ duration: 0.2 }}
+              className="p-1 rounded-lg hover:bg-gray-200 transition-colors duration-200"
             >
               <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </motion.div>
-          </div>
-        </div>
+          </motion.div>
 
-        {/* 테이블 내용 - 확장 시에만 표시 */}
-        <motion.div
-          initial={false}
-          animate={{ 
-            height: isPerformanceDetailsMinimized ? 0 : 'auto',
-            opacity: isPerformanceDetailsMinimized ? 0 : 1 
-          }}
-          transition={{ duration: 0.3 }}
-          className="overflow-hidden"
-        >
-          <div className="p-6">
-            {responses.revenueAnalysis?.status === 'loading' ? (
-              <div className="animate-pulse">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="flex space-x-4 mb-3">
-                    <div className="h-4 bg-gray-200 rounded w-20"></div>
-                    <div className="h-4 bg-gray-200 rounded w-32"></div>
-                    <div className="h-4 bg-gray-200 rounded w-32"></div>
-                    <div className="h-4 bg-gray-200 rounded w-32"></div>
-                    <div className="h-4 bg-gray-200 rounded w-20"></div>
-                  </div>
-                ))}
-              </div>
-            ) : responses.revenueAnalysis?.status === 'error' ? (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                <ErrorView
-                  title="공연별 매출 데이터를 불러올 수 없습니다"
-                  message="revenue-analysis API 연결에 실패했습니다."
-                  onRetry={() => retryAll()}
-                  showRetry={true}
-                />
-              </div>
-            ) : performanceDetailsData.length > 0 ? (
-              <PlayPerformanceDetailsTable data={performanceDetailsData} />
-            ) : (
-              <div className="h-16"></div> // 빈 화면
-            )}
-          </div>
-        </motion.div>
-      </motion.div>
+          {/* 테이블 내용 - 확장 시에만 표시 */}
+          <motion.div
+            initial={false}
+            animate={{ 
+              height: isPerformanceDetailsMinimized ? 0 : 'auto',
+              opacity: isPerformanceDetailsMinimized ? 0 : 1 
+            }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="p-6">
+              {responses.revenueAnalysis?.status === 'loading' ? (
+                <div className="animate-pulse">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="flex space-x-4 mb-3">
+                      <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      <div className="h-4 bg-gray-200 rounded w-32"></div>
+                      <div className="h-4 bg-gray-200 rounded w-32"></div>
+                      <div className="h-4 bg-gray-200 rounded w-32"></div>
+                      <div className="h-4 bg-gray-200 rounded w-20"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : responses.revenueAnalysis?.status === 'error' ? (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+                  <ErrorView
+                    title="공연별 매출 데이터를 불러올 수 없습니다"
+                    message="revenue-analysis API 연결에 실패했습니다."
+                    onRetry={() => retryAll()}
+                    showRetry={true}
+                  />
+                </div>
+              ) : performanceDetailsData.length > 0 ? (
+                <PlayPerformanceDetailsTable data={performanceDetailsData} />
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 font-medium">공연별 매출 데이터가 없습니다.</p>
+                  <p className="text-gray-400 text-sm mt-2">데이터가 로드되면 여기에 표시됩니다.</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </motion.section>
 
-      {/* 유료 점유율 현황 섹션 */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className={`bg-white rounded-xl shadow-lg overflow-hidden ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
-      >
-        {/* 헤더 - 항상 표시 */}
-        <div 
-          onClick={toggleOccupancyStatus}
-          className="flex items-center justify-between p-6 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+        {/* 유료 점유율 현황 섹션 */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 ${isFilterLoading ? 'opacity-50 pointer-events-none' : ''}`}
         >
-          <div className="flex items-center">
-            <span className="inline-block w-1 h-6 bg-pink-500 rounded-full mr-3"></span>
-            <h2 className="text-xl font-bold text-gray-900">
-              유료 점유율 현황 (공연 중)
-            </h2>
-          </div>
-          
-          <div className="flex items-center">
+          {/* 헤더 - 항상 표시 */}
+          <motion.div 
+            onClick={toggleOccupancyStatus}
+            className="flex items-center justify-between p-6 bg-gray-50/50 cursor-pointer hover:bg-gray-100/50 transition-all duration-200 group"
+            whileHover={{ backgroundColor: 'rgb(249 250 251 / 0.8)' }}
+          >
+            <div className="flex items-center">
+              <div className="w-1 h-7 bg-pink-500 rounded-full mr-4"></div>
+              <h2 className="text-xl font-bold text-gray-900 group-hover:text-pink-600 transition-colors duration-200">
+                유료 점유율 현황
+              </h2>
+              <span className="ml-3 px-3 py-1 bg-pink-50 text-pink-700 text-sm font-medium rounded-full">
+                공연 중
+              </span>
+            </div>
+            
             <motion.div
               animate={{ rotate: isOccupancyStatusMinimized ? 180 : 0 }}
               transition={{ duration: 0.2 }}
+              className="p-1 rounded-lg hover:bg-gray-200 transition-colors duration-200"
             >
               <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </motion.div>
-          </div>
-        </div>
+          </motion.div>
 
-        {/* 테이블 내용 - 확장 시에만 표시 */}
-        <motion.div
-          initial={false}
-          animate={{ 
-            height: isOccupancyStatusMinimized ? 0 : 'auto',
-            opacity: isOccupancyStatusMinimized ? 0 : 1 
-          }}
-          transition={{ duration: 0.3 }}
-          className="overflow-hidden"
-        >
-          <div className="p-6">
-            {responses.allShowtime?.status === 'loading' ? (
-              <div className="animate-pulse">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="flex space-x-4 mb-3">
-                    <div className="h-4 bg-gray-200 rounded w-24"></div>
-                    <div className="h-4 bg-gray-200 rounded w-20"></div>
-                    <div className="h-4 bg-gray-200 rounded w-20"></div>
-                    <div className="h-4 bg-gray-200 rounded w-20"></div>
-                    <div className="h-4 bg-gray-200 rounded w-24"></div>
-                    <div className="h-4 bg-gray-200 rounded w-20"></div>
-                    <div className="h-4 bg-gray-200 rounded w-24"></div>
-                  </div>
-                ))}
-              </div>
-            ) : responses.allShowtime?.status === 'error' ? (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                <ErrorView
-                  title="점유율 데이터를 불러올 수 없습니다"
-                  message="all-showtime API 연결에 실패했습니다."
-                  onRetry={() => retryAll()}
-                  showRetry={true}
-                />
-              </div>
-            ) : occupancyStatusData.length > 0 ? (
-              <PlayOccupancyStatusTable data={occupancyStatusData} />
-            ) : (
-              <div className="h-16"></div> // 빈 화면
-            )}
-          </div>
-        </motion.div>
-      </motion.div>
+          {/* 테이블 내용 - 확장 시에만 표시 */}
+          <motion.div
+            initial={false}
+            animate={{ 
+              height: isOccupancyStatusMinimized ? 0 : 'auto',
+              opacity: isOccupancyStatusMinimized ? 0 : 1 
+            }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="p-6">
+              {responses.allShowtime?.status === 'loading' ? (
+                <div className="animate-pulse">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="flex space-x-4 mb-3">
+                      <div className="h-4 bg-gray-200 rounded w-24"></div>
+                      <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      <div className="h-4 bg-gray-200 rounded w-24"></div>
+                      <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      <div className="h-4 bg-gray-200 rounded w-24"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : responses.allShowtime?.status === 'error' ? (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+                  <ErrorView
+                    title="점유율 데이터를 불러올 수 없습니다"
+                    message="all-showtime API 연결에 실패했습니다."
+                    onRetry={() => retryAll()}
+                    showRetry={true}
+                  />
+                </div>
+              ) : occupancyStatusData.length > 0 ? (
+                <PlayOccupancyStatusTable data={occupancyStatusData} />
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 font-medium">점유율 데이터가 없습니다.</p>
+                  <p className="text-gray-400 text-sm mt-2">현재 공연 중인 작품이 없거나 데이터 로딩 중입니다.</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </motion.section>
+      </div>
     </div>
   );
 } 
