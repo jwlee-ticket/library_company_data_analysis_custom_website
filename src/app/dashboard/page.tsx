@@ -552,11 +552,6 @@ export default function DashboardPage() {
                 <p className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-2">
                   {dashboardData.performanceDetails.length}개
                 </p>
-                <div className="text-sm text-gray-500">
-                  평균 달성률 {dashboardData.performanceDetails.length > 0 ? 
-                    (dashboardData.performanceDetails.reduce((sum, p) => sum + (Number(p.achievementRate) || 0), 0) / dashboardData.performanceDetails.length).toFixed(1) 
-                    : 0}%
-                </div>
               </div>
             </div>
             
@@ -630,10 +625,6 @@ export default function DashboardPage() {
                     ></div>
                   </div>
                 </div>
-                
-                <div className="text-xs text-gray-500">
-                  실시간 Concert API 연동
-                </div>
               </div>
             </motion.div>
           
@@ -671,10 +662,6 @@ export default function DashboardPage() {
                     ></div>
                   </div>
                 </div>
-                
-                <div className="text-xs text-gray-500">
-                  비례 분배 계산
-                </div>
               </div>
             </motion.div>
           
@@ -711,10 +698,6 @@ export default function DashboardPage() {
                       style={{ width: `${Math.min(((Number(dashboardData.genreSummary.musical.revenue) || 0) / (Number(dashboardData.genreSummary.musical.target) || 1) * 100), 100)}%` }}
                     ></div>
                   </div>
-                </div>
-                
-                <div className="text-xs text-gray-500">
-                  비례 분배 계산
                 </div>
               </div>
             </motion.div>
