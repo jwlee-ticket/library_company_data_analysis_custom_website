@@ -180,8 +180,8 @@ export default function MarketingSalesChart({ data, selectedConcert }: Marketing
               const marketingInfo = getMarketingByDate(dataIndex);
               
               if (marketingInfo.length > 0) {
-                const marketingTexts = marketingInfo.map((info: any) => `🎯 ${info.description}`);
-                return ['', '📊 마케팅 활동:', ...marketingTexts];
+                const marketingTexts = marketingInfo.map((info: any) => `${info.description}`);
+                return ['', '마케팅 활동:', ...marketingTexts];
               }
             }
             return [];
@@ -313,20 +313,9 @@ export default function MarketingSalesChart({ data, selectedConcert }: Marketing
     >
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900">마케팅 & 매출 현황</h3>
-          <p className="text-sm text-gray-600 mt-1">
-            <span className="inline-flex items-center gap-1">
-              <span className="w-3 h-3 bg-blue-500 rounded"></span>
-              매출
-            </span>
-            <span className="inline-flex items-center gap-1 ml-4">
-              <span className="w-3 h-1 bg-red-500"></span>
-              목표 매출
-            </span>
-            <span className="ml-4 text-gray-500">| 배경 색상: 마케팅 활동 기간</span>
-          </p>
-        </div>
+                  <div>
+            <h3 className="text-lg font-semibold text-gray-900">마케팅 & 매출 현황</h3>
+          </div>
         <select className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option>일별 보기</option>
           <option>주별 보기</option>
@@ -336,14 +325,14 @@ export default function MarketingSalesChart({ data, selectedConcert }: Marketing
 
       {/* 차트 영역 */}
       <div className="relative">
-        <div className="h-96">
+        <div className="h-[500px]">
           <Chart type="bar" data={chartData} options={options} />
         </div>
       </div>
 
       {/* 마케팅 리스트 */}
       <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-        <h4 className="text-sm font-medium text-gray-900 mb-4">마케팅 리스트</h4>
+        <h4 className="text-sm font-medium text-gray-900 mb-4">진행 중 마케팅 리스트</h4>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

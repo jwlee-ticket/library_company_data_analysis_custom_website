@@ -148,7 +148,7 @@ export default function ConcertMarketingSalesPage() {
   // 필터 핸들러
   const handleFiltersChange = (newFilters: typeof filters) => {
     setFilters(newFilters);
-    console.log('📅 필터 적용:', newFilters);
+    console.log('필터 적용:', newFilters);
   };
 
   const handleFiltersReset = () => {
@@ -157,7 +157,7 @@ export default function ConcertMarketingSalesPage() {
       startDate: '2025-04-17',
       endDate: '2025-04-28'
     });
-    console.log('🔄 필터 초기화');
+    console.log('필터 초기화');
   };
 
   // 캘린더 월 변경 핸들러
