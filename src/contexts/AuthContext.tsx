@@ -59,14 +59,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (userId: string, password: string): Promise<{ success: boolean; message?: string }> => {
     try {
-      // API 서버 URL 설정
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? 'http://35.208.29.100:3001' 
-        : 'http://35.208.29.100:3001'; // 개발환경에서도 동일한 서버 사용
-        
-      console.log('로그인 API 호출:', { userId, baseUrl });
+      console.log('로그인 API 호출:', { userId });
       
-      const response = await fetch(`${baseUrl}/users/login`, {
+      // Next.js API Routes 프록시 사용 (Mixed Content 해결)
+      const response = await fetch('/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
