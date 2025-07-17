@@ -13,6 +13,7 @@ import {
   ChartOptions,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import annotationPlugin from 'chartjs-plugin-annotation';
 import { Chart } from 'react-chartjs-2';
 import { motion } from 'framer-motion';
 
@@ -25,7 +26,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ChartDataLabels
+  ChartDataLabels,
+  annotationPlugin
 );
 
 interface MarketingSalesData {
@@ -51,48 +53,6 @@ export default function MarketingSalesChart({ data, selectedConcert }: Marketing
   
   // 목표 매출 데이터 (라인 그래프용)
   const targetSalesData = [15000000, 15000000, 15000000, 15000000, 20000000, 20000000, 25000000, 25000000, 18000000, 18000000, 18000000, 18000000];
-  
-  // 매출 변화에 따른 색상 계산
-  const getSalesColors = () => {
-    const colors = [];
-    const borderColors = [];
-    
-    for (let i = 0; i < dailySalesData.length; i++) {
-      let color, borderColor;
-      
-      if (i === 0) {
-        // 첫 번째 데이터는 기본 색상
-        color = 'rgba(75, 192, 192, 0.8)'; // 초록색
-        borderColor = 'rgb(75, 192, 192)';
-      } else {
-        const current = dailySalesData[i];
-        const previous = dailySalesData[i - 1];
-        
-        if (current > previous) {
-          // 상승 - 빨간색
-          color = 'rgba(239, 68, 68, 0.8)';
-          borderColor = 'rgb(239, 68, 68)';
-        } else if (current < previous) {
-          // 하락 - 파란색
-          color = 'rgba(59, 130, 246, 0.8)';
-          borderColor = 'rgb(59, 130, 246)';
-        } else {
-          // 동일 - 초록색
-          color = 'rgba(34, 197, 94, 0.8)';
-          borderColor = 'rgb(34, 197, 94)';
-        }
-      }
-      
-      colors.push(color);
-      borderColors.push(borderColor);
-    }
-    
-    return { colors, borderColors };
-  };
-
-  const { colors: salesColors, borderColors: salesBorderColors } = getSalesColors();
-
-  const marketingEvents = [2, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1]; // 빨간 원 숫자들
 
   // 마케팅 이벤트 정의 (날짜와 색상)
   const marketingPeriods = [
@@ -157,8 +117,8 @@ export default function MarketingSalesChart({ data, selectedConcert }: Marketing
         type: 'bar' as const,
         label: '매출',
         data: dailySalesData,
-        backgroundColor: salesColors,
-        borderColor: salesBorderColors,
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: 'rgb(59, 130, 246)',
         borderWidth: 1,
         order: 1,
         datalabels: {
@@ -220,8 +180,8 @@ export default function MarketingSalesChart({ data, selectedConcert }: Marketing
               const marketingInfo = getMarketingByDate(dataIndex);
               
               if (marketingInfo.length > 0) {
-                const marketingTexts = marketingInfo.map((info: any) => `${info.description}`);
-                return ['', '마케팅 활동:', ...marketingTexts];
+                const marketingTexts = marketingInfo.map((info: any) => `🎯 ${info.description}`);
+                return ['', '📊 마케팅 활동:', ...marketingTexts];
               }
             }
             return [];
@@ -357,8 +317,8 @@ export default function MarketingSalesChart({ data, selectedConcert }: Marketing
           <h3 className="text-lg font-semibold text-gray-900">마케팅 & 매출 현황</h3>
           <p className="text-sm text-gray-600 mt-1">
             <span className="inline-flex items-center gap-1">
-              <span className="w-3 h-3 bg-gray-400 rounded"></span>
-              매출 (색상: 빨강↗ 파랑↘ 초록→)
+              <span className="w-3 h-3 bg-blue-500 rounded"></span>
+              매출
             </span>
             <span className="inline-flex items-center gap-1 ml-4">
               <span className="w-3 h-1 bg-red-500"></span>
@@ -374,28 +334,33 @@ export default function MarketingSalesChart({ data, selectedConcert }: Marketing
         </select>
       </div>
 
+      {/* 차트 영역 */}
+      <div className="relative">
+        <div className="h-96">
+          <Chart type="bar" data={chartData} options={options} />
+        </div>
+      </div>
+
       {/* 마케팅 리스트 */}
-      <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-        <h4 className="text-sm font-medium text-gray-900 mb-3">마케팅 리스트</h4>
+      <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+        <h4 className="text-sm font-medium text-gray-900 mb-4">마케팅 리스트</h4>
         <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+          <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 pr-3 text-gray-600">마케팅명</th>
-                <th className="text-left py-2 px-3 text-gray-600">카테고리</th>
-                <th className="text-left py-2 px-3 text-gray-600">기간</th>
-                <th className="text-left py-2 pl-3 text-gray-600">색상</th>
+              <tr className="border-b border-gray-300">
+                <th className="text-left py-2 pr-4 text-gray-700 font-medium">색상</th>
+                <th className="text-left py-2 px-4 text-gray-700 font-medium">카테고리</th>
+                <th className="text-left py-2 px-4 text-gray-700 font-medium">내용</th>
+                <th className="text-left py-2 px-4 text-gray-700 font-medium">시작일</th>
+                <th className="text-left py-2 pl-4 text-gray-700 font-medium">종료일</th>
               </tr>
             </thead>
             <tbody>
               {marketingPeriods.map((period, index) => (
-                <tr key={index} className="border-b border-gray-100">
-                  <td className="py-2 pr-3 font-medium text-gray-900">{period.name}</td>
-                  <td className="py-2 px-3 text-gray-600">{period.category}</td>
-                  <td className="py-2 px-3 text-gray-600">{period.startDate} ~ {period.endDate}</td>
-                  <td className="py-2 pl-3">
+                <tr key={index} className="border-b border-gray-200 hover:bg-white transition-colors">
+                  <td className="py-3 pr-4">
                     <div 
-                      className="w-3 h-3 rounded border"
+                      className="w-4 h-4 rounded border"
                       style={{ 
                         backgroundColor: period.color,
                         borderColor: period.borderColor,
@@ -403,17 +368,14 @@ export default function MarketingSalesChart({ data, selectedConcert }: Marketing
                       }}
                     ></div>
                   </td>
+                  <td className="py-3 px-4 text-gray-700">{period.category}</td>
+                  <td className="py-3 px-4 text-gray-900">{period.name}</td>
+                  <td className="py-3 px-4 text-gray-700">{period.startDate}</td>
+                  <td className="py-3 pl-4 text-gray-700">{period.endDate}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* 차트 영역 */}
-      <div className="relative">
-        <div className="h-[500px]">
-          <Chart type="bar" data={chartData} options={options} />
         </div>
       </div>
     </motion.div>
