@@ -243,4 +243,4 @@ export default function WeeklyTicketsChart({ selectedPerformance }: WeeklyTicket
       <Chart type="bar" data={data} options={options} />
     </motion.div>
   );
-}
+} 

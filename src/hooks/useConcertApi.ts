@@ -48,6 +48,11 @@ export function useConcertApi(): UseConcertApiReturn {
       name: '월간 매출', 
       method: () => ConcertAPI.getMonthlyData(),
       url: '/concert/monthly'
+    },
+    weekly: { 
+      name: '주간 매출', 
+      method: () => ConcertAPI.getWeeklyData(),
+      url: '/concert/weekly'
     }
   };
 

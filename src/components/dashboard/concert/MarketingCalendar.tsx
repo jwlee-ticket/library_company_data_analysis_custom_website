@@ -19,45 +19,6 @@ interface MarketingCalendarProps {
 }
 
 export default function MarketingCalendar({ events, selectedMonth, onMonthChange }: MarketingCalendarProps) {
-  // 간단한 이벤트 데이터 (날짜별로 정리)
-  const marketingEvents = [
-    { 
-      title: '인터파크 아웃트로 40%', 
-      startDate: '2025-04-17', 
-      endDate: '2025-04-20', 
-      color: 'bg-blue-500',
-      category: 'salesMarketing'
-    },
-    { 
-      title: '메조 타입캐스팅 40%', 
-      startDate: '2025-04-21', 
-      endDate: '2025-04-22', 
-      color: 'bg-pink-500',
-      category: 'promotion'
-    },
-    { 
-      title: '세계적인출장의', 
-      startDate: '2025-04-23', 
-      endDate: '2025-04-23', 
-      color: 'bg-orange-500',
-      category: 'etc'
-    },
-    { 
-      title: '인터파크 놀이스타', 
-      startDate: '2025-04-25', 
-      endDate: '2025-04-28', 
-      color: 'bg-green-500',
-      category: 'salesMarketing'
-    },
-    { 
-      title: '바오밥 WEEK', 
-      startDate: '2025-04-29', 
-      endDate: '2025-05-04', 
-      color: 'bg-purple-500',
-      category: 'special'
-    }
-  ];
-
   // 2025년 4월 캘린더 생성
   const generateCalendar = () => {
     const year = 2025;
@@ -105,7 +66,7 @@ export default function MarketingCalendar({ events, selectedMonth, onMonthChange
 
   // 특정 날짜가 연속 이벤트에 포함되는지 확인
   const isDateInContinuousEvent = (dateStr: string) => {
-    return marketingEvents.some(event => {
+    return events.some(event => {
       const eventStart = new Date(event.startDate);
       const eventEnd = new Date(event.endDate);
       const currentDate = new Date(dateStr);
@@ -118,7 +79,7 @@ export default function MarketingCalendar({ events, selectedMonth, onMonthChange
 
   // 특정 날짜의 단일 이벤트 가져오기 (연속 이벤트 제외)
   const getSingleEventsForDate = (dateStr: string) => {
-    return marketingEvents.filter(event => {
+    return events.filter(event => {
       const eventStart = new Date(event.startDate);
       const eventEnd = new Date(event.endDate);
       const currentDate = new Date(dateStr);
@@ -126,7 +87,25 @@ export default function MarketingCalendar({ events, selectedMonth, onMonthChange
       // 단일 이벤트만 반환 (연속 이벤트는 제외)
       const daysDiff = (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60 * 60 * 24);
       return daysDiff === 0 && currentDate >= eventStart && currentDate <= eventEnd;
-    });
+    }).map(event => ({
+      title: event.title,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      color: getColorClass(event.color),
+      category: event.type
+    }));
+  };
+
+  // 색상 문자열을 CSS 클래스로 변환
+  const getColorClass = (color: string) => {
+    switch (color) {
+      case 'blue': return 'bg-blue-500';
+      case 'green': return 'bg-green-500';
+      case 'orange': return 'bg-orange-500';
+      case 'purple': return 'bg-purple-500';
+      case 'pink': return 'bg-pink-500';
+      default: return 'bg-gray-500';
+    }
   };
 
   // 연속 이벤트 바 계산
@@ -134,7 +113,7 @@ export default function MarketingCalendar({ events, selectedMonth, onMonthChange
     const calendarDays = generateCalendar();
     const eventBars: any[] = [];
 
-    marketingEvents.forEach((event, eventIndex) => {
+    events.forEach((event, eventIndex) => {
       const startDate = new Date(event.startDate);
       const endDate = new Date(event.endDate);
       
@@ -179,7 +158,10 @@ export default function MarketingCalendar({ events, selectedMonth, onMonthChange
       }
 
       eventBars.push({
-        event,
+        event: {
+          ...event,
+          color: getColorClass(event.color)
+        },
         bars,
         level: eventIndex % 2 // 최대 2개 레벨
       });
@@ -320,6 +302,16 @@ export default function MarketingCalendar({ events, selectedMonth, onMonthChange
           )}
         </div>
       </div>
+
+      {/* 빈 데이터 상태 표시 */}
+      {events.length === 0 && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 rounded-xl">
+          <div className="text-center">
+            <p className="text-gray-500 font-medium">마케팅 이벤트가 없습니다</p>
+            <p className="text-gray-400 text-sm mt-1">필터 조건을 설정하면 이벤트가 표시됩니다</p>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 } 

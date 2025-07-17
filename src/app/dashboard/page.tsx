@@ -292,12 +292,12 @@ export default function DashboardPage() {
                 <h3 className="text-sm font-medium text-gray-600 mb-2">총 매출</h3>
                 <p className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
                   {new Intl.NumberFormat('ko-KR', {
-                    style: 'currency',
-                    currency: 'KRW',
-                    maximumFractionDigits: 0
+              style: 'currency',
+              currency: 'KRW',
+              maximumFractionDigits: 0
                   }).format(Number(dashboardData.totalSummary.totalRevenue) || 0)}
                 </p>
-              </div>
+        </div>
               
               {/* 총 목표 */}
               <div className="text-center md:text-left">
@@ -309,7 +309,7 @@ export default function DashboardPage() {
                     maximumFractionDigits: 0
                   }).format(Number(dashboardData.totalSummary.totalTarget) || 0)}
                 </p>
-              </div>
+      </div>
               
               {/* 달성률 */}
               <div className="text-center md:text-left">
@@ -346,7 +346,7 @@ export default function DashboardPage() {
           </motion.div>
         </motion.section>
 
-        {/* 장르별 매출 현황 */}
+      {/* 장르별 매출 현황 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -356,40 +356,40 @@ export default function DashboardPage() {
             <div className="w-1 h-7 bg-purple-500 rounded-full mr-4"></div>
             <h2 className="text-xl font-bold text-gray-900">장르별 매출 현황</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-              <SalesCard
+          <SalesCard
                 title="콘서트 매출"
                 currentSales={Number(dashboardData.genreSummary.concert.revenue) || 0}
                 targetSales={Number(dashboardData.genreSummary.concert.target) || 0}
                 previousDaySales={(Number(dashboardData.genreSummary.concert.revenue) || 0) * 0.92}
-                backgroundColor="bg-white"
-              />
+            backgroundColor="bg-white"
+          />
             </motion.div>
-            
+          
             <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-              <SalesCard
+          <SalesCard
                 title="연극 매출"
                 currentSales={Number(dashboardData.genreSummary.theater.revenue) || 0}
                 targetSales={Number(dashboardData.genreSummary.theater.target) || 0}
                 previousDaySales={(Number(dashboardData.genreSummary.theater.revenue) || 0) * 0.95}
-                backgroundColor="bg-white"
-              />
+            backgroundColor="bg-white"
+          />
             </motion.div>
-            
+          
             <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-              <SalesCard
+          <SalesCard
                 title="뮤지컬 매출"
                 currentSales={Number(dashboardData.genreSummary.musical.revenue) || 0}
                 targetSales={Number(dashboardData.genreSummary.musical.target) || 0}
                 previousDaySales={(Number(dashboardData.genreSummary.musical.revenue) || 0) * 0.97}
-                backgroundColor="bg-white"
-              />
+            backgroundColor="bg-white"
+          />
             </motion.div>
-          </div>
+        </div>
         </motion.section>
 
-        {/* 공연별 매출 현황 */}
+      {/* 공연별 매출 현황 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -438,7 +438,7 @@ export default function DashboardPage() {
             <div className="text-gray-400 text-6xl mb-6">🎭</div>
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
               통합 데이터 없음
-            </h2>
+        </h2>
             <p className="text-gray-600 mb-8 max-w-md mx-auto">
               현재 표시할 콘서트, 연극, 뮤지컬 데이터가 없습니다.<br />
               잠시 후 다시 시도해주세요.

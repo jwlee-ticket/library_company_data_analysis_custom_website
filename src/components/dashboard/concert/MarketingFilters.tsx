@@ -25,14 +25,13 @@ interface MarketingFiltersProps {
   concerts: Array<{ id: string; name: string }>;
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
-  onReset: () => void;
+  onReset?: () => void;
 }
 
 export default function MarketingFilters({ 
   concerts, 
   filters, 
-  onFiltersChange, 
-  onReset 
+  onFiltersChange
 }: MarketingFiltersProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -51,7 +50,7 @@ export default function MarketingFilters({
     });
   };
 
-  const selectedConcertName = concerts.find(c => c.id === filters.selectedConcert)?.name || '라이카';
+  const selectedConcertName = concerts.find(c => c.id === filters.selectedConcert)?.name || '콘서트를 선택하세요';
 
   return (
     <motion.div
@@ -66,7 +65,9 @@ export default function MarketingFilters({
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center justify-between min-w-[120px] px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`flex items-center justify-between min-w-[200px] px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                !filters.selectedConcert ? 'text-gray-500' : 'text-gray-700'
+              }`}
             >
               <span className="truncate">{selectedConcertName}</span>
               <ChevronDownIcon 
@@ -100,13 +101,14 @@ export default function MarketingFilters({
           </div>
         </div>
 
-        {/* 중앙: 날짜 범위 선택기 */}
+        {/* 오른쪽: 날짜 범위 선택기 */}
         <div className="flex items-center space-x-2">
           <input
             type="date"
             value={filters.startDate}
             onChange={(e) => handleDateChange('startDate', e.target.value)}
             className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="시작일"
           />
           <span className="text-gray-500 text-sm">-</span>
           <input
@@ -114,19 +116,9 @@ export default function MarketingFilters({
             value={filters.endDate}
             onChange={(e) => handleDateChange('endDate', e.target.value)}
             className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="종료일"
           />
         </div>
-
-        {/* 오른쪽: 필터 초기화 버튼 */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onReset}
-          className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors duration-200"
-        >
-          <ArrowPathIcon className="h-4 w-4" />
-          <span>필터 초기화</span>
-        </motion.button>
       </div>
 
       {/* 활성 필터 표시 */}

@@ -117,6 +117,16 @@ export interface ConcertMonthlyData {
   monthlySalesAmount: string;
 }
 
+export interface ConcertWeeklyData {
+  liveId: string;
+  liveName: string;
+  recordWeek: string;
+  weeklySalesTicketNo: number;
+  weeklySalesAmount: number;
+  noteSalesMarketing: string | null;
+  notePromotion: string | null;
+  noteEtc: string | null;
+}
 
 
 // 콘서트 API 클래스
@@ -178,6 +188,15 @@ export class ConcertAPI {
   // 월간 매출 데이터 - 프록시 사용
   static async getMonthlyData(): Promise<ConcertMonthlyData[]> {
     const response = await fetch('/api/concert/monthly');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+
+  // 주간 매출 데이터 - 프록시 사용
+  static async getWeeklyData(): Promise<ConcertWeeklyData[]> {
+    const response = await fetch('/api/concert/weekly');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
