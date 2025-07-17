@@ -2,19 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://35.208.29.100:3001';
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const { query } = await request.json();
-    
-    console.log('SQL 쿼리 실행 프록시 요청:', { query: query?.substring(0, 100) + '...' });
+    console.log('테이블 관계 조회 프록시 요청');
     
     // 백엔드 API로 프록시
-    const response = await fetch(`${API_BASE_URL}/sql-execute`, {
-      method: 'POST',
+    const response = await fetch(`${API_BASE_URL}/sql-execute/relationships`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ query }),
     });
 
     if (!response.ok) {
@@ -24,23 +21,15 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
     
-    console.log('프록시 응답 성공:', data.success ? `${data.rowCount}행 조회` : '실패');
+    console.log('프록시 응답 성공:', Array.isArray(data) ? `${data.length}개 관계` : '단일 객체');
     
     return NextResponse.json(data);
     
   } catch (error) {
-    console.error('SQL 실행 프록시 오류:', error);
+    console.error('관계 조회 프록시 오류:', error);
     
     return NextResponse.json({ 
-      success: false, 
       error: error instanceof Error ? error.message : '서버 오류가 발생했습니다.' 
     }, { status: 500 });
   }
-}
-
-export async function GET() {
-  return NextResponse.json({ 
-    success: false, 
-    error: 'POST 메서드만 지원합니다.' 
-  }, { status: 405 });
 } 

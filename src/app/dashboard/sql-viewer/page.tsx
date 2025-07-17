@@ -135,11 +135,9 @@ export default function SqlViewerPage() {
   const [relationships, setRelationships] = useState<RelationshipResponse[]>([]);
   const [loadingRelationships, setLoadingRelationships] = useState(false);
 
-  // API URL 설정
+  // API URL 설정 (Next.js API Routes 프록시 사용)
   const getApiUrl = () => {
-    return process.env.NODE_ENV === 'production' 
-      ? 'http://35.208.29.100:3001' 
-      : 'http://localhost:3001';
+    return '/api';
   };
 
   // 스키마 정보 로드
@@ -393,7 +391,7 @@ export default function SqlViewerPage() {
             SQL Viewer
           </h1>
           <p className="text-gray-600">
-            데이터베이스 쿼리 실행 및 결과 조회 • {getApiUrl()}
+            Library DB 쿼리 실행 및 결과 조회
           </p>
         </motion.div>
 
