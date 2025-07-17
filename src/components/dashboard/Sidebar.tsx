@@ -172,6 +172,20 @@ export default function Sidebar() {
         >
           SQL Viewer
         </Link>
+        
+        <Link
+          href="/dashboard/ai-chat"
+          className={`
+            block px-4 py-2.5 rounded-lg font-medium
+            transition-all duration-200 ease-in-out
+            ${pathname === '/dashboard/ai-chat'
+              ? 'bg-blue-600/90 text-white shadow-sm' 
+              : 'text-gray-200 hover:bg-gray-700/50 hover:text-white'
+            }
+          `}
+        >
+          Library AI Data Chat
+        </Link>
       </nav>
     </div>
   );
