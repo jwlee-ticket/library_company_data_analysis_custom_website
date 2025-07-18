@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import * as XLSX from 'xlsx';
 import ApiDataViewer from '@/components/debug/ApiDataViewer';
 
 // API 타입 정의
@@ -614,7 +613,7 @@ export default function SqlViewerPage() {
     setExecutionInfo(null);
   };
 
-  // 엑셀 다운로드 함수
+  // CSV 다운로드 함수
   const downloadExcel = () => {
     if (results.length === 0) {
       alert('다운로드할 데이터가 없습니다.');
@@ -622,27 +621,49 @@ export default function SqlViewerPage() {
     }
 
     try {
-      // 데이터를 워크시트로 변환
-      const worksheet = XLSX.utils.json_to_sheet(results);
+      // CSV 문자열 생성 함수
+      const convertToCSV = (data: any[]) => {
+        if (data.length === 0) return '';
+        
+        // 헤더 추출
+        const headers = Object.keys(data[0]);
+        
+        // CSV 값 이스케이프 함수
+        const escapeCSVValue = (value: any) => {
+          if (value === null || value === undefined) return '';
+          const stringValue = String(value);
+          // 쉼표, 따옴표, 줄바꿈이 포함된 경우 따옴표로 감싸기
+          if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+            return `"${stringValue.replace(/"/g, '""')}"`;
+          }
+          return stringValue;
+        };
+        
+        // 헤더 행 생성
+        const headerRow = headers.map(escapeCSVValue).join(',');
+        
+        // 데이터 행들 생성
+        const dataRows = data.map(row => 
+          headers.map(header => escapeCSVValue(row[header])).join(',')
+        );
+        
+        return [headerRow, ...dataRows].join('\n');
+      };
       
-      // 워크북 생성
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'SQL 결과');
+      // CSV 데이터 생성
+      const csvContent = convertToCSV(results);
       
       // 현재 날짜시간으로 파일명 생성
       const now = new Date();
       const dateStr = now.toISOString().slice(0, 19).replace(/[:.]/g, '-');
-      const fileName = `SQL_결과_${dateStr}.xlsx`;
+      const fileName = `SQL_결과_${dateStr}.csv`;
       
-      // 바이너리 데이터로 변환
-      const excelBuffer = XLSX.write(workbook, { 
-        bookType: 'xlsx', 
-        type: 'array' 
-      });
+      // UTF-8 BOM 추가 (엑셀에서 한글 깨짐 방지)
+      const BOM = '\uFEFF';
       
-      // 적절한 MIME 타입으로 Blob 생성
-      const blob = new Blob([excelBuffer], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      // Blob 생성
+      const blob = new Blob([BOM + csvContent], { 
+        type: 'text/csv;charset=utf-8;' 
       });
       
       // 안전한 다운로드
@@ -661,8 +682,8 @@ export default function SqlViewerPage() {
       }, 100);
       
     } catch (error) {
-      console.error('엑셀 다운로드 오류:', error);
-      alert('엑셀 다운로드 중 오류가 발생했습니다.');
+      console.error('CSV 다운로드 오류:', error);
+      alert('CSV 다운로드 중 오류가 발생했습니다.');
     }
   };
 
@@ -892,7 +913,7 @@ export default function SqlViewerPage() {
                     onClick={downloadExcel}
                     className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors font-medium"
                   >
-                    엑셀 다운로드
+                    CSV 다운로드
                   </button>
                 )}
               </div>
