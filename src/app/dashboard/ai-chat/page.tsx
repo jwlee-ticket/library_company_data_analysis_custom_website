@@ -19,22 +19,12 @@ export default function AiChatPage() {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [error, setError] = useState<string>('');
   
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const aiChatApi = new AiChatApi();
   
   // 서버에서 받아온 채팅 세션만 표시
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [sessionsLoaded, setSessionsLoaded] = useState(false);
   const [hasServerSessions, setHasServerSessions] = useState(false);
-
-  // 메시지 끝으로 스크롤
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   // 세션 목록 로드
   const loadSessions = async () => {
@@ -238,8 +228,7 @@ export default function AiChatPage() {
           {messages.length === 0 ? (
             <div className="h-full flex items-center justify-center text-center text-gray-500">
               <div>
-                <h2 className="text-2xl font-bold mb-4">AI SQL Assistant</h2>
-                <p className="text-lg mb-4">Library Company 데이터에 대해 자연어로 질문해주세요.</p>
+                <p className="text-lg mb-4">AI SQL Assistant를 통해 SQL문을 만들어봐요.</p>
                 
                 <div className="bg-gray-50 rounded-lg p-6 mt-8 max-w-2xl">
                   <h3 className="text-lg font-semibold mb-4 text-gray-700">예시 질문</h3>
@@ -248,10 +237,10 @@ export default function AiChatPage() {
                       "최근 일주일간 매출이 높은 공연 5개를 조회하는 SQL문을 생성해주세요"
                     </div>
                     <div className="text-left bg-green-50 p-3 rounded border-l-4 border-green-400">
-                      "오늘 공연 현황을 알려주는 SQL문을 생성해주세요"
+                      "진행중인 모든 공연을 알려주는 SQL문을 생성해주세요"
                     </div>
                     <div className="text-left bg-purple-50 p-3 rounded border-l-4 border-purple-400">
-                      "사용자 수를 확인하는 SQL문을 생성해주세요"
+                      "사용자 정보를 확인하는 SQL문을 생성해주세요"
                     </div>
                     <div className="text-left bg-orange-50 p-3 rounded border-l-4 border-orange-400">
                       "캐스트별 매출 통계를 조회하는 SQL문을 생성해주세요"
@@ -309,8 +298,6 @@ export default function AiChatPage() {
                   </div>
                 </motion.div>
               )}
-
-              <div ref={messagesEndRef} />
             </div>
           )}
         </div>
@@ -323,7 +310,7 @@ export default function AiChatPage() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="데이터에 대해 질문해주세요... (Shift+Enter로 줄바꿈)"
+                placeholder="데이터에 대해 질문해주세요~ (Shift+Enter로 줄바꿈)"
                 className="flex-1 resize-none border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm"
                 rows={2}
                 disabled={isLoading}
@@ -406,14 +393,6 @@ export default function AiChatPage() {
             </div>
           </div>
         )}
-
-        {/* 하단 정보 */}
-        <div className="shrink-0 p-4 border-t border-gray-200">
-          <div className="text-xs text-gray-500 text-center">
-            <p className="mb-1">AI SQL Assistant</p>
-            <p>Library Company Data</p>
-          </div>
-        </div>
       </div>
     </div>
   );

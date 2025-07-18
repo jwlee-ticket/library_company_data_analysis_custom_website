@@ -184,7 +184,7 @@ export default function Sidebar() {
             }
           `}
         >
-          Library AI Data Chat
+          AI SQL Assistant
         </Link>
       </nav>
     </div>
