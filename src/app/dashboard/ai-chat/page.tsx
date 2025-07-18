@@ -533,13 +533,10 @@ export default function AiChatPage() {
                   <h3 className="text-lg font-semibold mb-4 text-gray-700">예시 질문</h3>
                   <div className="grid grid-cols-1 gap-2 text-sm">
                     <div className="text-left bg-blue-50 p-3 rounded border-l-4 border-blue-400">
-                      "최근 일주일간 매출이 높은 공연 5개를 조회하는 SQL문을 생성해주세요"
+                      "매출이 높은 공연순으로 조회하는 SQL문을 생성해주세요"
                     </div>
                     <div className="text-left bg-green-50 p-3 rounded border-l-4 border-green-400">
                       "진행중인 모든 공연을 알려주는 SQL문을 생성해주세요"
-                    </div>
-                    <div className="text-left bg-purple-50 p-3 rounded border-l-4 border-purple-400">
-                      "사용자 정보를 확인하는 SQL문을 생성해주세요"
                     </div>
                     <div className="text-left bg-orange-50 p-3 rounded border-l-4 border-orange-400">
                       "캐스트별 매출 통계를 조회하는 SQL문을 생성해주세요"

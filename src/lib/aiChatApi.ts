@@ -63,9 +63,8 @@ class AiChatApi {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.NODE_ENV === 'production' 
-      ? 'http://35.208.29.100:3001' 
-      : 'http://localhost:3001';
+    // Next.js API Routes 프록시 패턴 사용
+    this.baseUrl = '/api';
   }
 
   async sendMessage(message: string, sessionId?: string, previousMessages?: ChatMessage[]): Promise<ChatResponse> {
@@ -86,7 +85,7 @@ class AiChatApi {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(`HTTP ${response.status}: ${errorData.message || response.statusText}`);
+      throw new Error(`HTTP ${response.status}: ${errorData.error || response.statusText}`);
     }
 
     return response.json();
@@ -110,7 +109,7 @@ class AiChatApi {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(`HTTP ${response.status}: ${errorData.message || response.statusText}`);
+      throw new Error(`HTTP ${response.status}: ${errorData.error || response.statusText}`);
     }
 
     return response.json();
@@ -125,7 +124,7 @@ class AiChatApi {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(`HTTP ${response.status}: ${errorData.message || response.statusText}`);
+      throw new Error(`HTTP ${response.status}: ${errorData.error || response.statusText}`);
     }
 
     return response.json();
@@ -140,7 +139,7 @@ class AiChatApi {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(`HTTP ${response.status}: ${errorData.message || response.statusText}`);
+      throw new Error(`HTTP ${response.status}: ${errorData.error || response.statusText}`);
     }
 
     return response.json();
@@ -156,7 +155,7 @@ class AiChatApi {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(`HTTP ${response.status}: ${errorData.message || response.statusText}`);
+      throw new Error(`HTTP ${response.status}: ${errorData.error || response.statusText}`);
     }
 
     return response.json();

@@ -141,8 +141,8 @@ function PlaySalesTable({ performances, playDetails }: PlaySalesTableProps) {
                         </span>
                         <span className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
                           {performance.name}
-                        </span>
-                      </div>
+                </span>
+              </div>
                     </div>
                   </td>
 
@@ -234,7 +234,7 @@ function PlaySalesTable({ performances, playDetails }: PlaySalesTableProps) {
             </div>
             <div className="text-gray-500">
               전체 공연 평균
-            </div>
+              </div>
           </div>
         </div>
       </div>
@@ -552,9 +552,9 @@ export default function DashboardPage() {
                 <p className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-2">
                   {dashboardData.performanceDetails.length}개
                 </p>
-              </div>
-            </div>
-            
+        </div>
+      </div>
+
             {/* 성과 요약 바 */}
             <div className="mt-6 pt-6 border-t border-gray-100">
               <div className="flex items-center justify-between text-sm mb-2">
@@ -590,7 +590,7 @@ export default function DashboardPage() {
               <h2 className="text-xl font-bold text-gray-900">장르별 현황</h2>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* 콘서트 매출 */}
             <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
               <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-lg transition-all duration-300 h-full">
@@ -672,9 +672,9 @@ export default function DashboardPage() {
                   <div className="flex items-center">
                     <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
                     <h3 className="font-bold text-gray-900">뮤지컬</h3>
-                  </div>
-                </div>
-                
+        </div>
+      </div>
+
                 <div className="mb-4">
                   <p className="text-2xl font-bold text-gray-900 mb-1">
                     {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.musical.revenue) || 0)}원
@@ -768,7 +768,7 @@ export default function DashboardPage() {
             <div className="text-gray-400 text-6xl mb-6">🎭</div>
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
               통합 데이터 없음
-            </h2>
+        </h2>
             <p className="text-gray-600 mb-8 max-w-md mx-auto">
               현재 표시할 콘서트, 연극, 뮤지컬 데이터가 없습니다.<br />
               잠시 후 다시 시도해주세요.
