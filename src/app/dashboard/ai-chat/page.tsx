@@ -35,6 +35,67 @@ export default function AiChatPage() {
   const [apiResponses, setApiResponses] = useState<Record<string, any>>({});
   const [showApiModal, setShowApiModal] = useState(false);
 
+  // 로컬 스토리지 키
+  const STORAGE_KEYS = {
+    currentSession: 'ai-chat-current-session',
+    messages: 'ai-chat-messages',
+    apiResponses: 'ai-chat-api-responses'
+  };
+
+  // 로컬 스토리지에서 데이터 복원
+  useEffect(() => {
+    try {
+      const savedSessionId = localStorage.getItem(STORAGE_KEYS.currentSession);
+      const savedMessages = localStorage.getItem(STORAGE_KEYS.messages);
+      const savedApiResponses = localStorage.getItem(STORAGE_KEYS.apiResponses);
+
+      if (savedSessionId) {
+        setCurrentSessionId(savedSessionId);
+      }
+
+      if (savedMessages) {
+        const parsedMessages = JSON.parse(savedMessages);
+        // 타임스탬프를 Date 객체로 변환
+        const messagesWithDates = parsedMessages.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+        setMessages(messagesWithDates);
+      }
+
+      if (savedApiResponses) {
+        setApiResponses(JSON.parse(savedApiResponses));
+      }
+    } catch (error) {
+      console.error('로컬 스토리지에서 데이터 복원 실패:', error);
+    }
+  }, []);
+
+  // 상태가 변경될 때마다 로컬 스토리지에 저장
+  useEffect(() => {
+    if (currentSessionId) {
+      localStorage.setItem(STORAGE_KEYS.currentSession, currentSessionId);
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.currentSession);
+    }
+  }, [currentSessionId]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem(STORAGE_KEYS.messages, JSON.stringify(messages));
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.messages);
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    if (Object.keys(apiResponses).length > 0) {
+      localStorage.setItem(STORAGE_KEYS.apiResponses, JSON.stringify(apiResponses));
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.apiResponses);
+    }
+  }, [apiResponses]);
+  
   // 세션 목록 로드
   const loadSessions = async () => {
     try {
@@ -48,9 +109,9 @@ export default function AiChatPage() {
               let title = session.title;
               let lastMessage = session.lastMessage || '새로운 대화';
 
-              if (sessionDetail.success && sessionDetail.messages && sessionDetail.messages.length > 0) {
+              if (sessionDetail.success && sessionDetail.session && sessionDetail.session.messages && sessionDetail.session.messages.length > 0) {
                 // 첫 번째 사용자 메시지를 타이틀로 사용
-                const firstUserMessage = sessionDetail.messages.find((msg: ChatMessage) => msg.role === 'user');
+                const firstUserMessage = sessionDetail.session.messages.find((msg: ChatMessage) => msg.role === 'user');
                 if (firstUserMessage) {
                   title = firstUserMessage.content.length > 30 
                     ? firstUserMessage.content.substring(0, 30) + '...'
@@ -58,7 +119,7 @@ export default function AiChatPage() {
                 }
 
                 // 마지막 메시지를 내용으로 사용
-                const lastMsg = sessionDetail.messages[sessionDetail.messages.length - 1];
+                const lastMsg = sessionDetail.session.messages[sessionDetail.session.messages.length - 1];
                 if (lastMsg) {
                   lastMessage = lastMsg.content.length > 50
                     ? lastMsg.content.substring(0, 50) + '...'
@@ -221,11 +282,37 @@ export default function AiChatPage() {
     setError('');
     setSqlResults(null);
     setApiResponses({});
+    
+    // 로컬 스토리지 정리
+    localStorage.removeItem(STORAGE_KEYS.currentSession);
+    localStorage.removeItem(STORAGE_KEYS.messages);
+    localStorage.removeItem(STORAGE_KEYS.apiResponses);
+  };
+
+  // 세션 삭제 함수
+  const handleDeleteSession = async (sessionId: string) => {
+    if (!confirm('이 대화를 삭제하시겠습니까?')) return;
+
+    try {
+      await aiChatApi.deleteSession(sessionId);
+      
+      // 삭제된 세션이 현재 세션이면 새로운 채팅으로 이동
+      if (currentSessionId === sessionId) {
+        handleNewChat();
+      }
+      
+      // 세션 목록 새로고침
+      await loadSessions();
+    } catch (error) {
+      console.error('세션 삭제 실패:', error);
+      setError('대화 삭제에 실패했습니다.');
+    }
   };
 
   const handleSessionSelect = async (sessionId: string) => {
     if (sessionId === currentSessionId) return;
     
+    setIsLoading(true);
     try {
       setCurrentSessionId(sessionId);
       setError('');
@@ -234,23 +321,32 @@ export default function AiChatPage() {
       
       // 해당 세션의 모든 메시지를 로드
       const sessionData = await aiChatApi.getSession(sessionId);
-      if (sessionData.success && sessionData.messages && sessionData.messages.length > 0) {
+      
+      if (sessionData.success && sessionData.session && sessionData.session.messages && sessionData.session.messages.length > 0) {
         // 메시지 데이터를 ChatMessage 형태로 변환
-        const formattedMessages: ChatMessage[] = sessionData.messages.map((msg: any) => ({
+        const formattedMessages: ChatMessage[] = sessionData.session.messages.map((msg: any) => ({
           id: msg.id || Date.now().toString(),
           role: msg.role,
           content: msg.content,
           timestamp: new Date(msg.timestamp),
           sqlQuery: msg.sqlQuery
         }));
+        
         setMessages(formattedMessages);
+        
+        // 성공적으로 로드되면 로컬스토리지에도 저장
+        localStorage.setItem(STORAGE_KEYS.currentSession, sessionId);
+        localStorage.setItem(STORAGE_KEYS.messages, JSON.stringify(formattedMessages));
       } else {
         setMessages([]);
+        localStorage.removeItem(STORAGE_KEYS.messages);
       }
     } catch (error) {
       console.error('세션 로드 실패:', error);
       setError('세션을 불러오는데 실패했습니다.');
       setMessages([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -627,37 +723,55 @@ export default function AiChatPage() {
             <div className="p-2">
               <h3 className="text-sm font-semibold text-gray-700 px-3 py-2 mb-2">이전 대화</h3>
               {chatSessions.map((session) => (
-                <button
+                <div
                   key={session.id}
-                  onClick={() => handleSessionSelect(session.id)}
-                  className={`w-full text-left p-3 rounded-lg mb-2 transition-colors duration-200 ${
+                  className={`w-full text-left p-3 rounded-lg mb-2 transition-colors duration-200 relative group ${
                     currentSessionId === session.id
                       ? 'bg-blue-100 border border-blue-200'
                       : 'bg-white hover:bg-gray-100 border border-gray-200'
                   }`}
                 >
-                  <div className="font-medium text-sm text-gray-900 truncate mb-1">
-                    {session.title}
-                  </div>
-                  <div className="text-xs text-gray-500 truncate mb-2">
-                    {session.lastMessage}
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="text-xs text-gray-400">
-                      {session.timestamp.toLocaleDateString('ko-KR', {
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
+                  <button
+                    onClick={() => handleSessionSelect(session.id)}
+                    className="w-full text-left"
+                  >
+                    <div className="font-medium text-sm text-gray-900 truncate mb-1 pr-8">
+                      {session.title}
                     </div>
-                    {session.messageCount && (
-                      <div className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">
-                        {session.messageCount}개
+                    <div className="text-xs text-gray-500 truncate mb-2">
+                      {session.lastMessage}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="text-xs text-gray-400">
+                        {session.timestamp.toLocaleDateString('ko-KR', {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
                       </div>
-                    )}
-                  </div>
-                </button>
+                      {session.messageCount && (
+                        <div className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">
+                          {session.messageCount}개
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                  
+                  {/* 삭제 버튼 */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteSession(session.id);
+                    }}
+                    className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-all duration-200"
+                    title="대화 삭제"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
               ))}
             </div>
           </div>
