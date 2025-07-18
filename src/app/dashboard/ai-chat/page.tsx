@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { flushSync } from 'react-dom';
 import { motion } from 'framer-motion';
 import { AiChatApi, type ChatMessage, type ChatResponse } from '@/lib/aiChatApi';
 import ApiDataViewer from '@/components/debug/ApiDataViewer';
@@ -39,6 +40,9 @@ export default function AiChatPage() {
 
   // 채팅 스크롤을 위한 ref
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // 텍스트 입력칸 포커스 유지를 위한 ref
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // 로컬 스토리지 키
   const STORAGE_KEYS = {
@@ -105,6 +109,15 @@ export default function AiChatPage() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  
+  // 🎯 페이지 로드 시 텍스트 입력칸에 자동 포커스
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      textareaRef.current?.focus();
+    }, 300); // 페이지 로딩 완료 후 포커스
+    
+    return () => clearTimeout(timer);
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   // 스크롤을 맨 아래로 이동하는 함수
   const scrollToBottom = () => {
@@ -236,7 +249,11 @@ export default function AiChatPage() {
         sqlQuery: response.sqlAnalysis?.query
       };
 
-      setMessages(prev => [...prev, aiMessage]);
+      // 🎯 메시지 추가와 로딩 해제를 완전히 동시에 처리
+      flushSync(() => {
+        setMessages(prev => [...prev, aiMessage]);
+        setIsLoading(false);
+      });
 
       // API 성공 추적
       setApiResponses(prev => ({
@@ -251,8 +268,8 @@ export default function AiChatPage() {
         }
       }));
 
-      // 세션 목록 업데이트
-      await loadSessions();
+      // 세션 목록 업데이트는 백그라운드에서 처리 (로딩 상태에 영향 없음)
+      loadSessions().catch(console.error);
 
     } catch (err) {
       const duration = Date.now() - startTime;
@@ -280,7 +297,13 @@ export default function AiChatPage() {
         }
       }));
     } finally {
+      // 에러 상황에서만 로딩 해제 (성공 시에는 이미 해제됨)
       setIsLoading(false);
+      
+      // 🎯 메시지 전송 완료 후 텍스트 입력칸으로 포커스 복원
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 100); // 약간의 딜레이로 자연스러운 포커스 이동
     }
   };
 
@@ -303,6 +326,11 @@ export default function AiChatPage() {
     localStorage.removeItem(STORAGE_KEYS.currentSession);
     localStorage.removeItem(STORAGE_KEYS.messages);
     localStorage.removeItem(STORAGE_KEYS.apiResponses);
+    
+    // 🎯 새로운 채팅 시작 시 텍스트 입력칸으로 포커스 이동
+    setTimeout(() => {
+      textareaRef.current?.focus();
+    }, 100);
   };
 
   // 세션 삭제 함수
@@ -668,13 +696,14 @@ export default function AiChatPage() {
           <div className="max-w-4xl mx-auto">
             <div className="flex space-x-4">
               <textarea
+                ref={textareaRef}
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="어떤 도움을 드릴까요?"
                 className="flex-1 resize-none border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm"
                 rows={2}
-                disabled={isLoading}
+                // disabled 속성 제거 - 항상 활성화 상태 유지
               />
               <div className="flex flex-col gap-2">
                 <button
