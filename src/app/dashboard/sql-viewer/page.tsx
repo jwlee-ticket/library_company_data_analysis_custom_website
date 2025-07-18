@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import * as XLSX from 'xlsx';
 import ApiDataViewer from '@/components/debug/ApiDataViewer';
 
 // API 타입 정의
@@ -613,6 +614,34 @@ export default function SqlViewerPage() {
     setExecutionInfo(null);
   };
 
+  // 엑셀 다운로드 함수
+  const downloadExcel = () => {
+    if (results.length === 0) {
+      alert('다운로드할 데이터가 없습니다.');
+      return;
+    }
+
+    try {
+      // 데이터를 워크시트로 변환
+      const worksheet = XLSX.utils.json_to_sheet(results);
+      
+      // 워크북 생성
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'SQL 결과');
+      
+      // 현재 날짜시간으로 파일명 생성
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 19).replace(/[:.]/g, '-');
+      const fileName = `SQL_결과_${dateStr}.xlsx`;
+      
+      // 파일 다운로드
+      XLSX.writeFile(workbook, fileName);
+    } catch (error) {
+      console.error('엑셀 다운로드 오류:', error);
+      alert('엑셀 다운로드 중 오류가 발생했습니다.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/50">
       <div className="p-8 max-w-7xl mx-auto space-y-8">
@@ -825,12 +854,24 @@ export default function SqlViewerPage() {
             className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
           >
             <div className="p-6 border-b border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900">쿼리 결과</h2>
-              {executionInfo && (
-                <p className="text-sm text-gray-600 mt-1">
-                  {executionInfo.rowCount}개의 레코드 조회됨 • 실행 시간: {executionInfo.executionTime}ms
-                </p>
-              )}
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">쿼리 결과</h2>
+                  {executionInfo && (
+                    <p className="text-sm text-gray-600 mt-1">
+                      {executionInfo.rowCount}개의 레코드 조회됨 • 실행 시간: {executionInfo.executionTime}ms
+                    </p>
+                  )}
+                </div>
+                {results.length > 0 && (
+                  <button
+                    onClick={downloadExcel}
+                    className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors font-medium"
+                  >
+                    엑셀 다운로드
+                  </button>
+                )}
+              </div>
             </div>
             
             <div className="overflow-x-auto">
