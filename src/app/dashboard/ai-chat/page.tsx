@@ -215,7 +215,7 @@ export default function AiChatPage() {
   return (
     <div className="h-screen w-full bg-gray-50 flex overflow-hidden">
       {/* 메인 채팅 화면 */}
-      <div className={`flex flex-col h-full ${hasServerSessions ? 'flex-1' : 'w-full'}`}>
+      <div className="flex flex-col h-full flex-1">
         {/* 에러 메시지 */}
         {error && (
           <div className="bg-red-50 border-l-4 border-red-400 p-4 m-4 rounded">
@@ -342,21 +342,21 @@ export default function AiChatPage() {
         </div>
       </div>
 
-      {/* 이전 대화 목록 사이드바 - 서버 데이터가 있을 때만 표시 */}
-      {hasServerSessions && (
-        <div className="w-80 bg-gray-50 border-l border-gray-200 flex flex-col shrink-0">
-          {/* 새로운 채팅 버튼 */}
-          <div className="shrink-0 p-4 border-b border-gray-200">
-            <button
-              onClick={handleNewChat}
-              className="w-full px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 font-medium flex items-center justify-center gap-2"
-            >
-              <span className="text-lg">+</span>
-              새로운 채팅
-            </button>
-          </div>
+      {/* 사이드바 - 새로운 채팅 버튼은 항상 표시 */}
+      <div className="w-80 bg-gray-50 border-l border-gray-200 flex flex-col shrink-0">
+        {/* 새로운 채팅 버튼 */}
+        <div className="shrink-0 p-4 border-b border-gray-200">
+          <button
+            onClick={handleNewChat}
+            className="w-full px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 font-medium flex items-center justify-center gap-2"
+          >
+            <span className="text-lg">+</span>
+            새로운 채팅
+          </button>
+        </div>
 
-          {/* 채팅 세션 목록 */}
+        {/* 채팅 세션 목록 - 서버 데이터가 있을 때만 표시 */}
+        {hasServerSessions && (
           <div className="flex-1 overflow-y-auto min-h-0">
             <div className="p-2">
               <h3 className="text-sm font-semibold text-gray-700 px-3 py-2 mb-2">이전 대화</h3>
@@ -395,16 +395,26 @@ export default function AiChatPage() {
               ))}
             </div>
           </div>
+        )}
 
-          {/* 하단 정보 */}
-          <div className="shrink-0 p-4 border-t border-gray-200">
-            <div className="text-xs text-gray-500 text-center">
-              <p className="mb-1">AI SQL Assistant</p>
-              <p>Library Company Data</p>
+        {/* 빈 공간 또는 안내 메시지 */}
+        {!hasServerSessions && (
+          <div className="flex-1 flex items-center justify-center text-center text-gray-500 p-4">
+            <div>
+              <p className="text-sm">아직 저장된 대화가 없습니다.</p>
+              <p className="text-xs mt-1">새로운 채팅을 시작해보세요!</p>
             </div>
           </div>
+        )}
+
+        {/* 하단 정보 */}
+        <div className="shrink-0 p-4 border-t border-gray-200">
+          <div className="text-xs text-gray-500 text-center">
+            <p className="mb-1">AI SQL Assistant</p>
+            <p>Library Company Data</p>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 } 
