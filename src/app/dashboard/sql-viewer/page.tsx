@@ -634,8 +634,32 @@ export default function SqlViewerPage() {
       const dateStr = now.toISOString().slice(0, 19).replace(/[:.]/g, '-');
       const fileName = `SQL_결과_${dateStr}.xlsx`;
       
-      // 파일 다운로드
-      XLSX.writeFile(workbook, fileName);
+      // 바이너리 데이터로 변환
+      const excelBuffer = XLSX.write(workbook, { 
+        bookType: 'xlsx', 
+        type: 'array' 
+      });
+      
+      // 적절한 MIME 타입으로 Blob 생성
+      const blob = new Blob([excelBuffer], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
+      
+      // 안전한 다운로드
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      
+      // 메모리 정리
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
     } catch (error) {
       console.error('엑셀 다운로드 오류:', error);
       alert('엑셀 다운로드 중 오류가 발생했습니다.');
