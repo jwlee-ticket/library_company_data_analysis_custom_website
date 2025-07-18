@@ -221,19 +221,6 @@ export default function LoginPage() {
                 )}
               </motion.button>
             </form>
-
-            {/* 테스트 계정 정보 */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="mt-6 p-4 bg-gray-600/30 rounded-lg border border-gray-500/30"
-            >
-              <p className="text-sm text-gray-300 font-medium mb-2 flex items-center">
-                <span className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-2"></span>
-                문의는 플랫폼팀 이진욱님에게 해주세요.
-              </p>
-            </motion.div>
           </motion.div>
 
           {/* 푸터 */}
