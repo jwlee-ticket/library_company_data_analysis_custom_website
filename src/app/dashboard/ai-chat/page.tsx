@@ -34,6 +34,9 @@ export default function AiChatPage() {
   // API 응답 데이터 상태
   const [apiResponses, setApiResponses] = useState<Record<string, any>>({});
   const [showApiModal, setShowApiModal] = useState(false);
+  
+  // 복사 완료 상태 관리 (메시지별)
+  const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
 
   // 로컬 스토리지 키
   const STORAGE_KEYS = {
@@ -282,6 +285,7 @@ export default function AiChatPage() {
     setError('');
     setSqlResults(null);
     setApiResponses({});
+    setCopiedStates({});
     
     // 로컬 스토리지 정리
     localStorage.removeItem(STORAGE_KEYS.currentSession);
@@ -318,6 +322,7 @@ export default function AiChatPage() {
       setError('');
       setSqlResults(null);
       setApiResponses({});
+      setCopiedStates({});
       
       // 해당 세션의 모든 메시지를 로드
       const sessionData = await aiChatApi.getSession(sessionId);
@@ -351,22 +356,31 @@ export default function AiChatPage() {
   };
 
   // 안전한 클립보드 복사 함수
-  const copyToClipboard = async (text: string) => {
+  const copyToClipboard = async (text: string, messageId?: string) => {
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(text);
-        return;
+      } else {
+        // Fallback: 임시 textarea 사용
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
       }
       
-      // Fallback: 임시 textarea 사용
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
+      // 복사 성공 시 상태 업데이트
+      if (messageId) {
+        setCopiedStates(prev => ({ ...prev, [messageId]: true }));
+        
+        // 2초 후 원래 상태로 복원
+        setTimeout(() => {
+          setCopiedStates(prev => ({ ...prev, [messageId]: false }));
+        }, 2000);
+      }
       
     } catch (error) {
       console.error('복사 실패:', error);
@@ -457,18 +471,26 @@ export default function AiChatPage() {
             {sqlQuery && (
               <div className="flex gap-2 mt-2">
                 <button
-                  onClick={() => copyToClipboard(sqlQuery)}
-                  className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                  onClick={() => copyToClipboard(sqlQuery, messageId)}
+                  className={`px-3 py-1 rounded text-sm transition-colors ${
+                    copiedStates[messageId || ''] 
+                      ? 'bg-green-600 text-white' 
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
                 >
-                  복사
+                  {copiedStates[messageId || ''] ? '복사 완료' : 'SQL 복사'}
                 </button>
                 {messageId && (
                   <button
                     onClick={() => executeSql(sqlQuery, messageId)}
                     disabled={isExecutingSql}
-                    className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                    className={`px-3 py-1 rounded text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      isExecutingSql || sqlResults 
+                        ? 'bg-green-600 text-white' 
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
                   >
-                    {isExecutingSql ? '실행 중...' : 'API 응답 데이터'}
+                    {isExecutingSql ? '실행 중...' : 'SQL 확인하기'}
                   </button>
                 )}
               </div>
@@ -571,7 +593,6 @@ export default function AiChatPage() {
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                       </div>
-                      <span className="text-sm">AI가 답변을 생성하고 있습니다...</span>
                     </div>
                   </div>
                 </motion.div>
