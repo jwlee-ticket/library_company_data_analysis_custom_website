@@ -149,6 +149,27 @@ export default function SqlViewerPage() {
   // API 응답 추적 상태
   const [apiResponses, setApiResponses] = useState<Record<string, ApiResponse>>({});
 
+  // URL 파라미터에서 쿼리 확인 및 자동 실행
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryParam = urlParams.get('query');
+    
+    if (queryParam) {
+      // URL에서 전달된 쿼리를 디코딩하여 설정
+      const decodedQuery = decodeURIComponent(queryParam);
+      setSqlQuery(decodedQuery);
+      
+      // 스키마가 로드된 후 자동으로 쿼리 실행
+      const timer = setTimeout(() => {
+        if (decodedQuery.trim()) {
+          executeQueryWithValue(decodedQuery);
+        }
+      }, 1000); // 스키마 로드를 위한 짧은 지연
+      
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   // API URL 설정 (Next.js API Routes 프록시 사용)
   const getApiUrl = () => {
     return '/api';
@@ -298,6 +319,103 @@ export default function SqlViewerPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ query: sqlQuery }),
+      });
+
+      const duration = Date.now() - startTime;
+      const data: QueryResult = await response.json();
+
+      if (data.success) {
+        setResults(data.results || []);
+        setExecutionInfo({
+          rowCount: data.rowCount || 0,
+          executionTime: data.executionTime || 0
+        });
+        setError('');
+        
+        // API 성공 추적
+        setApiResponses(prev => ({
+          ...prev,
+          [endpoint]: {
+            endpoint,
+            status: 'success',
+            data: data,
+            timestamp: new Date().toISOString(),
+            duration,
+            url: `${getApiUrl()}/sql-execute`
+          }
+        }));
+      } else {
+        setError(getErrorMessage(data.error || '쿼리 실행 중 오류가 발생했습니다.', data.code));
+        setResults([]);
+        setExecutionInfo(null);
+        
+        // API 에러 추적
+        setApiResponses(prev => ({
+          ...prev,
+          [endpoint]: {
+            endpoint,
+            status: 'error',
+            error: data.error || '쿼리 실행 중 오류가 발생했습니다.',
+            timestamp: new Date().toISOString(),
+            duration,
+            url: `${getApiUrl()}/sql-execute`
+          }
+        }));
+      }
+    } catch (err) {
+      const duration = Date.now() - startTime;
+      console.error('API 호출 오류:', err);
+      setError('서버 연결에 실패했습니다. 네트워크 상태를 확인해주세요.');
+      setResults([]);
+      setExecutionInfo(null);
+      
+      // API 에러 추적
+      setApiResponses(prev => ({
+        ...prev,
+        [endpoint]: {
+          endpoint,
+          status: 'error',
+          error: err instanceof Error ? err.message : String(err),
+          timestamp: new Date().toISOString(),
+          duration,
+          url: `${getApiUrl()}/sql-execute`
+        }
+      }));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 특정 쿼리 값으로 실행 (URL 파라미터용)
+  const executeQueryWithValue = async (queryValue: string) => {
+    if (!queryValue.trim()) return;
+
+    setIsLoading(true);
+    setError('');
+    setResults([]);
+    setExecutionInfo(null);
+
+    const startTime = Date.now();
+    const endpoint = 'sql-execute-param';
+    
+    // API 호출 시작 추적
+    setApiResponses(prev => ({
+      ...prev,
+      [endpoint]: {
+        endpoint,
+        status: 'loading',
+        timestamp: new Date().toISOString(),
+        url: `${getApiUrl()}/sql-execute`
+      }
+    }));
+
+    try {
+      const response = await fetch(`${getApiUrl()}/sql-execute`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: queryValue }),
       });
 
       const duration = Date.now() - startTime;
