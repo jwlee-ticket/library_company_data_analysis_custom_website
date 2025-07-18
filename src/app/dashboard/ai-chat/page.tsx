@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { AiChatApi, type ChatMessage, type ChatResponse } from '@/lib/aiChatApi';
 import ApiDataViewer from '@/components/debug/ApiDataViewer';
 
@@ -33,7 +33,6 @@ export default function AiChatPage() {
   
   // API 응답 데이터 상태
   const [apiResponses, setApiResponses] = useState<Record<string, any>>({});
-  const [showApiModal, setShowApiModal] = useState(false);
   
   // 복사 완료 상태 관리 (메시지별)
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
@@ -593,7 +592,6 @@ export default function AiChatPage() {
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                       </div>
-                      <span className="text-sm">AI가 답변을 생성하고 있습니다...</span>
                     </div>
                   </div>
                 </motion.div>
@@ -601,56 +599,6 @@ export default function AiChatPage() {
             </div>
           )}
         </div>
-
-        {/* 플로팅 API 응답 데이터 버튼 */}
-        <button
-          onClick={() => setShowApiModal(true)}
-          className="fixed top-6 right-6 w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center z-40"
-          title="API 응답 데이터"
-        >
-          <svg 
-            className="w-6 h-6" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" 
-            />
-          </svg>
-        </button>
-
-        {/* API 응답 데이터 모달 */}
-        <AnimatePresence>
-          {showApiModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowApiModal(false)}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-                className="bg-white rounded-lg shadow-xl max-w-6xl w-full mx-4 max-h-[90vh] overflow-hidden" 
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-900">API 응답 데이터</h2>
-                  <button
-                    onClick={() => setShowApiModal(false)}
-                    className="text-gray-400 hover:text-gray-600 text-xl font-bold"
-                  >
-                    ×
-                  </button>
-                </div>
-                <div className="overflow-y-auto" style={{ maxHeight: 'calc(90vh - 60px)' }}>
-                  <ApiDataViewer responses={apiResponses} />
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
 
         {/* SQL 실행 결과 영역 */}
         {sqlResults && (
@@ -721,7 +669,11 @@ export default function AiChatPage() {
           </div>
         </div>
 
-        {/* API 응답 데이터 모달 */}
+        {/* API 응답 데이터 뷰어 */}
+        <div className="border-t border-gray-200 bg-white">
+          <ApiDataViewer responses={apiResponses} />
+        </div>
+
       </div>
 
       {/* 사이드바 - 새로운 채팅 버튼은 항상 표시 */}
