@@ -503,7 +503,7 @@ export default function AiChatPage() {
   };
 
   return (
-    <div className="h-screen w-full bg-gray-50 flex overflow-hidden">
+    <div className="h-full w-full bg-gray-50 flex overflow-hidden">
       {/* 메인 채팅 화면 */}
       <div className="flex flex-col h-full flex-1">
         {/* 에러 메시지 */}
@@ -524,7 +524,7 @@ export default function AiChatPage() {
         )}
 
         {/* 채팅 메시지 영역 */}
-        <div className="p-6 bg-white overflow-y-auto" style={{ height: 'calc(100vh - 100px)' }}>
+        <div className="flex-1 p-6 bg-white overflow-y-auto">
           {messages.length === 0 ? (
             <div className="h-full flex items-center justify-center text-center text-gray-500">
               <div>
@@ -593,6 +593,7 @@ export default function AiChatPage() {
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                       </div>
+                      <span className="text-sm">AI가 답변을 생성하고 있습니다...</span>
                     </div>
                   </div>
                 </motion.div>
@@ -653,7 +654,7 @@ export default function AiChatPage() {
 
         {/* SQL 실행 결과 영역 */}
         {sqlResults && (
-          <div className="border-t border-gray-200 bg-gray-50 p-4 max-h-60 overflow-y-auto">
+          <div className="border-t border-gray-200 bg-gray-50 p-4 max-h-80 overflow-y-auto">
             <div className="max-w-4xl mx-auto">
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-sm font-semibold text-gray-700">SQL 실행 결과</h3>
@@ -695,9 +696,9 @@ export default function AiChatPage() {
         )}
 
         {/* 메시지 입력 영역 - 고정된 하단 위치 */}
-        <div className="border-t border-gray-200 bg-white p-4 shadow-lg" style={{ height: '100px' }}>
-          <div className="max-w-4xl mx-auto h-full flex items-center">
-            <div className="flex space-x-4 w-full">
+        <div className="border-t border-gray-200 bg-white p-4 shadow-lg">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex space-x-4">
               <textarea
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
@@ -706,14 +707,12 @@ export default function AiChatPage() {
                 className="flex-1 resize-none border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm"
                 rows={2}
                 disabled={isLoading}
-                style={{ height: '60px' }}
               />
               <div className="flex flex-col gap-2">
                 <button
                   onClick={handleSendMessage}
                   disabled={isLoading || !inputMessage.trim()}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium shadow-sm"
-                  style={{ height: '60px' }}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium shadow-sm h-16"
                 >
                   {isLoading ? '전송 중...' : '전송'}
                 </button>
@@ -726,7 +725,7 @@ export default function AiChatPage() {
       </div>
 
       {/* 사이드바 - 새로운 채팅 버튼은 항상 표시 */}
-      <div className="w-80 bg-gray-50 border-l border-gray-200 flex flex-col shrink-0">
+      <div className="w-80 bg-gray-50 border-l border-gray-200 flex flex-col h-full shrink-0">
         {/* 새로운 채팅 버튼 */}
         <div className="shrink-0 p-4 border-b border-gray-200">
           <button
