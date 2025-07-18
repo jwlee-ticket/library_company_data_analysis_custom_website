@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ApiDataViewer from '@/components/debug/ApiDataViewer';
 
 // API 타입 정의
 interface TableSchema {
@@ -52,6 +53,16 @@ interface QueryResult {
   executionTime?: number;
   error?: string;
   code?: string;
+}
+
+interface ApiResponse {
+  endpoint: string;
+  status: 'loading' | 'success' | 'error';
+  data?: any;
+  error?: string;
+  timestamp?: string;
+  duration?: number;
+  url?: string;
 }
 
 // 에러 코드별 메시지 매핑
@@ -135,6 +146,9 @@ export default function SqlViewerPage() {
   const [relationships, setRelationships] = useState<RelationshipResponse[]>([]);
   const [loadingRelationships, setLoadingRelationships] = useState(false);
 
+  // API 응답 추적 상태
+  const [apiResponses, setApiResponses] = useState<Record<string, ApiResponse>>({});
+
   // API URL 설정 (Next.js API Routes 프록시 사용)
   const getApiUrl = () => {
     return '/api';
@@ -143,14 +157,57 @@ export default function SqlViewerPage() {
   // 스키마 정보 로드
   const loadSchema = async () => {
     setLoadingSchema(true);
+    const startTime = Date.now();
+    const endpoint = 'schema';
+    
+    // API 호출 시작 추적
+    setApiResponses(prev => ({
+      ...prev,
+      [endpoint]: {
+        endpoint,
+        status: 'loading',
+        timestamp: new Date().toISOString(),
+        url: `${getApiUrl()}/sql-execute/schema`
+      }
+    }));
+
     try {
       const response = await fetch(`${getApiUrl()}/sql-execute/schema`);
+      const duration = Date.now() - startTime;
+      
       if (!response.ok) throw new Error('스키마 정보 조회 실패');
       const schemaData: TableSchema[] = await response.json();
       setSchema(schemaData);
+      
+      // API 성공 추적
+      setApiResponses(prev => ({
+        ...prev,
+        [endpoint]: {
+          endpoint,
+          status: 'success',
+          data: schemaData,
+          timestamp: new Date().toISOString(),
+          duration,
+          url: `${getApiUrl()}/sql-execute/schema`
+        }
+      }));
     } catch (err) {
+      const duration = Date.now() - startTime;
       console.error('스키마 로드 실패:', err);
       setError('스키마 정보를 불러올 수 없습니다.');
+      
+      // API 에러 추적
+      setApiResponses(prev => ({
+        ...prev,
+        [endpoint]: {
+          endpoint,
+          status: 'error',
+          error: err instanceof Error ? err.message : String(err),
+          timestamp: new Date().toISOString(),
+          duration,
+          url: `${getApiUrl()}/sql-execute/schema`
+        }
+      }));
     } finally {
       setLoadingSchema(false);
     }
@@ -220,6 +277,20 @@ export default function SqlViewerPage() {
     setResults([]);
     setExecutionInfo(null);
 
+    const startTime = Date.now();
+    const endpoint = 'sql-execute';
+    
+    // API 호출 시작 추적
+    setApiResponses(prev => ({
+      ...prev,
+      [endpoint]: {
+        endpoint,
+        status: 'loading',
+        timestamp: new Date().toISOString(),
+        url: `${getApiUrl()}/sql-execute`
+      }
+    }));
+
     try {
       const response = await fetch(`${getApiUrl()}/sql-execute`, {
         method: 'POST',
@@ -229,6 +300,7 @@ export default function SqlViewerPage() {
         body: JSON.stringify({ query: sqlQuery }),
       });
 
+      const duration = Date.now() - startTime;
       const data: QueryResult = await response.json();
 
       if (data.success) {
@@ -238,16 +310,56 @@ export default function SqlViewerPage() {
           executionTime: data.executionTime || 0
         });
         setError('');
+        
+        // API 성공 추적
+        setApiResponses(prev => ({
+          ...prev,
+          [endpoint]: {
+            endpoint,
+            status: 'success',
+            data: data,
+            timestamp: new Date().toISOString(),
+            duration,
+            url: `${getApiUrl()}/sql-execute`
+          }
+        }));
       } else {
         setError(getErrorMessage(data.error || '쿼리 실행 중 오류가 발생했습니다.', data.code));
         setResults([]);
         setExecutionInfo(null);
+        
+        // API 에러 추적
+        setApiResponses(prev => ({
+          ...prev,
+          [endpoint]: {
+            endpoint,
+            status: 'error',
+            error: data.error || '쿼리 실행 중 오류가 발생했습니다.',
+            timestamp: new Date().toISOString(),
+            duration,
+            url: `${getApiUrl()}/sql-execute`
+          }
+        }));
       }
     } catch (err) {
+      const duration = Date.now() - startTime;
       console.error('API 호출 오류:', err);
       setError('서버 연결에 실패했습니다. 네트워크 상태를 확인해주세요.');
       setResults([]);
       setExecutionInfo(null);
+      
+      // API 에러 추적
+      setApiResponses(prev => ({
+        ...prev,
+        [endpoint]: {
+          endpoint,
+          status: 'error',
+          error: err instanceof Error ? err.message : String(err),
+          timestamp: new Date().toISOString(),
+          duration,
+          url: `${getApiUrl()}/sql-execute`
+        }
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -982,6 +1094,16 @@ LIMIT 10;`;
             </motion.section>
           )}
         </AnimatePresence>
+
+        {/* API 응답 데이터 뷰어 */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+        >
+          <ApiDataViewer responses={apiResponses} />
+        </motion.section>
       </div>
     </div>
   );

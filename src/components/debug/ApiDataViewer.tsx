@@ -22,6 +22,46 @@ export default function ApiDataViewer({ responses, isVisible = true }: ApiDataVi
   const [isOpen, setIsOpen] = useState(false);
   const [fullscreenData, setFullscreenData] = useState<{ key: string; response: ApiResponse } | null>(null);
 
+  // 안전한 클립보드 복사 함수
+  const copyToClipboard = async (text: string, buttonElement?: HTMLButtonElement) => {
+    try {
+      // 최신 Clipboard API 사용 시도
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        showCopyFeedback(buttonElement, '복사완료!');
+        return;
+      }
+      
+      // Fallback: 임시 textarea 사용
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      showCopyFeedback(buttonElement, '복사완료!');
+    } catch (error) {
+      console.error('클립보드 복사 실패:', error);
+      showCopyFeedback(buttonElement, '복사 실패');
+      
+      // 에러 시 사용자에게 수동 복사 안내
+      alert('자동 복사가 실패했습니다. 텍스트를 수동으로 선택해서 복사해주세요.');
+    }
+  };
+
+  // 복사 피드백 표시
+  const showCopyFeedback = (buttonElement?: HTMLButtonElement, message: string = '복사완료!') => {
+    if (!buttonElement) return;
+    
+    const originalText = buttonElement.textContent;
+    buttonElement.textContent = message;
+    setTimeout(() => {
+      buttonElement.textContent = originalText;
+    }, 1500);
+  };
+
   if (!isVisible) return null;
 
   const getStatusColor = (status: string) => {
@@ -244,15 +284,11 @@ export default function ApiDataViewer({ responses, isVisible = true }: ApiDataVi
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(JSON.stringify(fullscreenData.response.data, null, 2));
-                      // 간단한 피드백 (실제로는 toast 라이브러리 사용 권장)
-                      const button = document.activeElement as HTMLButtonElement;
-                      const originalText = button.textContent;
-                      button.textContent = '복사됨!';
-                      setTimeout(() => {
-                        button.textContent = originalText;
-                      }, 1000);
+                    onClick={(e) => {
+                      copyToClipboard(
+                        JSON.stringify(fullscreenData.response.data, null, 2), 
+                        e.target as HTMLButtonElement
+                      );
                     }}
                     className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
                   >
