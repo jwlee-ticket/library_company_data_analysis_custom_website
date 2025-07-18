@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { AiChatApi, type ChatMessage, type ChatResponse } from '@/lib/aiChatApi';
 import ApiDataViewer from '@/components/debug/ApiDataViewer';
@@ -36,6 +36,9 @@ export default function AiChatPage() {
   
   // 복사 완료 상태 관리 (메시지별)
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
+
+  // 채팅 스크롤을 위한 ref
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // 로컬 스토리지 키
   const STORAGE_KEYS = {
@@ -97,6 +100,16 @@ export default function AiChatPage() {
       localStorage.removeItem(STORAGE_KEYS.apiResponses);
     }
   }, [apiResponses]);
+  
+  // 메시지가 변경될 때마다 자동으로 스크롤
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // 스크롤을 맨 아래로 이동하는 함수
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
   
   // 세션 목록 로드
   const loadSessions = async () => {
@@ -570,7 +583,7 @@ export default function AiChatPage() {
                       </div>
                     )}
                     <div className="text-xs opacity-70 mt-2">
-                      {message.timestamp.toLocaleTimeString('ko-KR')}
+                      {message.timestamp.toLocaleString('ko-KR')}
                     </div>
                   </div>
                 </motion.div>
@@ -583,16 +596,26 @@ export default function AiChatPage() {
                   className="flex justify-start"
                 >
                   <div className="bg-gray-100 text-gray-900 max-w-md px-4 py-3 rounded-2xl">
-                    <div className="flex items-center space-x-2">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      </div>
+                    <div className="flex items-center justify-center space-x-1">
+                      <div 
+                        className="w-2 h-2 bg-gray-400 rounded-full animate-big-bounce"
+                        style={{ animationDelay: '0s' }}
+                      ></div>
+                      <div 
+                        className="w-2 h-2 bg-gray-500 rounded-full animate-big-bounce"
+                        style={{ animationDelay: '0.2s' }}
+                      ></div>
+                      <div 
+                        className="w-2 h-2 bg-gray-600 rounded-full animate-big-bounce"
+                        style={{ animationDelay: '0.4s' }}
+                      ></div>
                     </div>
                   </div>
                 </motion.div>
               )}
+              
+              {/* 스크롤 위치 참조용 요소 */}
+              <div ref={messagesEndRef} />
             </div>
           )}
         </div>
@@ -713,6 +736,7 @@ export default function AiChatPage() {
                     <div className="flex justify-between items-center">
                       <div className="text-xs text-gray-400">
                         {session.timestamp.toLocaleDateString('ko-KR', {
+                          year: 'numeric',
                           month: 'short',
                           day: 'numeric',
                           hour: '2-digit',
