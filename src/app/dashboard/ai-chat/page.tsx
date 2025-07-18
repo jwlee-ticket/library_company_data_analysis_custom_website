@@ -671,7 +671,7 @@ export default function AiChatPage() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="데이터에 대해 질문해주세요~ (Shift+Enter로 줄바꿈)"
+                placeholder="어떤 도움을 드릴까요?"
                 className="flex-1 resize-none border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm"
                 rows={2}
                 disabled={isLoading}
