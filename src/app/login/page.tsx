@@ -231,7 +231,7 @@ export default function LoginPage() {
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full max-w-md relative z-10"
+            className="w-full max-w-md relative z-10 mt-64"
           >
             {/* 모바일에서만 보이는 로고 */}
             <div className="lg:hidden text-center mb-10">
