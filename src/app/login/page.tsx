@@ -181,7 +181,7 @@ export default function LoginPage() {
             </div>
           </div>
           
-          <div className="relative z-20 flex flex-col justify-between items-start px-12 py-8 text-white h-full">
+          <div className="relative z-20 flex flex-col justify-start items-start px-8 pt-6 pb-8 text-white h-full">
             {/* 상단 영역 - 타이틀과 설명 */}
             <motion.div
               initial={{ opacity: 0, y: -30 }}
