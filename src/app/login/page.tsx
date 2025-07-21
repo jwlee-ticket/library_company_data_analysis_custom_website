@@ -130,7 +130,7 @@ export default function LoginPage() {
 
       <div className="relative z-10 flex min-h-screen">
         {/* 왼쪽 영상/브랜딩 영역 */}
-        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <div className="hidden lg:flex lg:w-[60%] relative overflow-hidden">
           {/* 유튜브 영상 배경 */}
           <div className="absolute inset-0">
             <iframe
@@ -245,7 +245,7 @@ export default function LoginPage() {
                     <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full shadow-lg"></div>
                     <div className="absolute inset-0 w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-ping opacity-30"></div>
                   </div>
-                  <span className="text-base group-hover:text-white transition-colors">콘서트, 연극, 뮤지켤 상세 데이터 대시보드</span>
+                  <span className="text-base group-hover:text-white transition-colors">콘서트, 연극, 뮤지컬 상세 데이터 대시보드</span>
                 </motion.div>
                 
                 <motion.div 
@@ -264,7 +264,7 @@ export default function LoginPage() {
         </div>
 
         {/* 오른쪽 로그인 폼 영역 */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative">
+        <div className="w-full lg:w-[40%] flex items-center justify-center p-8 relative">
           {/* 폼 영역 배경 효과 */}
           <div className="absolute inset-0 bg-gradient-to-l from-black/50 via-black/30 to-transparent lg:from-black/70 lg:via-black/50"></div>
           
