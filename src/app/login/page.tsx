@@ -14,6 +14,7 @@ export default function LoginPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isMuted, setIsMuted] = useState(false); // 음소거 상태 관리 - 기본값 소리 ON
 
   // 이미 로그인된 사용자는 대시보드로 리다이렉트
   useEffect(() => {
@@ -53,6 +54,11 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // 음소거 토글 함수
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
   };
 
   // 인증 상태 확인 중일 때 로딩 화면
@@ -106,7 +112,8 @@ export default function LoginPage() {
           {/* 유튜브 영상 배경 */}
           <div className="absolute inset-0">
             <iframe
-              src="https://www.youtube.com/embed/yTw4R2bucL8?autoplay=1&mute=1&loop=1&playlist=yTw4R2bucL8&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1"
+              key={`video-${isMuted}`} // 음소거 상태 변경 시 iframe 다시 렌더링
+              src={`https://www.youtube.com/embed/wzfmZRJZUwE?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&playlist=wzfmZRJZUwE&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1`}
               title="Background Video"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
@@ -122,19 +129,24 @@ export default function LoginPage() {
             {/* 영상 위 오버레이 */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-black/40 z-10"></div>
             
-            {/* 음소거 해제 버튼 */}
+            {/* 음소거 토글 버튼 */}
             <div className="absolute bottom-6 right-6 z-20">
               <button 
-                onClick={() => {
-                  // 새 창에서 영상 열기 (소리와 함께)
-                  window.open('https://youtu.be/yTw4R2bucL8', '_blank');
-                }}
+                onClick={toggleMute}
                 className="bg-black/50 hover:bg-black/70 text-white p-3 rounded-full backdrop-blur-sm transition-all duration-200 group"
-                title="소리와 함께 보기"
+                title={isMuted ? "소리 켜기" : "소리 끄기"}
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.776l-4.146-3.317a1 1 0 00-.632-.219H2a1 1 0 01-1-1V7.761a1 1 0 011-1h1.605a1 1 0 00.632-.219l4.146-3.317a1 1 0 01.617-.149zM14.024 7.564a.5.5 0 01.706.019c.33.333.79.797 1.255 1.364.47.574.904 1.253 1.255 1.955.351.703.629 1.462.629 2.098 0 .636-.278 1.395-.629 2.098-.351.702-.785 1.38-1.255 1.955-.464.567-.924 1.031-1.255 1.364a.5.5 0 11-.725-.69c.267-.272.684-.687 1.103-1.205.424-.525.802-1.142 1.11-1.785.312-.65.495-1.273.495-1.737s-.183-1.087-.495-1.737c-.308-.643-.686-1.26-1.11-1.785-.419-.518-.836-.933-1.103-1.205a.5.5 0 01.019-.706z" clipRule="evenodd" />
-                </svg>
+                {isMuted ? (
+                  // 음소거 상태 - 소리 없음 아이콘
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.776l-4.146-3.317a1 1 0 00-.632-.219H2a1 1 0 01-1-1V7.761a1 1 0 011-1h1.605a1 1 0 00.632-.219l4.146-3.317a1 1 0 01.617-.149zM15.828 8.172a.5.5 0 00-.707 0L13 10.293 10.879 8.172a.5.5 0 10-.707.707L12.293 11l-2.121 2.121a.5.5 0 10.707.707L13 11.707l2.121 2.121a.5.5 0 10.707-.707L13.707 11l2.121-2.121a.5.5 0 000-.707z" clipRule="evenodd" />
+                  </svg>
+                ) : (
+                  // 소리 재생 상태 - 스피커 아이콘
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.776l-4.146-3.317a1 1 0 00-.632-.219H2a1 1 0 01-1-1V7.761a1 1 0 011-1h1.605a1 1 0 00.632-.219l4.146-3.317a1 1 0 01.617-.149zM14.024 7.564a.5.5 0 01.706.019c.33.333.79.797 1.255 1.364.47.574.904 1.253 1.255 1.955.351.703.629 1.462.629 2.098 0 .636-.278 1.395-.629 2.098-.351.702-.785 1.38-1.255 1.955-.464.567-.924 1.031-1.255 1.364a.5.5 0 11-.725-.69c.267-.272.684-.687 1.103-1.205.424-.525.802-1.142 1.11-1.785.312-.65.495-1.273.495-1.737s-.183-1.087-.495-1.737c-.308-.643-.686-1.26-1.11-1.785-.419-.518-.836-.933-1.103-1.205a.5.5 0 01.019-.706z" clipRule="evenodd" />
+                  </svg>
+                )}
               </button>
             </div>
           </div>
@@ -192,7 +204,7 @@ export default function LoginPage() {
                     <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg"></div>
                     <div className="absolute inset-0 w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-ping opacity-30"></div>
                   </div>
-                  <span className="text-base group-hover:text-white transition-colors">실시간 공연 매출 분석</span>
+                  <span className="text-base group-hover:text-white transition-colors">통합 데이터 대시보드</span>
                 </motion.div>
                 
                 <motion.div 
@@ -203,7 +215,7 @@ export default function LoginPage() {
                     <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full shadow-lg"></div>
                     <div className="absolute inset-0 w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-ping opacity-30"></div>
                   </div>
-                  <span className="text-base group-hover:text-white transition-colors">스마트 관객 트렌드 예측</span>
+                  <span className="text-base group-hover:text-white transition-colors">콘서트, 연극, 뮤지켤 상세 데이터 대시보드</span>
                 </motion.div>
                 
                 <motion.div 
@@ -214,7 +226,7 @@ export default function LoginPage() {
                     <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg"></div>
                     <div className="absolute inset-0 w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-ping opacity-30"></div>
                   </div>
-                  <span className="text-base group-hover:text-white transition-colors">통합 공연장 대시보드</span>
+                  <span className="text-base group-hover:text-white transition-colors">AI SQL Assistant 제공</span>
                 </motion.div>
               </div>
             </motion.div>
@@ -354,6 +366,13 @@ export default function LoginPage() {
                     </div>
                   </motion.button>
                 </form>
+                
+                {/* 담당자 정보 */}
+                <div className="mt-6 pt-4 border-t border-white/10">
+                  <p className="text-xs text-gray-500 text-center">
+                    담당자: <span className="text-gray-400 font-medium">플랫폼팀 이진욱</span>
+                  </p>
+                </div>
               </div>
             </motion.div>
 
