@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,7 +14,27 @@ export default function LoginPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [isMuted, setIsMuted] = useState(false); // 음소거 상태 관리 - 기본값 소리 ON
+  const [isMuted, setIsMuted] = useState(true); // 기본값: 음소거 ON (자동재생 보장)
+  const [videoKey, setVideoKey] = useState(0); // iframe 강제 리로드용
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // 페이지 로드 시 자동재생을 위한 처리
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setVideoKey(prev => prev + 1); // iframe 강제 리로드
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // 영상 영역 클릭 시 소리 켜기
+  const handleVideoClick = () => {
+    if (isMuted) {
+      setIsMuted(false); // 소리 켜기
+      setVideoKey(prev => prev + 1); // iframe 리로드로 소리 적용
+      console.log('영상 클릭 - 소리 켜짐');
+    }
+  };
 
   // 이미 로그인된 사용자는 대시보드로 리다이렉트
   useEffect(() => {
@@ -59,6 +79,8 @@ export default function LoginPage() {
   // 음소거 토글 함수
   const toggleMute = () => {
     setIsMuted(!isMuted);
+    setVideoKey(prev => prev + 1); // iframe 리로드로 음소거 상태 즉시 적용
+    console.log('음소거 토글:', !isMuted ? '음소거됨' : '소리켜짐');
   };
 
   // 인증 상태 확인 중일 때 로딩 화면
@@ -112,10 +134,11 @@ export default function LoginPage() {
           {/* 유튜브 영상 배경 */}
           <div className="absolute inset-0">
             <iframe
-              key={`video-${isMuted}`} // 음소거 상태 변경 시 iframe 다시 렌더링
-              src={`https://www.youtube.com/embed/wzfmZRJZUwE?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&playlist=wzfmZRJZUwE&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1`}
+              ref={iframeRef}
+              key={`video-${videoKey}-${isMuted}`} // videoKey와 음소거 상태로 강제 리렌더링
+              src={`https://www.youtube.com/embed/wzfmZRJZUwE?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&playlist=wzfmZRJZUwE&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`}
               title="Background Video"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
               allowFullScreen
               className="absolute inset-0 w-full h-full"
               style={{
@@ -126,8 +149,15 @@ export default function LoginPage() {
               }}
             />
             
+            {/* 클릭 가능한 투명 오버레이 */}
+            <div 
+              className="absolute inset-0 z-5 cursor-pointer"
+              onClick={handleVideoClick}
+              title={isMuted ? "클릭하여 음악 재생" : "음악 재생 중"}
+            ></div>
+            
             {/* 영상 위 오버레이 */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-black/40 z-10"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/10 to-black/30 z-10 pointer-events-none"></div>
             
             {/* 음소거 토글 버튼 */}
             <div className="absolute bottom-6 right-6 z-20">
@@ -252,7 +282,7 @@ export default function LoginPage() {
                 transition={{ duration: 0.8 }}
               >
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent mb-3">
-                  LibraryCompany Analytics
+                  LibraryCompany Dashboard
                 </h1>
                 <div className="h-1 w-32 bg-gradient-to-r from-blue-400/30 via-purple-400/30 to-blue-400/30 rounded-full mx-auto mb-6"></div>
                 <p className="text-gray-300 text-lg">데이터 대시보드에 로그인하세요</p>
@@ -392,4 +422,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-} 
+}
