@@ -5,7 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function Header() {
+interface HeaderProps {
+  onToggleSidebar?: () => void;
+  isSidebarOpen?: boolean;
+}
+
+export default function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -18,32 +23,45 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-gray-100">
-      <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto py-3 sm:py-4 px-3 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          {/* 로고 및 제목 섹션 */}
+          {/* 햄버거 메뉴 + 로고 및 제목 섹션 */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white text-lg font-bold">LC</span>
+            {/* 햄버거 메뉴 버튼 (모바일) */}
+            <button
+              onClick={onToggleSidebar}
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+              aria-label="메뉴 열기"
+            >
+              <div className="w-6 h-6 flex flex-col justify-center items-center">
+                <span className={`bg-gray-600 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isSidebarOpen ? 'rotate-45 translate-y-1' : '-translate-y-0.5'}`}></span>
+                <span className={`bg-gray-600 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+                <span className={`bg-gray-600 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isSidebarOpen ? '-rotate-45 -translate-y-1' : 'translate-y-0.5'}`}></span>
+              </div>
+            </button>
+
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white text-sm sm:text-lg font-bold">LC</span>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">
+            <div className="hidden sm:block">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900">
                 공연 데이터 대시보드
               </h1>
             </div>
           </div>
 
           {/* 우측 액션 버튼 섹션 */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2 sm:space-x-6">
             {/* 관리자 프로필 */}
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center space-x-3 border-l pl-6 border-gray-200 hover:bg-gray-50 rounded-lg p-2 transition-colors duration-200"
+                className="flex items-center space-x-2 sm:space-x-3 sm:border-l sm:pl-6 border-gray-200 hover:bg-gray-50 rounded-lg p-1 sm:p-2 transition-colors duration-200"
               >
-                <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-medium shadow-md">
+                <div className="w-7 h-7 sm:w-9 sm:h-9 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-medium shadow-md">
                   {user?.name?.charAt(0).toUpperCase() || 'U'}
                 </div>
-                <div className="flex flex-col text-left">
+                <div className="hidden sm:flex flex-col text-left">
                   <span className="text-sm font-medium text-gray-700">
                     {user?.name || '사용자'}
                   </span>

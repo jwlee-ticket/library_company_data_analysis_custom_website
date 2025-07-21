@@ -162,7 +162,8 @@ function PlaySalesTable({ performances, playDetails, concertBepData }: PlaySales
 
   return (
     <div className="overflow-hidden">
-      <div className="overflow-x-auto">
+      {/* 데스크톱 테이블 */}
+      <div className="hidden lg:block overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/50">
@@ -194,8 +195,8 @@ function PlaySalesTable({ performances, playDetails, concertBepData }: PlaySales
                         </span>
                         <span className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
                           {performance.name}
-                </span>
-              </div>
+                        </span>
+                      </div>
                     </div>
                   </td>
 
@@ -259,6 +260,86 @@ function PlaySalesTable({ performances, playDetails, concertBepData }: PlaySales
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* 모바일 카드 레이아웃 */}
+      <div className="lg:hidden space-y-4">
+        {sortedPerformances.map((performance, index) => {
+          const rate = Number(performance.achievementRate) || 0;
+          const dates = getPerformanceDates(performance.name, performance.genre);
+
+          return (
+            <motion.div
+              key={`${performance.genre}-${performance.name}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-all duration-200"
+            >
+              {/* 공연 정보 헤더 */}
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className={`px-2 py-1 rounded-lg text-xs font-semibold border ${getGenreColor(performance.genre)}`}>
+                      {performance.genre}
+                    </span>
+                  </div>
+                  <h3 className="font-semibold text-gray-900 text-sm leading-tight">
+                    {performance.name}
+                  </h3>
+                </div>
+                <div className="text-right ml-3">
+                  <div className="text-xl font-bold text-gray-900">
+                    {rate.toFixed(1)}%
+                  </div>
+                  <div className="text-xs text-gray-500">달성률</div>
+                </div>
+              </div>
+
+              {/* 달성률 바 */}
+              <div className="mb-4">
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-1000 ${
+                      rate >= 100 ? 'bg-blue-500' :
+                      rate >= 80 ? 'bg-green-500' :
+                      rate >= 60 ? 'bg-orange-500' :
+                      'bg-red-500'
+                    }`}
+                    style={{ width: `${Math.min(rate, 100)}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* 매출 및 기간 정보 */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <div className="text-gray-500 mb-1">현재 매출</div>
+                  <div className="font-bold text-gray-900">
+                    {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(performance.revenue) || 0)}원
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    목표: {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(performance.target) || 0)}원
+                  </div>
+                </div>
+                <div>
+                  <div className="text-gray-500 mb-1">공연 기간</div>
+                  {dates.startDate ? (
+                    <div className="text-gray-900">
+                      <div className="font-medium">{dates.startDate}</div>
+                      <div className="text-xs text-gray-500">~</div>
+                      <div className="font-medium">{dates.endDate}</div>
+                    </div>
+                  ) : (
+                    <div className="font-medium text-gray-900">
+                      {dates.endDate}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* 테이블 하단 요약 */}
@@ -465,7 +546,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/50">
-      <div className="p-8 max-w-7xl mx-auto space-y-10">
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8 lg:space-y-10">
         {/* 페이지 헤더 */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -475,10 +556,10 @@ export default function DashboardPage() {
         >
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
             <div className="lg:flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-3">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
                 통합 대시보드
               </h1>
-              <p className="text-gray-600 mb-4">
+              <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
                 콘서트 · 연극 · 뮤지컬 실시간 현황 • 최근 업데이트: {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
@@ -509,10 +590,10 @@ export default function DashboardPage() {
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors duration-200 self-start lg:self-auto shadow-sm"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors duration-200 self-start lg:self-auto shadow-sm text-sm"
               >
                 <IoMdRefresh className={`text-lg ${isLoading || apiLoading ? 'animate-spin' : ''}`} />
-                <span className="font-medium text-sm">새로고침</span>
+                <span className="font-medium">새로고침</span>
               </motion.button>
             </div>
           </div>
@@ -557,15 +638,15 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <div className="flex items-center">
-              <div className="w-1 h-7 bg-blue-500 rounded-full mr-4"></div>
-              <h2 className="text-xl font-bold text-gray-900">핵심 성과 지표</h2>
-              <span className="ml-3 px-3 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-full">
+              <div className="w-1 h-6 sm:h-7 bg-blue-500 rounded-full mr-3 sm:mr-4"></div>
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900">핵심 성과 지표</h2>
+              <span className="ml-2 sm:ml-3 px-2 sm:px-3 py-1 bg-blue-50 text-blue-700 text-xs sm:text-sm font-medium rounded-full">
                 콘서트 + 연극 + 뮤지컬
               </span>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-xs sm:text-sm text-gray-500">
               {(Number(dashboardData.totalSummary.achievementRate) || 0) >= 100 ? (
                 <span className="text-green-600 font-semibold">목표 달성</span>
               ) : (Number(dashboardData.totalSummary.achievementRate) || 0) >= 80 ? (
@@ -578,34 +659,34 @@ export default function DashboardPage() {
           
           {/* 통합 매출 요약 카드 */}
           <motion.div 
-            className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-md transition-all duration-300 group"
+            className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-4 sm:p-6 lg:p-8 shadow-sm hover:shadow-md transition-all duration-300 group"
             whileHover={{ y: -2 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {/* 총 매출 */}
-              <div className="text-center md:text-left">
-                <h3 className="text-sm font-medium text-gray-600 mb-2 flex items-center">
+              <div className="text-center sm:text-left">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2 flex items-center justify-center sm:justify-start">
                   총 매출
-                  <span className="ml-2 px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">누적</span>
+                  <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-blue-50 text-blue-600 text-xs rounded-full">누적</span>
                 </h3>
-                <p className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-1">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-1">
                   {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.totalSummary.totalRevenue) || 0)}원
                 </p>
-                <div className="text-sm text-gray-500 mb-2">
+                <div className="text-xs sm:text-sm text-gray-500 mb-1 sm:mb-2">
                   목표: {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.totalSummary.totalTarget) || 0)}원
                 </div>
               </div>
               
               {/* 목표 달성률 */}
-              <div className="text-center md:text-left">
-                <h3 className="text-sm font-medium text-gray-600 mb-2 flex items-center">
+              <div className="text-center sm:text-left">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2 flex items-center justify-center sm:justify-start">
                   목표 달성률
                 </h3>
-                <p className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-2">
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-1 sm:mb-2">
                   {(Number(dashboardData.totalSummary.achievementRate) || 0).toFixed(1)}%
                 </p>
-                <div className="flex items-center text-sm">
+                <div className="flex items-center text-xs sm:text-sm justify-center sm:justify-start">
                   {((Number(dashboardData.totalSummary.achievementRate) || 0) - 100) > 0 ? (
                     <span className="text-blue-600 font-medium">+{Math.abs((Number(dashboardData.totalSummary.achievementRate) || 0) - 100).toFixed(1)}% 초과달성</span>
                   ) : (
@@ -615,27 +696,27 @@ export default function DashboardPage() {
               </div>
               
               {/* 활성 공연 */}
-              <div className="text-center md:text-left">
-                <h3 className="text-sm font-medium text-gray-600 mb-2 flex items-center">
+              <div className="text-center sm:text-left sm:col-span-2 lg:col-span-1">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2 flex items-center justify-center sm:justify-start">
                   활성 공연
-                  <span className="ml-2 px-2 py-1 bg-green-50 text-green-600 text-xs rounded-full">운영중</span>
+                  <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-green-50 text-green-600 text-xs rounded-full">운영중</span>
                 </h3>
-                <p className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-2">
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-1 sm:mb-2">
                   {dashboardData.performanceDetails.length}개
                 </p>
-        </div>
-      </div>
+              </div>
+            </div>
 
             {/* 성과 요약 바 */}
-            <div className="mt-6 pt-6 border-t border-gray-100">
-              <div className="flex items-center justify-between text-sm mb-2">
+            <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-100">
+              <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
                 <span className="text-gray-600">전체 목표 진행률 ({(Number(dashboardData.totalSummary.achievementRate) || 0).toFixed(1)}%)</span>
-                <span className="font-semibold text-gray-900">
-                  {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.totalSummary.totalRevenue) || 0)}원
-                  <span className="text-gray-500 ml-1">/ {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.totalSummary.totalTarget) || 0)}원</span>
+                <span className="font-semibold text-gray-900 text-right">
+                  <span className="block sm:inline">{new Intl.NumberFormat('ko-KR').format(Number(dashboardData.totalSummary.totalRevenue) || 0)}원</span>
+                  <span className="text-gray-500 ml-1 block sm:inline">/ {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.totalSummary.totalTarget) || 0)}원</span>
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+              <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3 overflow-hidden">
                 <div 
                   className={`h-full rounded-full transition-all duration-1000 ${
                     (Number(dashboardData.totalSummary.achievementRate) || 0) >= 100 ? 'bg-gradient-to-r from-blue-500 to-green-500' :
@@ -655,35 +736,35 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <div className="flex items-center">
-              <div className="w-1 h-7 bg-purple-500 rounded-full mr-4"></div>
-              <h2 className="text-xl font-bold text-gray-900">장르별 현황</h2>
+              <div className="w-1 h-6 sm:h-7 bg-purple-500 rounded-full mr-3 sm:mr-4"></div>
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900">장르별 현황</h2>
             </div>
           </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* 콘서트 매출 */}
             <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-              <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-lg transition-all duration-300 h-full">
-                <div className="flex items-center justify-between mb-4">
+              <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
                   <div className="flex items-center">
-                    <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                    <h3 className="font-bold text-gray-900">콘서트</h3>
+                    <div className="w-2.5 sm:w-3 h-2.5 sm:h-3 bg-green-500 rounded-full mr-2"></div>
+                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">콘서트</h3>
                   </div>
                 </div>
                 
-                <div className="mb-4">
-                  <p className="text-2xl font-bold text-gray-900 mb-1">
-                    {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.concert.revenue) || 0)}원
+                <div className="mb-3 sm:mb-4">
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900 mb-1">
+                    {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(dashboardData.genreSummary.concert.revenue) || 0)}원
                   </p>
-                  <p className="text-sm text-gray-500">
-                    목표: {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.concert.target) || 0)}원
+                  <p className="text-xs sm:text-sm text-gray-500">
+                    목표: {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(dashboardData.genreSummary.concert.target) || 0)}원
                   </p>
                 </div>
                 
                 {/* 달성률 바 */}
                 <div className="mb-3">
-                  <div className="flex justify-between text-sm mb-1">
+                  <div className="flex justify-between text-xs sm:text-sm mb-1">
                     <span className="text-gray-600">달성률</span>
                     <span className="font-semibold text-green-600">
                       {((Number(dashboardData.genreSummary.concert.revenue) || 0) / (Number(dashboardData.genreSummary.concert.target) || 1) * 100).toFixed(1)}%
@@ -701,26 +782,26 @@ export default function DashboardPage() {
           
             {/* 연극 매출 */}
             <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-              <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-lg transition-all duration-300 h-full">
-                <div className="flex items-center justify-between mb-4">
+              <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
                   <div className="flex items-center">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                    <h3 className="font-bold text-gray-900">연극</h3>
+                    <div className="w-2.5 sm:w-3 h-2.5 sm:h-3 bg-blue-500 rounded-full mr-2"></div>
+                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">연극</h3>
                   </div>
                 </div>
                 
-                <div className="mb-4">
-                  <p className="text-2xl font-bold text-gray-900 mb-1">
-                    {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.theater.revenue) || 0)}원
+                <div className="mb-3 sm:mb-4">
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900 mb-1">
+                    {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(dashboardData.genreSummary.theater.revenue) || 0)}원
                   </p>
-                  <p className="text-sm text-gray-500">
-                    목표: {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.theater.target) || 0)}원
+                  <p className="text-xs sm:text-sm text-gray-500">
+                    목표: {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(dashboardData.genreSummary.theater.target) || 0)}원
                   </p>
                 </div>
                 
                 {/* 달성률 바 */}
                 <div className="mb-3">
-                  <div className="flex justify-between text-sm mb-1">
+                  <div className="flex justify-between text-xs sm:text-sm mb-1">
                     <span className="text-gray-600">달성률</span>
                     <span className="font-semibold text-blue-600">
                       {((Number(dashboardData.genreSummary.theater.revenue) || 0) / (Number(dashboardData.genreSummary.theater.target) || 1) * 100).toFixed(1)}%
@@ -738,26 +819,26 @@ export default function DashboardPage() {
           
             {/* 뮤지컬 매출 */}
             <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-              <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-lg transition-all duration-300 h-full">
-                <div className="flex items-center justify-between mb-4">
+              <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
                   <div className="flex items-center">
-                    <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
-                    <h3 className="font-bold text-gray-900">뮤지컬</h3>
-        </div>
-      </div>
+                    <div className="w-2.5 sm:w-3 h-2.5 sm:h-3 bg-purple-500 rounded-full mr-2"></div>
+                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">뮤지컬</h3>
+                  </div>
+                </div>
 
-                <div className="mb-4">
-                  <p className="text-2xl font-bold text-gray-900 mb-1">
-                    {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.musical.revenue) || 0)}원
+                <div className="mb-3 sm:mb-4">
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900 mb-1">
+                    {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(dashboardData.genreSummary.musical.revenue) || 0)}원
                   </p>
-                  <p className="text-sm text-gray-500">
-                    목표: {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.musical.target) || 0)}원
+                  <p className="text-xs sm:text-sm text-gray-500">
+                    목표: {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(dashboardData.genreSummary.musical.target) || 0)}원
                   </p>
                 </div>
                 
                 {/* 달성률 바 */}
                 <div className="mb-3">
-                  <div className="flex justify-between text-sm mb-1">
+                  <div className="flex justify-between text-xs sm:text-sm mb-1">
                     <span className="text-gray-600">달성률</span>
                     <span className="font-semibold text-purple-600">
                       {((Number(dashboardData.genreSummary.musical.revenue) || 0) / (Number(dashboardData.genreSummary.musical.target) || 1) * 100).toFixed(1)}%
@@ -781,26 +862,26 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
-              <div className="w-1 h-7 bg-green-500 rounded-full mr-4"></div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6">
+            <div className="flex items-center mb-2 sm:mb-0">
+              <div className="w-1 h-6 sm:h-7 bg-green-500 rounded-full mr-3 sm:mr-4"></div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">공연별 요약</h2>
-                <p className="text-sm text-gray-600 mt-1">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">공연별 요약</h2>
+                <p className="text-xs sm:text-sm text-gray-600 mt-1">
                   종료일 기준 정렬 • 실제 공연 일정 연동
                 </p>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-500 mb-1">총 {dashboardData.performanceDetails.length}개 공연</div>
-              <div className="flex items-center space-x-4">
+            <div className="text-left sm:text-right">
+              <div className="text-xs sm:text-sm text-gray-500 mb-1">총 {dashboardData.performanceDetails.length}개 공연</div>
+              <div className="flex items-center space-x-2 sm:space-x-4">
                 {dashboardData.performanceDetails.filter(p => (Number(p.achievementRate) || 0) >= 100).length > 0 && (
-                  <span className="text-blue-600 font-semibold text-sm">{dashboardData.performanceDetails.filter(p => (Number(p.achievementRate) || 0) >= 100).length}개 목표달성</span>
+                  <span className="text-blue-600 font-semibold text-xs sm:text-sm">{dashboardData.performanceDetails.filter(p => (Number(p.achievementRate) || 0) >= 100).length}개 목표달성</span>
                 )}
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+          <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
             {dashboardData.performanceDetails.length > 0 ? (
               <PlaySalesTable 
                 performances={dashboardData.performanceDetails} 
@@ -808,19 +889,19 @@ export default function DashboardPage() {
                 concertBepData={concertBepData}
               />
             ) : (
-              <div className="p-12 text-center">
-                <div className="text-gray-400 text-6xl mb-4">📊</div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">
+              <div className="p-8 sm:p-12 text-center">
+                <div className="text-gray-400 text-4xl sm:text-6xl mb-3 sm:mb-4">📊</div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2">
                   공연별 매출 데이터가 없습니다
                 </h3>
-                <p className="text-gray-500 mb-6">
+                <p className="text-sm sm:text-base text-gray-500 mb-4 sm:mb-6">
                   데이터를 확인하거나 새로고침을 시도해보세요
                 </p>
                 <motion.button
                   onClick={refetch}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 font-medium"
+                  className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 font-medium text-sm sm:text-base"
                 >
                   데이터 새로고침
                 </motion.button>
