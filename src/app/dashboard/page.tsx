@@ -755,10 +755,10 @@ export default function DashboardPage() {
                 
                 <div className="mb-3 sm:mb-4">
                   <p className="text-lg sm:text-2xl font-bold text-gray-900 mb-1">
-                    {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(dashboardData.genreSummary.concert.revenue) || 0)}원
+                    {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.concert.revenue) || 0)}원
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500">
-                    목표: {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(dashboardData.genreSummary.concert.target) || 0)}원
+                    목표: {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.concert.target) || 0)}원
                   </p>
                 </div>
                 
@@ -792,10 +792,10 @@ export default function DashboardPage() {
                 
                 <div className="mb-3 sm:mb-4">
                   <p className="text-lg sm:text-2xl font-bold text-gray-900 mb-1">
-                    {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(dashboardData.genreSummary.theater.revenue) || 0)}원
+                    {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.theater.revenue) || 0)}원
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500">
-                    목표: {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(dashboardData.genreSummary.theater.target) || 0)}원
+                    목표: {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.theater.target) || 0)}원
                   </p>
                 </div>
                 
@@ -829,10 +829,10 @@ export default function DashboardPage() {
 
                 <div className="mb-3 sm:mb-4">
                   <p className="text-lg sm:text-2xl font-bold text-gray-900 mb-1">
-                    {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(dashboardData.genreSummary.musical.revenue) || 0)}원
+                    {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.musical.revenue) || 0)}원
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500">
-                    목표: {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(dashboardData.genreSummary.musical.target) || 0)}원
+                    목표: {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.genreSummary.musical.target) || 0)}원
                   </p>
                 </div>
                 
