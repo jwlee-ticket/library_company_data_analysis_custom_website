@@ -191,7 +191,7 @@ export default function LoginPage() {
             >
               {/* 메인 타이틀 */}
               <div className="relative mb-4">
-                <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
                   LibraryCompany<br />Dashboard
                 </h1>
                 <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 blur-xl opacity-60"></div>
@@ -211,55 +211,14 @@ export default function LoginPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.7 }}
               >
-                <p className="text-xl text-gray-200 leading-relaxed font-light">
+                <p className="text-lg text-gray-200 leading-relaxed font-light">
                   공연의 모든 순간을<br />
                   <span className="text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text font-semibold">데이터로 만나보세요</span>
                 </p>
               </motion.div>
             </motion.div>
 
-            {/* 하단 영역 - 특징 리스트 */}
-            <motion.div 
-              className="w-full mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 1 }}
-            >
-              <div className="space-y-4 text-gray-300">
-                <motion.div 
-                  className="flex items-center space-x-4 group"
-                  whileHover={{ x: 10, transition: { duration: 0.2 } }}
-                >
-                  <div className="relative">
-                    <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg"></div>
-                    <div className="absolute inset-0 w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-ping opacity-30"></div>
-                  </div>
-                  <span className="text-base group-hover:text-white transition-colors">통합 데이터 대시보드</span>
-                </motion.div>
-                
-                <motion.div 
-                  className="flex items-center space-x-4 group"
-                  whileHover={{ x: 10, transition: { duration: 0.2 } }}
-                >
-                  <div className="relative">
-                    <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full shadow-lg"></div>
-                    <div className="absolute inset-0 w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-ping opacity-30"></div>
-                  </div>
-                  <span className="text-base group-hover:text-white transition-colors">콘서트, 연극, 뮤지컬 상세 데이터 대시보드</span>
-                </motion.div>
-                
-                <motion.div 
-                  className="flex items-center space-x-4 group"
-                  whileHover={{ x: 10, transition: { duration: 0.2 } }}
-                >
-                  <div className="relative">
-                    <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg"></div>
-                    <div className="absolute inset-0 w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-ping opacity-30"></div>
-                  </div>
-                  <span className="text-base group-hover:text-white transition-colors">AI SQL Assistant 제공</span>
-                </motion.div>
-              </div>
-            </motion.div>
+
           </div>
         </div>
 
