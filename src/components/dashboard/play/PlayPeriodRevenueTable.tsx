@@ -12,24 +12,35 @@ interface PlayPeriodRevenueTableProps {
 export default function PlayPeriodRevenueTable({ data }: PlayPeriodRevenueTableProps) {
   if (!data || data.length === 0) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="bg-white rounded-xl shadow-lg p-6 border border-gray-100"
-      >
-        <div className="text-center py-8">
-          <p className="text-gray-500">월별 매출 상세 데이터가 없습니다.</p>
+      <div className="w-full h-[300px] flex items-center justify-center text-gray-500">
+        <div className="text-center">
+          <div className="text-4xl mb-4">📋</div>
+          <p className="text-lg font-medium mb-2">월별 매출 데이터가 없습니다</p>
+          <p className="text-sm">데이터를 불러올 수 없습니다.</p>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
-  // 데이터를 날짜순으로 정렬 (최신순)
+  // 안전한 숫자 변환 함수
+  const toSafeNumber = (value: any): number => {
+    if (typeof value === 'number' && isFinite(value) && value >= 0) {
+      return Math.min(value, 1000000000000); // 1조원 이하로 제한
+    }
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value);
+      if (isFinite(parsed) && parsed >= 0) {
+        return Math.min(parsed, 1000000000000);
+      }
+    }
+    return 0;
+  };
+
+  // 데이터를 날짜순으로 정렬 (과거 → 현재)
   const sortedData = [...data].sort((a, b) => {
     const dateA = new Date((a.month_str || '') + '-01');
     const dateB = new Date((b.month_str || '') + '-01');
-    return dateB.getTime() - dateA.getTime();
+    return dateA.getTime() - dateB.getTime();
   });
 
   // 변화율에 따른 아이콘과 색상 반환
@@ -75,11 +86,22 @@ export default function PlayPeriodRevenueTable({ data }: PlayPeriodRevenueTableP
     type: typeof item.total_revenue
   })));
 
+  // 안전한 매출 데이터 변환
   const validRevenueData: number[] = sortedData
-    .map(item => item.total_revenue)
-    .filter((revenue): revenue is number => 
-      revenue !== null && revenue !== undefined && typeof revenue === 'number' && !isNaN(revenue) && revenue >= 0
-    );
+    .map(item => {
+      const revenue = item.total_revenue;
+      if (typeof revenue === 'number' && isFinite(revenue) && revenue >= 0) {
+        return Math.min(revenue, 1000000000000); // 1조원 이하로 제한
+      }
+      if (typeof revenue === 'string') {
+        const parsed = parseFloat(revenue);
+        if (isFinite(parsed) && parsed >= 0) {
+          return Math.min(parsed, 1000000000000);
+        }
+      }
+      return 0;
+    })
+    .filter(revenue => revenue > 0); // 0보다 큰 값만 유효
 
   console.log('📋 유효한 매출 데이터:', validRevenueData);
 
@@ -173,10 +195,10 @@ export default function PlayPeriodRevenueTable({ data }: PlayPeriodRevenueTableP
                     {year}년 {month}월
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 font-semibold">
-                    {formatCurrency(item.total_revenue || 0)}
+                    {formatCurrency(toSafeNumber(item.total_revenue))}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                    {item.absolute_change ? formatCurrency(item.absolute_change) : '-'}
+                    {item.absolute_change ? formatCurrency(toSafeNumber(item.absolute_change)) : '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <div className={`flex items-center justify-center space-x-1 ${changeIndicator.color}`}>

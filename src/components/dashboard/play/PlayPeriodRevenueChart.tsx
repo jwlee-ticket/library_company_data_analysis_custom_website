@@ -34,6 +34,20 @@ interface PlayPeriodRevenueChartProps {
 }
 
 export default function PlayPeriodRevenueChart({ data }: PlayPeriodRevenueChartProps) {
+  // 안전한 숫자 변환 함수
+  const toSafeNumber = (value: any): number => {
+    if (typeof value === 'number' && isFinite(value) && value >= 0) {
+      return Math.min(value, 1000000000000); // 1조원 이하로 제한
+    }
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value);
+      if (isFinite(parsed) && parsed >= 0) {
+        return Math.min(parsed, 1000000000000);
+      }
+    }
+    return 0;
+  };
+
   if (!data || data.length === 0) {
     return (
       <div className="w-full h-[400px] flex items-center justify-center text-gray-500">
@@ -61,12 +75,12 @@ export default function PlayPeriodRevenueChart({ data }: PlayPeriodRevenueChartP
     datasets: [
       {
         label: '월별 매출',
-        data: sortedData.map(item => item.total_revenue || 0),
+        data: sortedData.map(item => toSafeNumber(item.total_revenue)),
         backgroundColor: sortedData.map(item => {
           const change = item.percentage_change || 0;
-          if (change > 0) return 'rgba(34, 197, 94, 0.5)'; // 증가: 초록색
-          if (change < 0) return 'rgba(239, 68, 68, 0.5)'; // 감소: 빨간색
-          return 'rgba(59, 130, 246, 0.5)'; // 동일/첫 월: 파란색
+          if (change > 0) return 'rgba(34, 197, 94, 0.6)'; // 증가: 초록색
+          if (change < 0) return 'rgba(239, 68, 68, 0.6)'; // 감소: 빨간색
+          return 'rgba(59, 130, 246, 0.6)'; // 동일/첫 월: 파란색
         }),
         borderColor: sortedData.map(item => {
           const change = item.percentage_change || 0;
@@ -75,8 +89,9 @@ export default function PlayPeriodRevenueChart({ data }: PlayPeriodRevenueChartP
           return 'rgb(59, 130, 246)';
         }),
         borderWidth: 2,
-        borderRadius: 6,
+        borderRadius: 8,
         borderSkipped: false,
+        maxBarThickness: 60, // 막대 최대 넓이 제한
       },
     ],
   };
@@ -89,20 +104,22 @@ export default function PlayPeriodRevenueChart({ data }: PlayPeriodRevenueChartP
         display: true,
         text: '연극 & 뮤지컬 월별 매출 추이',
         font: {
-          size: 16,
+          size: 18,
           weight: 'bold' as const,
         },
-        color: '#374151',
+        color: '#1f2937',
+        padding: 20,
       },
       legend: {
         display: false,
       },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: 'rgba(17, 24, 39, 0.95)',
         titleColor: '#ffffff',
         bodyColor: '#ffffff',
         borderColor: '#374151',
         borderWidth: 1,
+        cornerRadius: 8,
         callbacks: {
           label: function(context: any) {
             const dataIndex = context.dataIndex;
@@ -128,21 +145,31 @@ export default function PlayPeriodRevenueChart({ data }: PlayPeriodRevenueChartP
       },
       datalabels: {
         display: true,
-        color: '#ffffff',
+        color: '#1f2937',
         font: {
           weight: 'bold' as const,
-          size: 11,
+          size: 12,
         },
         anchor: 'end' as const,
         align: 'top' as const,
-        offset: 4,
+        offset: 8,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderColor: '#e5e7eb',
+        borderWidth: 1,
+        borderRadius: 6,
+        padding: {
+          top: 4,
+          bottom: 4,
+          left: 8,
+          right: 8,
+        },
         formatter: (value: number) => {
           if (value >= 100000000) {
-            return `${(value / 100000000).toFixed(1)}억`;
+            return `${(value / 100000000).toFixed(1)}억원`;
           } else if (value >= 10000) {
-            return `${(value / 10000).toFixed(0)}만`;
+            return `${(value / 10000).toFixed(0)}만원`;
           } else {
-            return value.toLocaleString();
+            return value.toLocaleString() + '원';
           }
         },
       }
@@ -154,7 +181,7 @@ export default function PlayPeriodRevenueChart({ data }: PlayPeriodRevenueChartP
           text: '기간',
           color: '#6b7280',
           font: {
-            size: 12,
+            size: 14,
             weight: 'bold' as const,
           },
         },
@@ -164,9 +191,11 @@ export default function PlayPeriodRevenueChart({ data }: PlayPeriodRevenueChartP
         ticks: {
           color: '#6b7280',
           font: {
-            size: 11,
+            size: 12,
           },
         },
+        categoryPercentage: 0.7, // 카테고리 너비 비율 (전체 공간의 70%)
+        barPercentage: 0.8, // 막대 너비 비율 (카테고리의 80%)
       },
       y: {
         title: {
@@ -174,7 +203,7 @@ export default function PlayPeriodRevenueChart({ data }: PlayPeriodRevenueChartP
           text: '매출 (원)',
           color: '#6b7280',
           font: {
-            size: 12,
+            size: 14,
             weight: 'bold' as const,
           },
         },
@@ -184,7 +213,7 @@ export default function PlayPeriodRevenueChart({ data }: PlayPeriodRevenueChartP
         ticks: {
           color: '#6b7280',
           font: {
-            size: 11,
+            size: 12,
           },
           callback: function(value: any) {
             return formatCurrency(value);
@@ -202,11 +231,10 @@ export default function PlayPeriodRevenueChart({ data }: PlayPeriodRevenueChartP
     type: typeof item.total_revenue
   })));
 
+  // 안전한 매출 데이터 변환
   const validRevenueData: number[] = sortedData
-    .map(item => item.total_revenue)
-    .filter((revenue): revenue is number => 
-      revenue !== null && revenue !== undefined && typeof revenue === 'number' && !isNaN(revenue) && revenue >= 0
-    );
+    .map(item => toSafeNumber(item.total_revenue))
+    .filter(revenue => revenue > 0); // 0보다 큰 값만 유효
 
   console.log('📊 유효한 매출 데이터:', validRevenueData);
 
@@ -242,9 +270,11 @@ export default function PlayPeriodRevenueChart({ data }: PlayPeriodRevenueChartP
         </div>
       </div>
 
-      {/* 차트 */}
-      <div className="h-[400px]">
-        <Bar data={chartData} options={options} />
+      {/* 차트 - 최대 너비 제한 */}
+      <div className="w-full max-w-5xl mx-auto h-[450px] overflow-x-auto">
+        <div className="min-w-[600px] h-full">
+          <Bar data={chartData} options={options} />
+        </div>
       </div>
     </motion.div>
   );

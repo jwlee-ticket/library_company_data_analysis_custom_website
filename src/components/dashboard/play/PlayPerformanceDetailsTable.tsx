@@ -85,52 +85,52 @@ export default function PlayPerformanceDetailsTable({ data }: PlayPerformanceDet
           <table className="w-full">
             <thead>
               <tr className="bg-blue-50/50">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-blue-700">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-blue-700 whitespace-nowrap">
                   구분
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700 whitespace-nowrap">
                   오늘 매출
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700 whitespace-nowrap">
                   오늘 목표
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700 whitespace-nowrap">
                   오늘 달성률
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700 whitespace-nowrap">
                   총 매출
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700 whitespace-nowrap">
                   총 목표
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-blue-700 whitespace-nowrap">
                   총 달성률
                 </th>
               </tr>
             </thead>
             <tbody>
               <tr className="hover:bg-blue-50/30 transition-colors duration-200">
-                <td className="px-6 py-4 text-sm font-bold text-blue-900">
+                <td className="px-6 py-4 text-sm font-bold text-blue-900 whitespace-nowrap">
                   통합 총계
                 </td>
-                <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
+                <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right whitespace-nowrap">
                   {grandTotals.todaySales.toLocaleString()}원
                 </td>
-                <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right">
+                <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right whitespace-nowrap">
                   {grandTotals.todayTargetSales.toLocaleString()}원
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 text-right whitespace-nowrap">
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getAchievementColor(calculateAchievementRate(grandTotals.todaySales, grandTotals.todayTargetSales))}`}>
                     {calculateAchievementRate(grandTotals.todaySales, grandTotals.todayTargetSales).toFixed(1)}%
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
+                <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right whitespace-nowrap">
                   {grandTotals.totalSales.toLocaleString()}원
                 </td>
-                <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right">
+                <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right whitespace-nowrap">
                   {grandTotals.totalTargetSales.toLocaleString()}원
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 text-right whitespace-nowrap">
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getAchievementColor(calculateAchievementRate(grandTotals.totalSales, grandTotals.totalTargetSales))}`}>
                     {calculateAchievementRate(grandTotals.totalSales, grandTotals.totalTargetSales).toFixed(1)}%
                   </span>
@@ -162,25 +162,25 @@ export default function PlayPerformanceDetailsTable({ data }: PlayPerformanceDet
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50/30">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 whitespace-nowrap">
                   카테고리
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
                   오늘 매출
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
                   오늘 목표
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
                   오늘 달성률
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
                   총 매출
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
                   총 목표
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
                   총 달성률
                 </th>
               </tr>
@@ -192,29 +192,29 @@ export default function PlayPerformanceDetailsTable({ data }: PlayPerformanceDet
                 transition={{ duration: 0.4, delay: 0.2 }}
                 className="hover:bg-purple-50/30 transition-colors duration-200"
               >
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 whitespace-nowrap">
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-purple-100 text-purple-800 border border-purple-200">
                     연극
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
+                <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right whitespace-nowrap">
                   {theaterTotals.todaySales.toLocaleString()}원
                 </td>
-                <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right">
+                <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right whitespace-nowrap">
                   {theaterTotals.todayTargetSales.toLocaleString()}원
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 text-right whitespace-nowrap">
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getAchievementColor(calculateAchievementRate(theaterTotals.todaySales, theaterTotals.todayTargetSales))}`}>
                     {calculateAchievementRate(theaterTotals.todaySales, theaterTotals.todayTargetSales).toFixed(1)}%
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
+                <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right whitespace-nowrap">
                   {theaterTotals.totalSales.toLocaleString()}원
                 </td>
-                <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right">
+                <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right whitespace-nowrap">
                   {theaterTotals.totalTargetSales.toLocaleString()}원
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 text-right whitespace-nowrap">
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getAchievementColor(calculateAchievementRate(theaterTotals.totalSales, theaterTotals.totalTargetSales))}`}>
                     {calculateAchievementRate(theaterTotals.totalSales, theaterTotals.totalTargetSales).toFixed(1)}%
                   </span>
@@ -226,29 +226,29 @@ export default function PlayPerformanceDetailsTable({ data }: PlayPerformanceDet
                 transition={{ duration: 0.4, delay: 0.3 }}
                 className="hover:bg-pink-50/30 transition-colors duration-200"
               >
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 whitespace-nowrap">
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-pink-100 text-pink-800 border border-pink-200">
                     뮤지컬
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
+                <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right whitespace-nowrap">
                   {musicalTotals.todaySales.toLocaleString()}원
                 </td>
-                <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right">
+                <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right whitespace-nowrap">
                   {musicalTotals.todayTargetSales.toLocaleString()}원
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 text-right whitespace-nowrap">
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getAchievementColor(calculateAchievementRate(musicalTotals.todaySales, musicalTotals.todayTargetSales))}`}>
                     {calculateAchievementRate(musicalTotals.todaySales, musicalTotals.todayTargetSales).toFixed(1)}%
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
+                <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right whitespace-nowrap">
                   {musicalTotals.totalSales.toLocaleString()}원
                 </td>
-                <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right">
+                <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right whitespace-nowrap">
                   {musicalTotals.totalTargetSales.toLocaleString()}원
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 text-right whitespace-nowrap">
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getAchievementColor(calculateAchievementRate(musicalTotals.totalSales, musicalTotals.totalTargetSales))}`}>
                     {calculateAchievementRate(musicalTotals.totalSales, musicalTotals.totalTargetSales).toFixed(1)}%
                   </span>
@@ -280,28 +280,28 @@ export default function PlayPerformanceDetailsTable({ data }: PlayPerformanceDet
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50/30">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 whitespace-nowrap">
                   카테고리
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
                   공연명
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
                   오늘 매출
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
                   오늘 목표
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
                   오늘 달성률
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
                   총 매출
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
                   총 목표
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
                   총 달성률
                 </th>
               </tr>
@@ -315,7 +315,7 @@ export default function PlayPerformanceDetailsTable({ data }: PlayPerformanceDet
                   transition={{ duration: 0.4, delay: 0.3 + (index * 0.05) }}
                   className="hover:bg-gray-50/50 transition-all duration-200 group"
                 >
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                       item.category === '연극' 
                         ? 'bg-purple-100 text-purple-800 border border-purple-200' 
@@ -327,24 +327,24 @@ export default function PlayPerformanceDetailsTable({ data }: PlayPerformanceDet
                   <td className="px-6 py-4 text-sm font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors duration-200">
                     {item.performanceName}
                   </td>
-                  <td className="px-6 py-4 text-sm font-semibold text-gray-900 text-right">
+                  <td className="px-6 py-4 text-sm font-semibold text-gray-900 text-right whitespace-nowrap">
                     {item.todaySales.toLocaleString()}원
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right whitespace-nowrap">
                     {item.todayTargetSales.toLocaleString()}원
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right whitespace-nowrap">
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${getAchievementColor(item.todayAchievementRate)}`}>
                       {item.todayAchievementRate.toFixed(1)}%
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm font-semibold text-gray-900 text-right">
+                  <td className="px-6 py-4 text-sm font-semibold text-gray-900 text-right whitespace-nowrap">
                     {item.totalSales.toLocaleString()}원
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-700 text-right whitespace-nowrap">
                     {item.totalTargetSales.toLocaleString()}원
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right whitespace-nowrap">
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${getAchievementColor(item.totalAchievementRate)}`}>
                       {item.totalAchievementRate.toFixed(1)}%
                     </span>

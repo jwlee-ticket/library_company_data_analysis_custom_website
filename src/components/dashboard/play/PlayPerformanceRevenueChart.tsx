@@ -44,6 +44,21 @@ const PERFORMANCE_COLORS = [
 ];
 
 export default function PlayPerformanceRevenueChart({ data }: PlayPerformanceRevenueChartProps) {
+  // 안전한 숫자 변환 함수
+  const toSafeNumber = (value: any): number => {
+    if (typeof value === 'number' && isFinite(value) && value >= 0) {
+      // 1조원 이하로 제한 (1,000,000,000,000)
+      return Math.min(value, 1000000000000);
+    }
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value);
+      if (isFinite(parsed) && parsed >= 0) {
+        return Math.min(parsed, 1000000000000);
+      }
+    }
+    return 0;
+  };
+
   if (!data || data.length === 0) {
     return (
       <div className="w-full h-[500px] flex items-center justify-center text-gray-500">
@@ -77,12 +92,13 @@ export default function PlayPerformanceRevenueChart({ data }: PlayPerformanceRev
         label: performanceName,
         data: months.map(month => {
           const monthData = performanceData.find(item => item.month === month);
-          return monthData?.total_revenue || 0;
+          return toSafeNumber(monthData?.total_revenue);
         }),
         backgroundColor: PERFORMANCE_COLORS[index % PERFORMANCE_COLORS.length],
         borderColor: PERFORMANCE_COLORS[index % PERFORMANCE_COLORS.length].replace('0.7)', '1)'),
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 6,
+        maxBarThickness: 50, // 막대 최대 넓이 제한
       };
     }),
   };
@@ -95,30 +111,34 @@ export default function PlayPerformanceRevenueChart({ data }: PlayPerformanceRev
         display: true,
         text: '공연별 월별 매출 현황',
         font: {
-          size: 16,
+          size: 18,
           weight: 'bold' as const,
         },
-        color: '#374151',
+        color: '#1f2937',
+        padding: 20,
       },
       legend: {
         display: true,
         position: 'top' as const,
         labels: {
-          boxWidth: 12,
-          boxHeight: 12,
+          boxWidth: 14,
+          boxHeight: 14,
           font: {
             size: 12,
+            weight: 'bold' as const,
           },
-          color: '#6b7280',
+          color: '#374151',
           padding: 15,
+          usePointStyle: true,
         },
       },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: 'rgba(17, 24, 39, 0.95)',
         titleColor: '#ffffff',
         bodyColor: '#ffffff',
         borderColor: '#374151',
         borderWidth: 1,
+        cornerRadius: 8,
         callbacks: {
           label: function(context: any) {
             const performanceName = context.dataset.label;
@@ -154,15 +174,25 @@ export default function PlayPerformanceRevenueChart({ data }: PlayPerformanceRev
             return false;
           }
           const value = context.parsed.y;
-          return value > 1000000; // 100만원 이상만 표시
+          return value > 5000000; // 500만원 이상만 표시
         },
-        color: '#ffffff',
+        color: '#1f2937',
         font: {
           weight: 'bold' as const,
           size: 10,
         },
         anchor: 'center' as const,
         align: 'center' as const,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderColor: '#e5e7eb',
+        borderWidth: 1,
+        borderRadius: 4,
+        padding: {
+          top: 2,
+          bottom: 2,
+          left: 4,
+          right: 4,
+        },
         formatter: (value: number) => {
           if (value >= 100000000) {
             return `${(value / 100000000).toFixed(0)}억`;
@@ -183,7 +213,7 @@ export default function PlayPerformanceRevenueChart({ data }: PlayPerformanceRev
           text: '기간',
           color: '#6b7280',
           font: {
-            size: 12,
+            size: 14,
             weight: 'bold' as const,
           },
         },
@@ -194,9 +224,11 @@ export default function PlayPerformanceRevenueChart({ data }: PlayPerformanceRev
         ticks: {
           color: '#6b7280',
           font: {
-            size: 11,
+            size: 12,
           },
         },
+        categoryPercentage: 0.7, // 카테고리 너비 비율
+        barPercentage: 0.9, // 막대 너비 비율
       },
       y: {
         title: {
@@ -204,7 +236,7 @@ export default function PlayPerformanceRevenueChart({ data }: PlayPerformanceRev
           text: '매출 (원)',
           color: '#6b7280',
           font: {
-            size: 12,
+            size: 14,
             weight: 'bold' as const,
           },
         },
@@ -215,7 +247,7 @@ export default function PlayPerformanceRevenueChart({ data }: PlayPerformanceRev
         ticks: {
           color: '#6b7280',
           font: {
-            size: 11,
+            size: 12,
           },
           callback: function(value: any) {
             return formatCurrency(value);
@@ -225,15 +257,34 @@ export default function PlayPerformanceRevenueChart({ data }: PlayPerformanceRev
     },
   };
 
-  // 통계 계산
+  // 통계 계산 - 안전한 데이터 처리
+  console.log('🎭 공연별 원본 데이터:', data.slice(0, 3)); // 처음 3개만 로깅
+  
   const performanceStats = performances.map(performanceName => {
     const performanceData = data.filter(item => item.performance_name === performanceName);
-    const totalRevenue = performanceData.reduce((sum, item) => sum + (item.total_revenue || 0), 0);
+    
+    // 안전한 매출 계산
+    const revenues = performanceData.map(item => {
+      const revenue = toSafeNumber(item.total_revenue);
+      if (revenue > 100000000000) { // 1000억 이상이면 로깅
+        console.warn('⚠️ 비정상적으로 큰 매출 데이터:', {
+          performance: performanceName,
+          month: item.month,
+          revenue: item.total_revenue,
+          converted: revenue
+        });
+      }
+      return revenue;
+    });
+    
+    const totalRevenue = revenues.reduce((sum, revenue) => sum + revenue, 0);
+    const validCount = revenues.filter(r => r > 0).length;
+    
     return {
       name: performanceName,
       total: totalRevenue,
       count: performanceData.length,
-      average: totalRevenue / performanceData.length
+      average: validCount > 0 ? totalRevenue / validCount : 0
     };
   }).sort((a, b) => b.total - a.total);
 
@@ -249,23 +300,25 @@ export default function PlayPerformanceRevenueChart({ data }: PlayPerformanceRev
         <h3 className="text-lg font-semibold text-gray-800 mb-4">공연별 매출 순위</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {performanceStats.slice(0, 6).map((stat, index) => (
-            <div key={stat.name} className="p-3 bg-gray-50 rounded-lg">
+            <div key={stat.name} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
               <div className="flex items-center gap-2 mb-1">
                 <div 
-                  className="w-3 h-3 rounded"
+                  className="w-3 h-3 rounded-full shadow-sm"
                   style={{ backgroundColor: PERFORMANCE_COLORS[performances.indexOf(stat.name) % PERFORMANCE_COLORS.length] }}
                 />
                 <span className="text-sm font-medium text-gray-700 truncate">{stat.name}</span>
               </div>
-              <p className="text-xs text-gray-500">{formatCurrency(stat.total)}</p>
+              <p className="text-xs text-gray-500 font-medium">{formatCurrency(stat.total)}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* 차트 */}
-      <div className="h-[400px]">
-        <Bar data={chartData} options={options} />
+      {/* 차트 - 최대 너비 제한 */}
+      <div className="w-full max-w-6xl mx-auto h-[450px] overflow-x-auto">
+        <div className="min-w-[700px] h-full">
+          <Bar data={chartData} options={options} />
+        </div>
       </div>
     </motion.div>
   );
