@@ -231,7 +231,7 @@ export default function LoginPage() {
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full max-w-md relative z-10"
+            className="w-full max-w-md relative z-10 mt-64"
           >
             {/* 모바일에서만 보이는 로고 */}
             <div className="lg:hidden text-center mb-10">
@@ -252,17 +252,14 @@ export default function LoginPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
               className="relative"
             >
-              {/* 폼 배경 글로우 효과 */}
-              <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-blue-600/20 rounded-3xl blur-2xl"></div>
-              
-              <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-8">
-                <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-8">
+                <form onSubmit={handleSubmit} className="space-y-8">
                   {/* 아이디 입력 */}
                   <div>
-                    <label htmlFor="userId" className="block text-sm font-medium text-gray-200 mb-3">
+                    <label htmlFor="userId" className="block text-sm font-medium text-gray-200 mb-4">
                       사용자 ID
                     </label>
                     <div className="relative">
@@ -273,17 +270,16 @@ export default function LoginPage() {
                         required
                         value={formData.userId}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300 text-white placeholder-gray-300 hover:bg-white/15"
+                        className="w-full px-0 py-3 bg-transparent border-0 border-b-2 border-white/30 focus:border-purple-400 focus:outline-none transition-all duration-300 text-white placeholder-gray-400 text-lg"
                         placeholder="아이디를 입력하세요"
                         disabled={isLoading}
                       />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/0 via-purple-500/0 to-blue-500/0 hover:from-blue-500/5 hover:via-purple-500/5 hover:to-blue-500/5 transition-all duration-300 pointer-events-none"></div>
                     </div>
                   </div>
 
                   {/* 비밀번호 입력 */}
                   <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-3">
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-4">
                       비밀번호
                     </label>
                     <div className="relative">
@@ -294,11 +290,10 @@ export default function LoginPage() {
                         required
                         value={formData.password}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300 text-white placeholder-gray-300 hover:bg-white/15"
+                        className="w-full px-0 py-3 bg-transparent border-0 border-b-2 border-white/30 focus:border-purple-400 focus:outline-none transition-all duration-300 text-white placeholder-gray-400 text-lg"
                         placeholder="비밀번호를 입력하세요"
                         disabled={isLoading}
                       />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/0 via-purple-500/0 to-blue-500/0 hover:from-blue-500/5 hover:via-purple-500/5 hover:to-blue-500/5 transition-all duration-300 pointer-events-none"></div>
                     </div>
                   </div>
 
@@ -310,12 +305,11 @@ export default function LoginPage() {
                       transition={{ duration: 0.3 }}
                       className="relative"
                     >
-                      <div className="absolute -inset-2 bg-gradient-to-r from-red-600/20 to-red-600/20 rounded-xl blur-lg"></div>
-                      <div className="relative bg-red-500/10 backdrop-blur-sm border border-red-400/30 rounded-xl p-4">
+                      <div className="bg-red-500/10 backdrop-blur-sm border-l-4 border-red-400 rounded p-4">
                         <div className="flex items-center space-x-3">
                           <div className="flex-shrink-0">
-                            <div className="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center">
-                              <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="w-6 h-6 bg-red-500/20 rounded-full flex items-center justify-center">
+                              <svg className="w-3 h-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                               </svg>
                             </div>
@@ -334,7 +328,7 @@ export default function LoginPage() {
                     disabled={isLoading || !formData.userId || !formData.password}
                     whileHover={{ scale: isLoading ? 1 : 1.02 }}
                     whileTap={{ scale: isLoading ? 1 : 0.98 }}
-                    className="relative w-full py-4 px-4 rounded-xl font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-2xl overflow-hidden group"
+                    className="relative w-full py-4 px-4 rounded-xl font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-2xl overflow-hidden group mt-8"
                   >
                     {/* 버튼 배경 그라데이션 */}
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 group-hover:from-blue-500 group-hover:via-purple-500 group-hover:to-blue-500 transition-all duration-300"></div>
@@ -357,7 +351,7 @@ export default function LoginPage() {
                 </form>
                 
                 {/* 담당자 정보 */}
-                <div className="mt-6 pt-4 border-t border-white/10">
+                <div className="pt-6 border-t border-white/10">
                   <p className="text-xs text-gray-500 text-center">
                     담당자: <span className="text-gray-400 font-medium">플랫폼팀 이진욱</span>
                   </p>
