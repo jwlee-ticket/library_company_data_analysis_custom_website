@@ -130,7 +130,7 @@ export default function LoginPage() {
 
       <div className="relative z-10 flex min-h-screen">
         {/* 왼쪽 영상/브랜딩 영역 */}
-        <div className="hidden lg:flex lg:w-[60%] relative overflow-hidden">
+        <div className="hidden lg:flex lg:w-[70%] relative overflow-hidden">
           {/* 유튜브 영상 배경 */}
           <div className="absolute inset-0">
             <iframe
@@ -190,8 +190,8 @@ export default function LoginPage() {
               className="w-full"
             >
               {/* 메인 타이틀 */}
-              <div className="relative mb-4">
-                <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
+              <div className="relative mb-3">
+                <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
                   LibraryCompany<br />Dashboard
                 </h1>
                 <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 blur-xl opacity-60"></div>
@@ -199,9 +199,9 @@ export default function LoginPage() {
               
               {/* 장식적 라인 */}
               <motion.div 
-                className="h-1 w-32 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-full mb-4 shadow-lg"
+                className="h-1 w-24 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-full mb-3 shadow-lg"
                 initial={{ width: 0 }}
-                animate={{ width: 128 }}
+                animate={{ width: 96 }}
                 transition={{ duration: 1.5, delay: 0.5 }}
               ></motion.div>
               
@@ -211,7 +211,7 @@ export default function LoginPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.7 }}
               >
-                <p className="text-lg text-gray-200 leading-relaxed font-light">
+                <p className="text-base text-gray-200 leading-relaxed font-light">
                   공연의 모든 순간을<br />
                   <span className="text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text font-semibold">데이터로 만나보세요</span>
                 </p>
@@ -223,7 +223,7 @@ export default function LoginPage() {
         </div>
 
         {/* 오른쪽 로그인 폼 영역 */}
-        <div className="w-full lg:w-[40%] flex items-center justify-center p-8 relative">
+        <div className="w-full lg:w-[30%] flex items-center justify-center p-8 relative">
           {/* 폼 영역 배경 효과 */}
           <div className="absolute inset-0 bg-gradient-to-l from-black/50 via-black/30 to-transparent lg:from-black/70 lg:via-black/50"></div>
           
@@ -231,7 +231,7 @@ export default function LoginPage() {
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full max-w-md relative z-10 mt-64"
+            className="w-full max-w-md relative z-10 mt-92"
           >
             {/* 모바일에서만 보이는 로고 */}
             <div className="lg:hidden text-center mb-10">
@@ -255,11 +255,11 @@ export default function LoginPage() {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="relative"
             >
-              <div className="space-y-8">
-                <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   {/* 아이디 입력 */}
                   <div>
-                    <label htmlFor="userId" className="block text-sm font-medium text-gray-200 mb-4">
+                    <label htmlFor="userId" className="block text-sm font-medium text-gray-200 mb-3">
                       사용자 ID
                     </label>
                     <div className="relative">
@@ -270,7 +270,7 @@ export default function LoginPage() {
                         required
                         value={formData.userId}
                         onChange={handleInputChange}
-                        className="w-full px-0 py-3 bg-transparent border-0 border-b-2 border-white/30 focus:border-purple-400 focus:outline-none transition-all duration-300 text-white placeholder-gray-400 text-lg"
+                        className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-white/30 focus:border-purple-400 focus:outline-none transition-all duration-300 text-white placeholder-gray-400 text-base"
                         placeholder="아이디를 입력하세요"
                         disabled={isLoading}
                       />
@@ -279,7 +279,7 @@ export default function LoginPage() {
 
                   {/* 비밀번호 입력 */}
                   <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-4">
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-3">
                       비밀번호
                     </label>
                     <div className="relative">
@@ -290,7 +290,7 @@ export default function LoginPage() {
                         required
                         value={formData.password}
                         onChange={handleInputChange}
-                        className="w-full px-0 py-3 bg-transparent border-0 border-b-2 border-white/30 focus:border-purple-400 focus:outline-none transition-all duration-300 text-white placeholder-gray-400 text-lg"
+                        className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-white/30 focus:border-purple-400 focus:outline-none transition-all duration-300 text-white placeholder-gray-400 text-base"
                         placeholder="비밀번호를 입력하세요"
                         disabled={isLoading}
                       />
@@ -305,10 +305,10 @@ export default function LoginPage() {
                       transition={{ duration: 0.3 }}
                       className="relative"
                     >
-                      <div className="bg-red-500/10 backdrop-blur-sm border-l-4 border-red-400 rounded p-4">
+                      <div className="bg-red-500/10 backdrop-blur-sm border-l-4 border-red-400 rounded p-3">
                         <div className="flex items-center space-x-3">
                           <div className="flex-shrink-0">
-                            <div className="w-6 h-6 bg-red-500/20 rounded-full flex items-center justify-center">
+                            <div className="w-5 h-5 bg-red-500/20 rounded-full flex items-center justify-center">
                               <svg className="w-3 h-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                               </svg>
@@ -326,32 +326,92 @@ export default function LoginPage() {
                   <motion.button
                     type="submit"
                     disabled={isLoading || !formData.userId || !formData.password}
-                    whileHover={{ scale: isLoading ? 1 : 1.02 }}
-                    whileTap={{ scale: isLoading ? 1 : 0.98 }}
-                    className="relative w-full py-4 px-4 rounded-xl font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-2xl overflow-hidden group mt-8"
+                    whileHover={{ 
+                      scale: isLoading ? 1 : 1.05,
+                      y: isLoading ? 0 : -2,
+                      transition: { duration: 0.2 }
+                    }}
+                    whileTap={{ scale: isLoading ? 1 : 0.95 }}
+                    className="relative w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center overflow-hidden group mt-6"
+                    style={{
+                      filter: isLoading || !formData.userId || !formData.password ? 'none' : 'drop-shadow(0 0 20px rgba(139, 92, 246, 0.3))'
+                    }}
                   >
-                    {/* 버튼 배경 그라데이션 */}
+                    {/* 메인 배경 그라데이션 */}
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 group-hover:from-blue-500 group-hover:via-purple-500 group-hover:to-blue-500 transition-all duration-300"></div>
                     
-                    {/* 버튼 글로우 효과 */}
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                    {/* 애니메이션 배경 오버레이 */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
+                    
+                    {/* 글로우 효과 - 활성화 시 강화 */}
+                    <div className={`absolute -inset-2 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 rounded-xl blur transition-all duration-300 ${
+                      isLoading || !formData.userId || !formData.password 
+                        ? 'opacity-0' 
+                        : 'opacity-30 group-hover:opacity-60 group-hover:blur-lg'
+                    }`}></div>
+                    
+                    {/* 펄스 링 효과 */}
+                    <div className={`absolute inset-0 rounded-xl border-2 border-purple-400 transition-all duration-300 ${
+                      isLoading || !formData.userId || !formData.password 
+                        ? 'opacity-0 scale-100' 
+                        : 'opacity-0 group-hover:opacity-100 group-hover:scale-110 group-hover:border-purple-300'
+                    }`}></div>
+                    
+                    {/* 파티클 효과 배경 */}
+                    <div className="absolute inset-0 overflow-hidden rounded-xl">
+                      <div className={`absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full transition-all duration-300 ${
+                        isLoading || !formData.userId || !formData.password 
+                          ? 'opacity-0' 
+                          : 'opacity-0 group-hover:opacity-60 group-hover:animate-ping'
+                      }`} style={{ animationDelay: '0s' }}></div>
+                      <div className={`absolute top-3/4 right-1/4 w-1 h-1 bg-blue-200 rounded-full transition-all duration-300 ${
+                        isLoading || !formData.userId || !formData.password 
+                          ? 'opacity-0' 
+                          : 'opacity-0 group-hover:opacity-40 group-hover:animate-ping'
+                      }`} style={{ animationDelay: '0.2s' }}></div>
+                      <div className={`absolute top-1/2 right-3/4 w-1.5 h-1.5 bg-purple-200 rounded-full transition-all duration-300 ${
+                        isLoading || !formData.userId || !formData.password 
+                          ? 'opacity-0' 
+                          : 'opacity-0 group-hover:opacity-50 group-hover:animate-ping'
+                      }`} style={{ animationDelay: '0.4s' }}></div>
+                    </div>
                     
                     {/* 버튼 내용 */}
-                    <div className="relative flex items-center justify-center">
+                    <div className="relative flex items-center justify-center z-10">
                       {isLoading ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
-                          로그인 중...
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                          <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent animate-pulse text-base">
+                            로그인 중...
+                          </span>
                         </>
                       ) : (
-                        '로그인'
+                        <motion.span 
+                          className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent font-bold text-base tracking-wide"
+                          whileHover={{ 
+                            backgroundImage: "linear-gradient(45deg, #ffffff, #a78bfa, #ffffff, #60a5fa, #ffffff)",
+                            transition: { duration: 0.3 }
+                          }}
+                        >
+                          로그인
+                        </motion.span>
                       )}
                     </div>
+                    
+                    {/* 클릭 시 리플 효과 */}
+                    <motion.div
+                      className="absolute inset-0 bg-white/20 rounded-xl opacity-0"
+                      whileTap={{
+                        opacity: [0, 0.3, 0],
+                        scale: [1, 1.05, 1],
+                        transition: { duration: 0.3 }
+                      }}
+                    />
                   </motion.button>
                 </form>
                 
                 {/* 담당자 정보 */}
-                <div className="pt-6 border-t border-white/10">
+                <div className="pt-4 border-t border-white/10">
                   <p className="text-xs text-gray-500 text-center">
                     담당자: <span className="text-gray-400 font-medium">플랫폼팀 이진욱</span>
                   </p>
