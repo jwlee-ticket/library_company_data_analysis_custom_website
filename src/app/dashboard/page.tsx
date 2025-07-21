@@ -26,6 +26,24 @@ interface ConcertDaily {
   dailySalesAmount: number;
 }
 
+interface ConcertBepData {
+  liveId: string;
+  liveName: string;
+  latestRecordDate: string;
+  salesStartDate: string; // 판매 시작일
+  salesEndDate: string; // 판매 종료일
+  seatClass: string;
+  seatOrder: number;
+  totalSeats: number;
+  soldSeats: number;
+  remainingSeats: number;
+  estAdditionalSales: string | number;
+  estFinalRemaining: string | number;
+  bepSeats: string;
+  estSalesRatio: string;
+  bepRatio: number;
+}
+
 interface PlayDailyDetails {
   id: number;
   liveId: string;
@@ -55,6 +73,12 @@ const fetchConcertDaily = async (): Promise<ConcertDaily[]> => {
   return response.json();
 };
 
+const fetchConcertBepData = async (): Promise<ConcertBepData[]> => {
+  const response = await fetch('http://localhost:3001/concert/bep');
+  if (!response.ok) throw new Error('Concert bep data fetch failed');
+  return response.json();
+};
+
 const fetchPlayDailyDetails = async (): Promise<PlayDailyDetails[]> => {
   const response = await fetch('/api/play/daily-details');
   if (!response.ok) throw new Error('Play daily details fetch failed');
@@ -72,9 +96,10 @@ interface PlaySalesTableProps {
     endDate?: string;
   }>;
   playDetails?: PlayDailyDetails[];
+  concertBepData?: ConcertBepData[];
 }
 
-function PlaySalesTable({ performances, playDetails }: PlaySalesTableProps) {
+function PlaySalesTable({ performances, playDetails, concertBepData }: PlaySalesTableProps) {
   const getGenreColor = (genre: string) => {
     switch (genre) {
       case '연극': return 'bg-blue-50 text-blue-700 border-blue-100';
@@ -85,15 +110,43 @@ function PlaySalesTable({ performances, playDetails }: PlaySalesTableProps) {
   };
 
   // playDetails에서 실제 시작일/종료일 매칭
-  const getPerformanceDates = (performanceName: string) => {
-    const matchedDetail = playDetails?.find(detail => 
-      detail.liveName.includes(performanceName) || performanceName.includes(detail.liveName)
-    );
-    
-    return {
-      startDate: matchedDetail?.start_date ? new Date(matchedDetail.start_date).toLocaleDateString('ko-KR') : '미정',
-      endDate: matchedDetail?.end_date ? new Date(matchedDetail.end_date).toLocaleDateString('ko-KR') : '미정'
-    };
+  const getPerformanceDates = (performanceName: string, genre: string) => {
+    if (genre === '콘서트') {
+      // 콘서트의 경우 BEP 데이터에서 정보 가져오기
+      const matchedBepData = concertBepData?.find(bep => 
+        bep.liveName.includes(performanceName) || performanceName.includes(bep.liveName)
+      );
+      
+      if (matchedBepData) {
+        const salesEndDate = matchedBepData.salesEndDate ? new Date(matchedBepData.salesEndDate).toLocaleDateString('ko-KR') : '미정';
+        
+        return {
+          startDate: null, // 콘서트는 시작일 표시 안함
+          endDate: salesEndDate, // 판매 종료일만 표시
+          ticketSaleEndDate: null // 별도 판매 종료일 표시 안함
+        };
+      }
+      
+      return {
+        startDate: null,
+        endDate: '미정',
+        ticketSaleEndDate: null
+      };
+    } else {
+      // 연극/뮤지컬의 경우 기존 로직 사용
+      const matchedDetail = playDetails?.find(detail => 
+        detail.liveName.includes(performanceName) || performanceName.includes(detail.liveName)
+      );
+      
+      const startDate = matchedDetail?.start_date ? new Date(matchedDetail.start_date).toLocaleDateString('ko-KR') : '미정';
+      const endDate = matchedDetail?.end_date ? new Date(matchedDetail.end_date).toLocaleDateString('ko-KR') : '미정';
+      
+      return {
+        startDate,
+        endDate,
+        ticketSaleEndDate: null // 연극/뮤지컬은 판매 종료일 별도 표시 안함
+      };
+    }
   };
 
   // 종료일 기준으로 정렬 (최신 종료일이 상단에)
@@ -122,7 +175,7 @@ function PlaySalesTable({ performances, playDetails }: PlaySalesTableProps) {
           <tbody>
             {sortedPerformances.map((performance, index) => {
               const rate = Number(performance.achievementRate) || 0;
-              const dates = getPerformanceDates(performance.name);
+              const dates = getPerformanceDates(performance.name, performance.genre);
 
               return (
                 <motion.tr
@@ -149,13 +202,23 @@ function PlaySalesTable({ performances, playDetails }: PlaySalesTableProps) {
                   {/* 공연 기간 */}
                   <td className="p-5 text-center">
                     <div className="space-y-1">
-                      <div className="text-sm font-medium text-gray-900">
-                        {dates.startDate}
-                      </div>
-                      <div className="text-xs text-gray-500">~</div>
-                      <div className="text-sm font-medium text-gray-900">
-                        {dates.endDate}
-                      </div>
+                      {dates.startDate ? (
+                        // 연극/뮤지컬: 시작일 ~ 종료일
+                        <>
+                          <div className="text-sm font-medium text-gray-900">
+                            {dates.startDate}
+                          </div>
+                          <div className="text-xs text-gray-500">~</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {dates.endDate}
+                          </div>
+                        </>
+                      ) : (
+                        // 콘서트: 판매 종료일만
+                        <div className="text-sm font-medium text-gray-900">
+                          {dates.endDate}
+                        </div>
+                      )}
                     </div>
                   </td>
 
@@ -271,6 +334,7 @@ export default function DashboardPage() {
   // Concert API 데이터 상태
   const [concertOverview, setConcertOverview] = useState<ConcertOverview | null>(null);
   const [concertDaily, setConcertDaily] = useState<ConcertDaily[]>([]);
+  const [concertBepData, setConcertBepData] = useState<ConcertBepData[]>([]);
   const [playDetails, setPlayDetails] = useState<PlayDailyDetails[]>([]);
   const [apiLoading, setApiLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -282,13 +346,17 @@ export default function DashboardPage() {
       setApiError(null);
       
       try {
-        const [overviewData, dailyData, detailsData] = await Promise.all([
+        const [overviewData, dailyData, bepData, detailsData] = await Promise.all([
           fetchConcertOverview().catch(err => {
             console.warn('Concert overview API failed:', err);
             return null;
           }),
           fetchConcertDaily().catch(err => {
             console.warn('Concert daily API failed:', err);
+            return [];
+          }),
+          fetchConcertBepData().catch(err => {
+            console.warn('Concert bep data API failed:', err);
             return [];
           }),
           fetchPlayDailyDetails().catch(err => {
@@ -299,6 +367,7 @@ export default function DashboardPage() {
 
         setConcertOverview(overviewData);
         setConcertDaily(dailyData);
+        setConcertBepData(bepData);
         setPlayDetails(detailsData);
       } catch (error) {
         console.error('API loading failed:', error);
@@ -422,13 +491,15 @@ export default function DashboardPage() {
                   const loadApiData = async () => {
                     setApiLoading(true);
                     try {
-                      const [overviewData, dailyData, detailsData] = await Promise.all([
+                      const [overviewData, dailyData, bepData, detailsData] = await Promise.all([
                         fetchConcertOverview().catch(() => null),
                         fetchConcertDaily().catch(() => []),
+                        fetchConcertBepData().catch(() => []),
                         fetchPlayDailyDetails().catch(() => [])
                       ]);
                       setConcertOverview(overviewData);
                       setConcertDaily(dailyData);
+                      setConcertBepData(bepData);
                       setPlayDetails(detailsData);
                     } finally {
                       setApiLoading(false);
@@ -734,6 +805,7 @@ export default function DashboardPage() {
               <PlaySalesTable 
                 performances={dashboardData.performanceDetails} 
                 playDetails={playDetails}
+                concertBepData={concertBepData}
               />
             ) : (
               <div className="p-12 text-center">
