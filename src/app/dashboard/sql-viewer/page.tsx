@@ -689,17 +689,17 @@ export default function SqlViewerPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/50">
-      <div className="p-8 max-w-7xl mx-auto space-y-8">
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
         {/* 페이지 헤더 */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
             SQL Viewer
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Library DB 쿼리 실행 및 결과 조회
           </p>
         </motion.div>
@@ -709,15 +709,15 @@ export default function SqlViewerPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm"
+          className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-4">기본 조회 예제</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">기본 조회 예제</h2>
           <div className="flex flex-wrap gap-2">
             {BASIC_EXAMPLE_QUERIES.map((example, index) => (
               <div key={index} className="group relative">
                 <button
                   onClick={() => setExampleQuery(example.query)}
-                  className="px-3 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200"
+                  className="px-3 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200 text-sm"
                 >
                   {example.name}
                 </button>
@@ -734,16 +734,16 @@ export default function SqlViewerPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm"
+          className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm"
         >
-          <div className="flex items-center gap-2 mb-4">
-            <h2 className="text-xl font-bold text-gray-900">SQL 쿼리 입력</h2>
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">SQL 쿼리 입력</h2>
             <div className="group relative">
               <button className="w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs flex items-center justify-center hover:bg-gray-300 transition-colors">
                 ?
               </button>
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-80 p-4 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-20 pointer-events-none">
-                <div className="space-y-3">
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-72 sm:w-80 p-3 sm:p-4 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-20 pointer-events-none">
+                <div className="space-y-2 sm:space-y-3">
                   <div>
                     <div className="font-semibold text-yellow-300 mb-1">허용되는 쿼리</div>
                     <div>• SELECT 문만 허용</div>
@@ -818,7 +818,7 @@ export default function SqlViewerPage() {
                     }
                   }}
                   placeholder="SELECT * FROM user_model LIMIT 10;"
-                  className="w-full h-48 p-4 border border-gray-300 rounded-lg font-mono text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full h-32 sm:h-48 p-3 sm:p-4 border border-gray-300 rounded-lg font-mono text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 
                 {/* 자동완성 드롭다운 */}
@@ -827,7 +827,7 @@ export default function SqlViewerPage() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute top-full left-4 right-4 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto"
+                    className="absolute top-full left-3 sm:left-4 right-3 sm:right-4 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto"
                   >
                     {suggestions.map((suggestion, index) => (
                       <button
@@ -860,18 +860,18 @@ export default function SqlViewerPage() {
               )}
             </div>
             
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={executeQuery}
                 disabled={isLoading}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium"
+                className="px-4 sm:px-6 py-2 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium text-sm sm:text-base"
               >
                 {isLoading ? '실행 중...' : '쿼리 실행'}
               </button>
               <button
                 onClick={clearQuery}
                 disabled={isLoading}
-                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200 font-medium"
+                className="px-4 sm:px-6 py-2 sm:py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200 font-medium text-sm sm:text-base"
               >
                 초기화
               </button>
@@ -884,9 +884,9 @@ export default function SqlViewerPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-red-50 border border-red-200 rounded-lg p-4"
+            className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4"
           >
-            <p className="text-red-700 font-medium">{error}</p>
+            <p className="text-red-700 font-medium text-sm sm:text-base">{error}</p>
           </motion.div>
         )}
 
@@ -896,14 +896,14 @@ export default function SqlViewerPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.25 }}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
           >
-            <div className="p-6 border-b border-gray-100">
-              <div className="flex justify-between items-start">
+            <div className="p-4 sm:p-6 border-b border-gray-100">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">쿼리 결과</h2>
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">쿼리 결과</h2>
                   {executionInfo && (
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-xs sm:text-sm text-gray-600 mt-1">
                       {executionInfo.rowCount}개의 레코드 조회됨 • 실행 시간: {executionInfo.executionTime}ms
                     </p>
                   )}
@@ -911,7 +911,7 @@ export default function SqlViewerPage() {
                 {results.length > 0 && (
                   <button
                     onClick={downloadExcel}
-                    className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors font-medium"
+                    className="px-3 sm:px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors font-medium self-start"
                   >
                     CSV 다운로드
                   </button>
@@ -919,7 +919,8 @@ export default function SqlViewerPage() {
               </div>
             </div>
             
-            <div className="overflow-x-auto">
+            {/* 데스크톱 테이블 */}
+            <div className="hidden lg:block overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
@@ -948,6 +949,49 @@ export default function SqlViewerPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* 모바일 카드 레이아웃 */}
+            <div className="lg:hidden">
+              {results.length > 0 && (
+                <div className="p-4 space-y-4 max-h-96 overflow-y-auto">
+                  {results.map((row, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                    >
+                      <div className="text-xs text-gray-500 mb-2">Record #{index + 1}</div>
+                      <div className="space-y-2">
+                        {Object.entries(row).map(([key, value], cellIndex) => (
+                          <div key={cellIndex} className="flex flex-col sm:flex-row sm:justify-between">
+                            <div className="text-sm font-medium text-gray-700 mb-1 sm:mb-0 sm:w-1/3">
+                              {key}
+                            </div>
+                            <div className="text-sm text-gray-900 sm:w-2/3 font-mono break-words">
+                              {typeof value === 'object' && value !== null
+                                ? JSON.stringify(value)
+                                : typeof value === 'number' && value > 1000 
+                                  ? new Intl.NumberFormat('ko-KR').format(value)
+                                  : String(value)
+                              }
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  ))}
+                  
+                  {/* 더 많은 데이터가 있는 경우 안내 */}
+                  {results.length >= 10 && (
+                    <div className="text-center py-4 text-sm text-gray-500">
+                      처음 {results.length}개 레코드만 표시됩니다. 전체 결과를 보려면 CSV를 다운로드하세요.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </motion.section>
         )}
 
@@ -956,10 +1000,10 @@ export default function SqlViewerPage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="bg-white rounded-2xl border border-gray-100 p-12 shadow-sm text-center"
+            className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-8 sm:p-12 shadow-sm text-center"
           >
-            <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p className="text-gray-600">쿼리를 실행하고 있습니다...</p>
+            <div className="animate-spin w-6 sm:w-8 h-6 sm:h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-3 sm:mb-4"></div>
+            <p className="text-sm sm:text-base text-gray-600">쿼리를 실행하고 있습니다...</p>
           </motion.div>
         )}
 
@@ -968,11 +1012,11 @@ export default function SqlViewerPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.25 }}
-          className="flex flex-wrap gap-4"
+          className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4"
         >
           <button
             onClick={() => setShowSchemaBrowser(!showSchemaBrowser)}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+            className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base ${
               showSchemaBrowser 
                 ? 'bg-blue-600 text-white shadow-sm' 
                 : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
@@ -983,7 +1027,7 @@ export default function SqlViewerPage() {
           
           <button
             onClick={() => setShowRelationships(!showRelationships)}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+            className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base ${
               showRelationships 
                 ? 'bg-green-600 text-white shadow-sm' 
                 : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
@@ -992,14 +1036,14 @@ export default function SqlViewerPage() {
             테이블 관계 보기
           </button>
           
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {schema.length > 0 && (
-              <span className="px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm">
+              <span className="px-2 sm:px-3 py-1 sm:py-2 bg-blue-50 text-blue-700 rounded-lg text-xs sm:text-sm">
                 {schema.length}개 테이블
               </span>
             )}
             {relationships.length > 0 && (
-              <span className="px-3 py-2 bg-green-50 text-green-700 rounded-lg text-sm">
+              <span className="px-2 sm:px-3 py-1 sm:py-2 bg-green-50 text-green-700 rounded-lg text-xs sm:text-sm">
                 {relationships.length}개 관계
               </span>
             )}
@@ -1014,31 +1058,31 @@ export default function SqlViewerPage() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+              className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
             >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-900">데이터베이스 스키마</h2>
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-3">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">데이터베이스 스키마</h2>
                   <button
                     onClick={loadSchema}
                     disabled={loadingSchema}
-                    className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50"
+                    className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50 self-start sm:self-auto"
                   >
                     {loadingSchema ? '새로고침 중...' : '새로고침'}
                   </button>
                 </div>
 
                 {loadingSchema ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
-                    <p className="text-gray-600">스키마 정보를 불러오는 중...</p>
+                  <div className="text-center py-6 sm:py-8">
+                    <div className="animate-spin w-5 sm:w-6 h-5 sm:h-6 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+                    <p className="text-sm sm:text-base text-gray-600">스키마 정보를 불러오는 중...</p>
                   </div>
                 ) : (
-                  <div className="flex gap-6">
+                  <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
                     {/* 테이블 목록 */}
                     <div className="flex-1">
-                      <h3 className="font-medium text-gray-900 mb-3">테이블 목록</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto">
+                      <h3 className="font-medium text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">테이블 목록</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 max-h-80 sm:max-h-96 overflow-y-auto">
                         {schema.map(table => (
                           <div
                             key={table.tableName}
@@ -1073,26 +1117,26 @@ export default function SqlViewerPage() {
 
                     {/* 테이블 상세 정보 */}
                     {selectedTable && (
-                      <div className="flex-1 border-l border-gray-200 pl-6">
-                        <h3 className="font-medium text-gray-900 mb-3">{selectedTable} 상세</h3>
+                      <div className="flex-1 lg:border-l border-gray-200 lg:pl-6 mt-4 lg:mt-0">
+                        <h3 className="font-medium text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">{selectedTable} 상세</h3>
                         
                         {loadingTableDetail ? (
-                          <div className="text-center py-8">
-                            <div className="animate-spin w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
-                            <p className="text-gray-600 text-sm">테이블 정보 로드 중...</p>
+                          <div className="text-center py-6 sm:py-8">
+                            <div className="animate-spin w-4 sm:w-5 h-4 sm:h-5 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+                            <p className="text-gray-600 text-xs sm:text-sm">테이블 정보 로드 중...</p>
                           </div>
                         ) : tableDetail ? (
-                          <div className="space-y-4">
+                          <div className="space-y-3 sm:space-y-4">
                             {/* 컬럼 정보 */}
                             <div>
-                              <h4 className="font-medium text-gray-800 mb-2">컬럼 정보</h4>
-                              <div className="max-h-60 overflow-y-auto">
+                              <h4 className="font-medium text-gray-800 mb-2 text-sm">컬럼 정보</h4>
+                              <div className="max-h-48 sm:max-h-60 overflow-y-auto">
                                 <table className="w-full text-xs">
                                   <thead className="bg-gray-50 sticky top-0">
                                     <tr>
-                                      <th className="text-left p-2 font-medium">컬럼명</th>
-                                      <th className="text-left p-2 font-medium">타입</th>
-                                      <th className="text-left p-2 font-medium">NULL</th>
+                                      <th className="text-left p-1.5 sm:p-2 font-medium">컬럼명</th>
+                                      <th className="text-left p-1.5 sm:p-2 font-medium">타입</th>
+                                      <th className="text-left p-1.5 sm:p-2 font-medium">NULL</th>
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -1102,10 +1146,10 @@ export default function SqlViewerPage() {
                                       );
                                       return (
                                         <tr key={column.column_name} className="border-t border-gray-100">
-                                          <td className="p-2">
+                                          <td className="p-1.5 sm:p-2">
                                             <div className="flex items-center gap-1">
-                                              {getColumnTypeIcon(column.data_type)}
-                                              <span className="font-mono">{column.column_name}</span>
+                                              <span className="text-xs">{getColumnTypeIcon(column.data_type)}</span>
+                                              <span className="font-mono text-xs break-all">{column.column_name}</span>
                                               {constraint?.constraint_type === 'PRIMARY KEY' && (
                                                 <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">PK</span>
                                               )}
@@ -1114,8 +1158,8 @@ export default function SqlViewerPage() {
                                               )}
                                             </div>
                                           </td>
-                                          <td className="p-2 text-gray-600">{column.data_type}</td>
-                                          <td className="p-2">{column.is_nullable === 'YES' ? 'Y' : 'N'}</td>
+                                          <td className="p-1.5 sm:p-2 text-gray-600 text-xs break-all">{column.data_type}</td>
+                                          <td className="p-1.5 sm:p-2 text-xs">{column.is_nullable === 'YES' ? 'Y' : 'N'}</td>
                                         </tr>
                                       );
                                     })}
@@ -1127,13 +1171,13 @@ export default function SqlViewerPage() {
                             {/* 제약조건 정보 */}
                             {tableDetail.constraints.length > 0 && (
                               <div>
-                                <h4 className="font-medium text-gray-800 mb-2">제약조건</h4>
+                                <h4 className="font-medium text-gray-800 mb-2 text-sm">제약조건</h4>
                                 <div className="space-y-1">
                                   {tableDetail.constraints.map(constraint => (
                                     <div key={constraint.constraint_name} className="text-xs p-2 bg-gray-50 rounded">
                                       <span className="font-medium">{constraint.constraint_type}</span>: {constraint.column_name}
                                       {constraint.foreign_table_name && (
-                                        <span className="text-blue-600">
+                                        <span className="text-blue-600 block sm:inline">
                                           → {constraint.foreign_table_name}.{constraint.foreign_column_name}
                                         </span>
                                       )}
@@ -1161,31 +1205,31 @@ export default function SqlViewerPage() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+              className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
             >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-900">테이블 관계도</h2>
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-3">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">테이블 관계도</h2>
                   <button
                     onClick={loadRelationships}
                     disabled={loadingRelationships}
-                    className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50"
+                    className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50 self-start sm:self-auto"
                   >
                     {loadingRelationships ? '새로고침 중...' : '새로고침'}
                   </button>
                 </div>
 
                 {loadingRelationships ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full mx-auto mb-2"></div>
-                    <p className="text-gray-600">관계 정보를 불러오는 중...</p>
+                  <div className="text-center py-6 sm:py-8">
+                    <div className="animate-spin w-5 sm:w-6 h-5 sm:h-6 border-2 border-green-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+                    <p className="text-sm sm:text-base text-gray-600">관계 정보를 불러오는 중...</p>
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                     {/* 관계 요약 */}
-                    <div className="bg-green-50 rounded-lg p-4">
-                      <h3 className="font-medium text-green-900 mb-2">관계 요약</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="bg-green-50 rounded-lg p-3 sm:p-4">
+                      <h3 className="font-medium text-green-900 mb-2 text-sm sm:text-base">관계 요약</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-sm">
                         <div>
                           <span className="text-green-700 font-medium">총 테이블:</span>
                           <span className="ml-2">{schema.length}개</span>
@@ -1206,21 +1250,22 @@ export default function SqlViewerPage() {
                     {/* 관계 목록 */}
                     {relationships.length > 0 ? (
                       <div>
-                        <h3 className="font-medium text-gray-900 mb-3">Foreign Key 관계</h3>
-                        <div className="space-y-2 max-h-64 overflow-y-auto">
+                        <h3 className="font-medium text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Foreign Key 관계</h3>
+                        <div className="space-y-2 max-h-48 sm:max-h-64 overflow-y-auto">
                           {relationships.map((rel, index) => (
-                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                              <div className="flex items-center gap-3">
+                            <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-gray-50 rounded-lg gap-3">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                                 <div className="text-sm">
-                                  <span className="font-mono font-medium text-blue-600">{rel.source_table}</span>
+                                  <span className="font-mono font-medium text-blue-600 break-all">{rel.source_table}</span>
                                   <span className="text-gray-500 mx-1">.</span>
-                                  <span className="font-mono text-blue-800">{rel.source_column}</span>
+                                  <span className="font-mono text-blue-800 break-all">{rel.source_column}</span>
                                 </div>
-                                <div className="text-gray-400">→</div>
+                                <div className="text-gray-400 hidden sm:block">→</div>
+                                <div className="text-gray-400 block sm:hidden">↓</div>
                                 <div className="text-sm">
-                                  <span className="font-mono font-medium text-green-600">{rel.target_table}</span>
+                                  <span className="font-mono font-medium text-green-600 break-all">{rel.target_table}</span>
                                   <span className="text-gray-500 mx-1">.</span>
-                                  <span className="font-mono text-green-800">{rel.target_column}</span>
+                                  <span className="font-mono text-green-800 break-all">{rel.target_column}</span>
                                 </div>
                               </div>
                               <button
@@ -1231,7 +1276,7 @@ JOIN ${rel.target_table} t ON s."${rel.source_column}" = t."${rel.target_column}
 LIMIT 10;`;
                                   setSqlQuery(joinQuery);
                                 }}
-                                className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                                className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors self-start sm:self-auto"
                               >
                                 JOIN 쿼리 생성
                               </button>
@@ -1240,17 +1285,17 @@ LIMIT 10;`;
                         </div>
                       </div>
                     ) : (
-                      <div className="text-center py-8 text-gray-500">
-                        <p>Foreign Key 관계가 발견되지 않았습니다.</p>
-                        <p className="text-sm mt-1">테이블 간 명시적인 관계가 정의되지 않았을 수 있습니다.</p>
+                      <div className="text-center py-6 sm:py-8 text-gray-500">
+                        <p className="text-sm sm:text-base">Foreign Key 관계가 발견되지 않았습니다.</p>
+                        <p className="text-xs sm:text-sm mt-1">테이블 간 명시적인 관계가 정의되지 않았을 수 있습니다.</p>
                       </div>
                     )}
 
                     {/* 관계 기반 쿼리 제안 */}
                     {relationships.length > 0 && (
                       <div>
-                        <h3 className="font-medium text-gray-900 mb-3">관계 기반 쿼리 제안</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <h3 className="font-medium text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">관계 기반 쿼리 제안</h3>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                           <button
                             onClick={() => {
                               const complexJoinQuery = relationships.slice(0, 2).reduce((query, rel, index) => {
@@ -1304,7 +1349,7 @@ LIMIT 10;`;
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+          className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
         >
           <ApiDataViewer responses={apiResponses} />
         </motion.section>
