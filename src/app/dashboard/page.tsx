@@ -112,50 +112,84 @@ function PlaySalesTable({ performances, playDetails, concertBepData }: PlaySales
   // playDetails에서 실제 시작일/종료일 매칭
   const getPerformanceDates = (performanceName: string, genre: string) => {
     if (genre === '콘서트') {
-      // 콘서트의 경우 BEP 데이터에서 정보 가져오기
+      // 콘서트의 경우 BEP 데이터에서 판매 기간 정보 가져오기
       const matchedBepData = concertBepData?.find(bep => 
         bep.liveName.includes(performanceName) || performanceName.includes(bep.liveName)
       );
       
       if (matchedBepData) {
-        const salesEndDate = matchedBepData.salesEndDate ? new Date(matchedBepData.salesEndDate).toLocaleDateString('ko-KR') : '미정';
+        const salesStartDate = matchedBepData.salesStartDate ? new Date(matchedBepData.salesStartDate).toLocaleDateString('ko-KR') : null;
+        const salesEndDate = matchedBepData.salesEndDate ? new Date(matchedBepData.salesEndDate).toLocaleDateString('ko-KR') : null;
+        
+        // 판매 시작일이 없으면 종료일 기준으로 추정
+        let estimatedStartDate = salesStartDate;
+        if (!salesStartDate && salesEndDate) {
+          const endDate = new Date(matchedBepData.salesEndDate!);
+          const estimatedStart = new Date(endDate);
+          estimatedStart.setDate(estimatedStart.getDate() - 90); // 90일 전으로 추정
+          estimatedStartDate = estimatedStart.toLocaleDateString('ko-KR');
+        }
         
         return {
-          startDate: null, // 콘서트는 시작일 표시 안함
-          endDate: salesEndDate, // 판매 종료일만 표시
-          ticketSaleEndDate: null // 별도 판매 종료일 표시 안함
+          startDate: estimatedStartDate || '미정',
+          endDate: salesEndDate || '미정',
+          ticketSaleEndDate: null
         };
       }
       
       return {
-        startDate: null,
+        startDate: '미정',
         endDate: '미정',
         ticketSaleEndDate: null
       };
     } else {
-      // 연극/뮤지컬의 경우 기존 로직 사용
+      // 연극/뮤지컬의 경우 - 판매 기간 정보 추정
       const matchedDetail = playDetails?.find(detail => 
         detail.liveName.includes(performanceName) || performanceName.includes(detail.liveName)
       );
       
-      const startDate = matchedDetail?.start_date ? new Date(matchedDetail.start_date).toLocaleDateString('ko-KR') : '미정';
-      const endDate = matchedDetail?.end_date ? new Date(matchedDetail.end_date).toLocaleDateString('ko-KR') : '미정';
+      if (matchedDetail) {
+        // 공연 시작일 기준으로 판매 기간 추정
+        const performanceStartDate = matchedDetail.start_date ? new Date(matchedDetail.start_date) : null;
+        
+        let salesStartDate = '미정';
+        let salesEndDate = '미정';
+        
+        if (performanceStartDate) {
+          // 판매 시작일: 공연 시작 60일 전으로 추정
+          const estimatedSalesStart = new Date(performanceStartDate);
+          estimatedSalesStart.setDate(estimatedSalesStart.getDate() - 60);
+          salesStartDate = estimatedSalesStart.toLocaleDateString('ko-KR');
+          
+          // 판매 종료일: 공연 시작 후 7일로 추정 (현장 판매 고려)
+          const estimatedSalesEnd = new Date(performanceStartDate);
+          estimatedSalesEnd.setDate(estimatedSalesEnd.getDate() + 7);
+          salesEndDate = estimatedSalesEnd.toLocaleDateString('ko-KR');
+        }
+        
+        return {
+          startDate: salesStartDate,
+          endDate: salesEndDate,
+          ticketSaleEndDate: null
+        };
+      }
       
       return {
-        startDate,
-        endDate,
-        ticketSaleEndDate: null // 연극/뮤지컬은 판매 종료일 별도 표시 안함
+        startDate: '미정',
+        endDate: '미정',
+        ticketSaleEndDate: null
       };
     }
   };
 
-  // 종료일 기준으로 정렬 (최신 종료일이 상단에)
+  // 판매 종료일 기준으로 정렬 (최신 판매 종료일이 상단에)
   const sortedPerformances = [...performances].sort((a, b) => {
-    const dateA = playDetails?.find(detail => detail.liveName.includes(a.name))?.end_date;
-    const dateB = playDetails?.find(detail => detail.liveName.includes(b.name))?.end_date;
+    const datesA = getPerformanceDates(a.name, a.genre);
+    const datesB = getPerformanceDates(b.name, b.genre);
     
-    const endDateA = dateA ? new Date(dateA) : new Date('1900-01-01');
-    const endDateB = dateB ? new Date(dateB) : new Date('1900-01-01');
+    // 판매 종료일 비교 (미정인 경우 과거 날짜로 설정)
+    const endDateA = datesA.endDate !== '미정' ? new Date(datesA.endDate) : new Date('1900-01-01');
+    const endDateB = datesB.endDate !== '미정' ? new Date(datesB.endDate) : new Date('1900-01-01');
     
     return endDateB.getTime() - endDateA.getTime();
   });
@@ -168,7 +202,7 @@ function PlaySalesTable({ performances, playDetails, concertBepData }: PlaySales
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/50">
               <th className="text-left p-5 font-semibold text-gray-700 text-sm">공연 정보</th>
-              <th className="text-center p-5 font-semibold text-gray-700 text-sm">공연 기간</th>
+              <th className="text-center p-5 font-semibold text-gray-700 text-sm">판매 기간</th>
               <th className="text-right p-5 font-semibold text-gray-700 text-sm">매출 현황</th>
               <th className="text-center p-5 font-semibold text-gray-700 text-sm">달성률</th>
             </tr>
@@ -200,24 +234,18 @@ function PlaySalesTable({ performances, playDetails, concertBepData }: PlaySales
                     </div>
                   </td>
 
-                  {/* 공연 기간 */}
+                  {/* 판매 기간 */}
                   <td className="p-5 text-center">
-                    <div className="space-y-1">
-                      {dates.startDate ? (
-                        // 연극/뮤지컬: 시작일 ~ 종료일
-                        <>
-                          <div className="text-sm font-medium text-gray-900">
-                            {dates.startDate}
-                          </div>
-                          <div className="text-xs text-gray-500">~</div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {dates.endDate}
-                          </div>
-                        </>
-                      ) : (
-                        // 콘서트: 판매 종료일만
+                    <div>
+                      {dates.startDate && dates.endDate && dates.startDate !== '미정' && dates.endDate !== '미정' ? (
+                        // 판매 시작일 ~ 판매 종료일 (1줄)
                         <div className="text-sm font-medium text-gray-900">
-                          {dates.endDate}
+                          {dates.startDate} ~ {dates.endDate}
+                        </div>
+                      ) : (
+                        // 데이터가 없는 경우
+                        <div className="text-sm font-medium text-gray-500">
+                          판매 기간 정보 없음
                         </div>
                       )}
                     </div>
@@ -323,16 +351,14 @@ function PlaySalesTable({ performances, playDetails, concertBepData }: PlaySales
                   </div>
                 </div>
                 <div>
-                  <div className="text-gray-500 mb-1">공연 기간</div>
-                  {dates.startDate ? (
-                    <div className="text-gray-900">
-                      <div className="font-medium">{dates.startDate}</div>
-                      <div className="text-xs text-gray-500">~</div>
-                      <div className="font-medium">{dates.endDate}</div>
+                  <div className="text-gray-500 mb-1">판매 기간</div>
+                  {dates.startDate && dates.endDate && dates.startDate !== '미정' && dates.endDate !== '미정' ? (
+                    <div className="text-gray-900 font-medium">
+                      {dates.startDate} ~ {dates.endDate}
                     </div>
                   ) : (
-                    <div className="font-medium text-gray-900">
-                      {dates.endDate}
+                    <div className="font-medium text-gray-500">
+                      판매 기간 정보 없음
                     </div>
                   )}
                 </div>
@@ -868,7 +894,7 @@ export default function DashboardPage() {
               <div>
                 <h2 className="text-lg sm:text-xl font-bold text-gray-900">공연별 요약</h2>
                 <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                  종료일 기준 정렬 • 실제 공연 일정 연동
+                  판매 종료일 기준 정렬 • 실제 공연 일정 연동
                 </p>
               </div>
             </div>
