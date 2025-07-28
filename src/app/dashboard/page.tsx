@@ -44,6 +44,13 @@ interface ConcertBepData {
   bepRatio: number;
 }
 
+interface ConcertEstimatedProfit {
+  liveName: string;
+  bep: number;         // ⭐ BEP 금액 (손익분기점 매출) - number 타입
+  estSales: number;    // 예상 최종 매출
+  finalProfit: number; // ⭐ 최종 예상 수익 (예상매출 - BEP)
+}
+
 interface PlayDailyDetails {
   id: number;
   liveId: string;
@@ -58,6 +65,14 @@ interface PlayDailyDetails {
   cast: string;
   paidSeatSales: number;
   // ... 다른 필드들
+}
+
+interface PlayAllShowtime {
+  liveId_?: string;       // 공연 ID
+  liveName?: string;      // 공연명
+  bep?: number;          // ⭐ BEP 금액 (각 공연의 손익분기점) - number 타입
+  latestRecordDate?: Date;
+  // ... 기타 공연 상세 정보
 }
 
 // Concert API 호출 함수들
@@ -79,9 +94,21 @@ const fetchConcertBepData = async (): Promise<ConcertBepData[]> => {
   return response.json();
 };
 
+const fetchConcertEstimatedProfit = async (): Promise<ConcertEstimatedProfit[]> => {
+  const response = await fetch('/api/concert/estimated-profit');
+  if (!response.ok) throw new Error('Concert estimated profit fetch failed');
+  return response.json();
+};
+
 const fetchPlayDailyDetails = async (): Promise<PlayDailyDetails[]> => {
   const response = await fetch('/api/play/daily-details');
   if (!response.ok) throw new Error('Play daily details fetch failed');
+  return response.json();
+};
+
+const fetchPlayAllShowtime = async (): Promise<PlayAllShowtime[]> => {
+  const response = await fetch('/api/play/all-showtime');
+  if (!response.ok) throw new Error('Play all showtime fetch failed');
   return response.json();
 };
 
@@ -97,9 +124,11 @@ interface PlaySalesTableProps {
   }>;
   playDetails?: PlayDailyDetails[];
   concertBepData?: ConcertBepData[];
+  concertEstimatedProfit?: ConcertEstimatedProfit[];
+  playAllShowtime?: PlayAllShowtime[];
 }
 
-function PlaySalesTable({ performances, playDetails, concertBepData }: PlaySalesTableProps) {
+function PlaySalesTable({ performances, playDetails, concertBepData, concertEstimatedProfit, playAllShowtime }: PlaySalesTableProps) {
   const getGenreColor = (genre: string) => {
     switch (genre) {
       case '연극': return 'bg-blue-50 text-blue-700 border-blue-100';
@@ -182,6 +211,35 @@ function PlaySalesTable({ performances, playDetails, concertBepData }: PlaySales
     }
   };
 
+  // 공연별 BEP 정보 가져오기 (서버 데이터 직접 사용)
+  const getPerformanceBEP = (performanceName: string, genre: string) => {
+    if (genre === '콘서트') {
+      // 콘서트의 경우 EstimatedProfit API에서 실제 BEP 매출액 사용
+      const matchedProfit = concertEstimatedProfit?.find((profit: ConcertEstimatedProfit) => 
+        profit.liveName.includes(performanceName) || performanceName.includes(profit.liveName)
+      );
+      
+      if (matchedProfit) {
+        // 서버에서 제공하는 BEP 값을 그대로 사용
+        return matchedProfit.bep || 0;
+      }
+      
+      return 0;
+    } else {
+      // 연극/뮤지컬의 경우 PlayAllShowtime API에서 BEP 값 사용
+      const matchedShowtime = playAllShowtime?.find((showtime: PlayAllShowtime) => 
+        showtime.liveName?.includes(performanceName) || performanceName.includes(showtime.liveName || '')
+      );
+      
+      if (matchedShowtime && matchedShowtime.bep) {
+        // 서버에서 제공하는 BEP 값을 그대로 사용
+        return matchedShowtime.bep || 0;
+      }
+      
+      return 0;
+    }
+  };
+
   // 판매 종료일 기준으로 정렬 (최신 판매 종료일이 상단에)
   const sortedPerformances = [...performances].sort((a, b) => {
     const datesA = getPerformanceDates(a.name, a.genre);
@@ -257,8 +315,16 @@ function PlaySalesTable({ performances, playDetails, concertBepData }: PlaySales
                       <div className="font-bold text-gray-900 text-base">
                         {new Intl.NumberFormat('ko-KR').format(Number(performance.revenue) || 0)}원
                       </div>
-                      <div className="text-sm text-gray-500">
-                        목표: {new Intl.NumberFormat('ko-KR').format(Number(performance.target) || 0)}원
+                      <div className="text-sm text-gray-500 space-y-0.5">
+                        {(() => {
+                          const bep = getPerformanceBEP(performance.name, performance.genre);
+                          return (
+                            <>
+                              <div>BEP: {new Intl.NumberFormat('ko-KR').format(bep || 0)}원</div>
+                              <div>목표: {new Intl.NumberFormat('ko-KR').format(Number(performance.target) || 0)}원</div>
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
                   </td>
@@ -346,8 +412,16 @@ function PlaySalesTable({ performances, playDetails, concertBepData }: PlaySales
                   <div className="font-bold text-gray-900">
                     {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(performance.revenue) || 0)}원
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    목표: {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(performance.target) || 0)}원
+                  <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+                    {(() => {
+                      const bep = getPerformanceBEP(performance.name, performance.genre);
+                      return (
+                        <>
+                          <div>BEP: {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(bep || 0)}원</div>
+                          <div>목표: {new Intl.NumberFormat('ko-KR', { notation: 'compact', compactDisplay: 'short' }).format(Number(performance.target) || 0)}원</div>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
                 <div>
@@ -442,7 +516,9 @@ export default function DashboardPage() {
   const [concertOverview, setConcertOverview] = useState<ConcertOverview | null>(null);
   const [concertDaily, setConcertDaily] = useState<ConcertDaily[]>([]);
   const [concertBepData, setConcertBepData] = useState<ConcertBepData[]>([]);
+  const [concertEstimatedProfit, setConcertEstimatedProfit] = useState<ConcertEstimatedProfit[]>([]);
   const [playDetails, setPlayDetails] = useState<PlayDailyDetails[]>([]);
+  const [playAllShowtime, setPlayAllShowtime] = useState<PlayAllShowtime[]>([]);
   const [apiLoading, setApiLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -453,7 +529,7 @@ export default function DashboardPage() {
       setApiError(null);
       
       try {
-        const [overviewData, dailyData, bepData, detailsData] = await Promise.all([
+        const [overviewData, dailyData, bepData, estimatedProfitData, detailsData, allShowtimeData] = await Promise.all([
           fetchConcertOverview().catch(err => {
             console.warn('Concert overview API failed:', err);
             return null;
@@ -466,8 +542,16 @@ export default function DashboardPage() {
             console.warn('Concert bep data API failed:', err);
             return [];
           }),
+          fetchConcertEstimatedProfit().catch(err => {
+            console.warn('Concert estimated profit API failed:', err);
+            return [];
+          }),
           fetchPlayDailyDetails().catch(err => {
             console.warn('Play details API failed:', err);
+            return [];
+          }),
+          fetchPlayAllShowtime().catch(err => {
+            console.warn('Play all showtime API failed:', err);
             return [];
           })
         ]);
@@ -475,7 +559,9 @@ export default function DashboardPage() {
         setConcertOverview(overviewData);
         setConcertDaily(dailyData);
         setConcertBepData(bepData);
+        setConcertEstimatedProfit(estimatedProfitData);
         setPlayDetails(detailsData);
+        setPlayAllShowtime(allShowtimeData);
       } catch (error) {
         console.error('API loading failed:', error);
         setApiError(error instanceof Error ? error.message : 'API 로딩 실패');
@@ -598,16 +684,20 @@ export default function DashboardPage() {
                   const loadApiData = async () => {
                     setApiLoading(true);
                     try {
-                      const [overviewData, dailyData, bepData, detailsData] = await Promise.all([
+                      const [overviewData, dailyData, bepData, estimatedProfitData, detailsData, allShowtimeData] = await Promise.all([
                         fetchConcertOverview().catch(() => null),
                         fetchConcertDaily().catch(() => []),
                         fetchConcertBepData().catch(() => []),
-                        fetchPlayDailyDetails().catch(() => [])
+                        fetchConcertEstimatedProfit().catch(() => []),
+                        fetchPlayDailyDetails().catch(() => []),
+                        fetchPlayAllShowtime().catch(() => [])
                       ]);
                       setConcertOverview(overviewData);
                       setConcertDaily(dailyData);
                       setConcertBepData(bepData);
+                      setConcertEstimatedProfit(estimatedProfitData);
                       setPlayDetails(detailsData);
+                      setPlayAllShowtime(allShowtimeData);
                     } finally {
                       setApiLoading(false);
                     }
@@ -651,6 +741,13 @@ export default function DashboardPage() {
                 endpoint: '/concert/daily',
                 status: apiLoading ? 'loading' : concertDaily.length === 0 ? 'error' : 'success',
                 data: concertDaily.slice(-5), // 최근 5일만 표시
+                error: apiError || undefined,
+                timestamp: new Date().toISOString()
+              },
+              'concert-estimated-profit': {
+                endpoint: '/concert/estimated-profit',
+                status: apiLoading ? 'loading' : concertEstimatedProfit.length === 0 ? 'error' : 'success',
+                data: concertEstimatedProfit,
                 error: apiError || undefined,
                 timestamp: new Date().toISOString()
               }
@@ -913,6 +1010,8 @@ export default function DashboardPage() {
                 performances={dashboardData.performanceDetails} 
                 playDetails={playDetails}
                 concertBepData={concertBepData}
+                concertEstimatedProfit={concertEstimatedProfit}
+                playAllShowtime={playAllShowtime}
               />
             ) : (
               <div className="p-8 sm:p-12 text-center">
