@@ -267,7 +267,6 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
           </thead>
           <tbody>
             {sortedPerformances.map((performance, index) => {
-              const rate = Number(performance.achievementRate) || 0;
               const dates = getPerformanceDates(performance.name, performance.genre);
 
               return (
@@ -331,22 +330,52 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
 
                   {/* 달성률 */}
                   <td className="p-5 text-center">
-                    <div className="space-y-2">
-                      <div className="text-lg font-bold text-gray-900">
-                        {rate.toFixed(1)}%
-                      </div>
-                      {/* 달성률 프로그레스 바 */}
-                      <div className="w-20 bg-gray-200 rounded-full h-2 mx-auto">
-                        <div 
-                          className={`h-2 rounded-full transition-all duration-1000 ${
-                            rate >= 100 ? 'bg-blue-500' :
-                            rate >= 80 ? 'bg-green-500' :
-                            rate >= 60 ? 'bg-orange-500' :
-                            'bg-red-500'
-                          }`}
-                          style={{ width: `${Math.min(rate, 100)}%` }}
-                        ></div>
-                      </div>
+                    <div className="space-y-3">
+                      {(() => {
+                        const bep = getPerformanceBEP(performance.name, performance.genre);
+                        const bepRate = bep > 0 ? (Number(performance.revenue) / bep) * 100 : 0;
+                        const targetRate = Number(performance.achievementRate) || 0;
+                        
+                        return (
+                          <>
+                            {/* BEP 대비 달성률 */}
+                            <div>
+                              <div className="text-sm font-bold text-gray-900 mb-1">
+                                BEP: {bepRate.toFixed(1)}%
+                              </div>
+                              <div className="w-20 bg-gray-200 rounded-full h-2 mx-auto">
+                                <div 
+                                  className={`h-2 rounded-full transition-all duration-1000 ${
+                                    bepRate >= 100 ? 'bg-blue-500' :
+                                    bepRate >= 80 ? 'bg-green-500' :
+                                    bepRate >= 60 ? 'bg-orange-500' :
+                                    'bg-red-500'
+                                  }`}
+                                  style={{ width: `${Math.min(bepRate, 100)}%` }}
+                                ></div>
+                              </div>
+                            </div>
+
+                            {/* 목표 대비 달성률 */}
+                            <div>
+                              <div className="text-sm font-bold text-gray-900 mb-1">
+                                목표: {targetRate.toFixed(1)}%
+                              </div>
+                              <div className="w-20 bg-gray-200 rounded-full h-2 mx-auto">
+                                <div 
+                                  className={`h-2 rounded-full transition-all duration-1000 ${
+                                    targetRate >= 100 ? 'bg-blue-500' :
+                                    targetRate >= 80 ? 'bg-green-500' :
+                                    targetRate >= 60 ? 'bg-orange-500' :
+                                    'bg-red-500'
+                                  }`}
+                                  style={{ width: `${Math.min(targetRate, 100)}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   </td>
                 </motion.tr>
@@ -359,7 +388,6 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
       {/* 모바일 카드 레이아웃 */}
       <div className="lg:hidden space-y-4">
         {sortedPerformances.map((performance, index) => {
-          const rate = Number(performance.achievementRate) || 0;
           const dates = getPerformanceDates(performance.name, performance.genre);
 
           return (
@@ -382,27 +410,86 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
                     {performance.name}
                   </h3>
                 </div>
+                
+                {/* 달성률 표시 영역 */}
                 <div className="text-right ml-3">
-                  <div className="text-xl font-bold text-gray-900">
-                    {rate.toFixed(1)}%
-                  </div>
-                  <div className="text-xs text-gray-500">달성률</div>
+                  {(() => {
+                    const bep = getPerformanceBEP(performance.name, performance.genre);
+                    const bepRate = bep > 0 ? (Number(performance.revenue) / bep) * 100 : 0;
+                    const targetRate = Number(performance.achievementRate) || 0;
+                    
+                    return (
+                      <div className="space-y-2">
+                        {/* BEP 달성률 */}
+                        <div>
+                          <div className="text-sm font-bold text-gray-900">
+                            BEP: {bepRate.toFixed(1)}%
+                          </div>
+                          <div className="text-xs text-gray-500">손익분기</div>
+                        </div>
+                        
+                        {/* 목표 달성률 */}
+                        <div>
+                          <div className="text-sm font-bold text-gray-900">
+                            목표: {targetRate.toFixed(1)}%
+                          </div>
+                          <div className="text-xs text-gray-500">목표달성</div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 
-              {/* 달성률 바 */}
-              <div className="mb-4">
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full transition-all duration-1000 ${
-                      rate >= 100 ? 'bg-blue-500' :
-                      rate >= 80 ? 'bg-green-500' :
-                      rate >= 60 ? 'bg-orange-500' :
-                      'bg-red-500'
-                    }`}
-                    style={{ width: `${Math.min(rate, 100)}%` }}
-                  ></div>
-                </div>
+              {/* 달성률 바들 */}
+              <div className="mb-4 space-y-2">
+                {(() => {
+                  const bep = getPerformanceBEP(performance.name, performance.genre);
+                  const bepRate = bep > 0 ? (Number(performance.revenue) / bep) * 100 : 0;
+                  const targetRate = Number(performance.achievementRate) || 0;
+                  
+                  return (
+                    <>
+                      {/* BEP 달성률 바 */}
+                      <div>
+                        <div className="flex justify-between text-xs text-gray-600 mb-1">
+                          <span>BEP 달성률</span>
+                          <span>{bepRate.toFixed(1)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full transition-all duration-1000 ${
+                              bepRate >= 100 ? 'bg-blue-500' :
+                              bepRate >= 80 ? 'bg-green-500' :
+                              bepRate >= 60 ? 'bg-orange-500' :
+                              'bg-red-500'
+                            }`}
+                            style={{ width: `${Math.min(bepRate, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      {/* 목표 달성률 바 */}
+                      <div>
+                        <div className="flex justify-between text-xs text-gray-600 mb-1">
+                          <span>목표 달성률</span>
+                          <span>{targetRate.toFixed(1)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full transition-all duration-1000 ${
+                              targetRate >= 100 ? 'bg-blue-500' :
+                              targetRate >= 80 ? 'bg-green-500' :
+                              targetRate >= 60 ? 'bg-orange-500' :
+                              'bg-red-500'
+                            }`}
+                            style={{ width: `${Math.min(targetRate, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
 
               {/* 매출 및 기간 정보 */}
@@ -444,7 +531,21 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
 
       {/* 테이블 하단 요약 */}
       <div className="p-6 bg-gray-50/50 border-t border-gray-100">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+          <div className="text-center">
+            <div className="font-semibold text-gray-900 mb-1">
+              BEP 달성 공연
+            </div>
+            <div className="text-2xl font-bold text-green-600">
+              {performances.filter(p => {
+                const bep = getPerformanceBEP(p.name, p.genre);
+                return bep > 0 && (Number(p.revenue) || 0) >= bep;
+              }).length}개
+            </div>
+            <div className="text-gray-500">
+              손익분기점 달성
+            </div>
+          </div>
           <div className="text-center">
             <div className="font-semibold text-gray-900 mb-1">
               목표 달성 공연
@@ -453,14 +554,14 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
               {performances.filter(p => (Number(p.achievementRate) || 0) >= 100).length}개
             </div>
             <div className="text-gray-500">
-              전체 {performances.length}개 중
+              목표 매출 달성
             </div>
           </div>
           <div className="text-center">
             <div className="font-semibold text-gray-900 mb-1">
               진행 중인 공연
             </div>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-purple-600">
               {performances.length}개
             </div>
             <div className="text-gray-500">
@@ -469,7 +570,7 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
           </div>
           <div className="text-center">
             <div className="font-semibold text-gray-900 mb-1">
-              평균 달성률
+              평균 목표 달성률
             </div>
             <div className="text-2xl font-bold text-gray-600">
               {performances.length > 0 ? 
@@ -478,7 +579,7 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
             </div>
             <div className="text-gray-500">
               전체 공연 평균
-              </div>
+            </div>
           </div>
         </div>
       </div>
