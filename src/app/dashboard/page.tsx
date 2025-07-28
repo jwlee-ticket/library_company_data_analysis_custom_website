@@ -336,22 +336,28 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
                         const bepRate = bep > 0 ? (Number(performance.revenue) / bep) * 100 : 0;
                         const targetRate = Number(performance.achievementRate) || 0;
                         
+                        // BEP와 목표가 거의 동일한 경우 (차이가 1% 미만) 달성률 통일
+                        const target = Number(performance.target) || 0;
+                        const isSameBepTarget = bep > 0 && target > 0 && Math.abs((bep - target) / target) < 0.01;
+                        const finalBepRate = isSameBepTarget ? targetRate : bepRate;
+                        const finalTargetRate = targetRate;
+                        
                         return (
                           <>
                             {/* BEP 대비 달성률 */}
                             <div>
                               <div className="text-sm font-bold text-gray-900 mb-1">
-                                BEP: {bepRate.toFixed(1)}%
+                                BEP: {finalBepRate.toFixed(1)}%
                               </div>
                               <div className="w-20 bg-gray-200 rounded-full h-2 mx-auto">
                                 <div 
                                   className={`h-2 rounded-full transition-all duration-1000 ${
-                                    bepRate >= 100 ? 'bg-blue-500' :
-                                    bepRate >= 80 ? 'bg-green-500' :
-                                    bepRate >= 60 ? 'bg-orange-500' :
+                                    finalBepRate >= 100 ? 'bg-blue-500' :
+                                    finalBepRate >= 80 ? 'bg-green-500' :
+                                    finalBepRate >= 60 ? 'bg-orange-500' :
                                     'bg-red-500'
                                   }`}
-                                  style={{ width: `${Math.min(bepRate, 100)}%` }}
+                                  style={{ width: `${Math.min(finalBepRate, 100)}%` }}
                                 ></div>
                               </div>
                             </div>
@@ -359,17 +365,17 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
                             {/* 목표 대비 달성률 */}
                             <div>
                               <div className="text-sm font-bold text-gray-900 mb-1">
-                                목표: {targetRate.toFixed(1)}%
+                                목표: {finalTargetRate.toFixed(1)}%
                               </div>
                               <div className="w-20 bg-gray-200 rounded-full h-2 mx-auto">
                                 <div 
                                   className={`h-2 rounded-full transition-all duration-1000 ${
-                                    targetRate >= 100 ? 'bg-blue-500' :
-                                    targetRate >= 80 ? 'bg-green-500' :
-                                    targetRate >= 60 ? 'bg-orange-500' :
+                                    finalTargetRate >= 100 ? 'bg-blue-500' :
+                                    finalTargetRate >= 80 ? 'bg-green-500' :
+                                    finalTargetRate >= 60 ? 'bg-orange-500' :
                                     'bg-red-500'
                                   }`}
-                                  style={{ width: `${Math.min(targetRate, 100)}%` }}
+                                  style={{ width: `${Math.min(finalTargetRate, 100)}%` }}
                                 ></div>
                               </div>
                             </div>
@@ -418,12 +424,18 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
                     const bepRate = bep > 0 ? (Number(performance.revenue) / bep) * 100 : 0;
                     const targetRate = Number(performance.achievementRate) || 0;
                     
+                    // BEP와 목표가 거의 동일한 경우 (차이가 1% 미만) 달성률 통일
+                    const target = Number(performance.target) || 0;
+                    const isSameBepTarget = bep > 0 && target > 0 && Math.abs((bep - target) / target) < 0.01;
+                    const finalBepRate = isSameBepTarget ? targetRate : bepRate;
+                    const finalTargetRate = targetRate;
+                    
                     return (
                       <div className="space-y-2">
                         {/* BEP 달성률 */}
                         <div>
                           <div className="text-sm font-bold text-gray-900">
-                            BEP: {bepRate.toFixed(1)}%
+                            BEP: {finalBepRate.toFixed(1)}%
                           </div>
                           <div className="text-xs text-gray-500">손익분기</div>
                         </div>
@@ -431,7 +443,7 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
                         {/* 목표 달성률 */}
                         <div>
                           <div className="text-sm font-bold text-gray-900">
-                            목표: {targetRate.toFixed(1)}%
+                            목표: {finalTargetRate.toFixed(1)}%
                           </div>
                           <div className="text-xs text-gray-500">목표달성</div>
                         </div>
@@ -448,23 +460,29 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
                   const bepRate = bep > 0 ? (Number(performance.revenue) / bep) * 100 : 0;
                   const targetRate = Number(performance.achievementRate) || 0;
                   
+                  // BEP와 목표가 거의 동일한 경우 (차이가 1% 미만) 달성률 통일
+                  const target = Number(performance.target) || 0;
+                  const isSameBepTarget = bep > 0 && target > 0 && Math.abs((bep - target) / target) < 0.01;
+                  const finalBepRate = isSameBepTarget ? targetRate : bepRate;
+                  const finalTargetRate = targetRate;
+                  
                   return (
                     <>
                       {/* BEP 달성률 바 */}
                       <div>
                         <div className="flex justify-between text-xs text-gray-600 mb-1">
                           <span>BEP 달성률</span>
-                          <span>{bepRate.toFixed(1)}%</span>
+                          <span>{finalBepRate.toFixed(1)}%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div 
                             className={`h-2 rounded-full transition-all duration-1000 ${
-                              bepRate >= 100 ? 'bg-blue-500' :
-                              bepRate >= 80 ? 'bg-green-500' :
-                              bepRate >= 60 ? 'bg-orange-500' :
+                              finalBepRate >= 100 ? 'bg-blue-500' :
+                              finalBepRate >= 80 ? 'bg-green-500' :
+                              finalBepRate >= 60 ? 'bg-orange-500' :
                               'bg-red-500'
                             }`}
-                            style={{ width: `${Math.min(bepRate, 100)}%` }}
+                            style={{ width: `${Math.min(finalBepRate, 100)}%` }}
                           ></div>
                         </div>
                       </div>
@@ -473,17 +491,17 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
                       <div>
                         <div className="flex justify-between text-xs text-gray-600 mb-1">
                           <span>목표 달성률</span>
-                          <span>{targetRate.toFixed(1)}%</span>
+                          <span>{finalTargetRate.toFixed(1)}%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div 
                             className={`h-2 rounded-full transition-all duration-1000 ${
-                              targetRate >= 100 ? 'bg-blue-500' :
-                              targetRate >= 80 ? 'bg-green-500' :
-                              targetRate >= 60 ? 'bg-orange-500' :
+                              finalTargetRate >= 100 ? 'bg-blue-500' :
+                              finalTargetRate >= 80 ? 'bg-green-500' :
+                              finalTargetRate >= 60 ? 'bg-orange-500' :
                               'bg-red-500'
                             }`}
-                            style={{ width: `${Math.min(targetRate, 100)}%` }}
+                            style={{ width: `${Math.min(finalTargetRate, 100)}%` }}
                           ></div>
                         </div>
                       </div>
@@ -539,7 +557,16 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
             <div className="text-2xl font-bold text-green-600">
               {performances.filter(p => {
                 const bep = getPerformanceBEP(p.name, p.genre);
-                return bep > 0 && (Number(p.revenue) || 0) >= bep;
+                const target = Number(p.target) || 0;
+                const isSameBepTarget = bep > 0 && target > 0 && Math.abs((bep - target) / target) < 0.01;
+                
+                if (isSameBepTarget) {
+                  // BEP와 목표가 같으면 목표 달성률 사용
+                  return (Number(p.achievementRate) || 0) >= 100;
+                } else {
+                  // BEP와 목표가 다르면 BEP 기준으로 계산
+                  return bep > 0 && (Number(p.revenue) || 0) >= bep;
+                }
               }).length}개
             </div>
             <div className="text-gray-500">
