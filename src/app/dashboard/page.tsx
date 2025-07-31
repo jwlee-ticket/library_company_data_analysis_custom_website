@@ -614,6 +614,68 @@ function PlaySalesTable({ performances, playDetails, concertBepData, concertEsti
   );
 }
 
+// 활성 공연 툴팁 컴포넌트
+function ActivePerformancesTooltip({ children, performances }: { 
+  children: React.ReactNode; 
+  performances: Array<{
+    genre: '콘서트' | '연극' | '뮤지컬';
+    name: string;
+    revenue: number;
+    target: number;
+    achievementRate: number;
+  }>;
+}) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  const getGenreColor = (genre: string) => {
+    switch (genre) {
+      case '연극': return 'bg-blue-100 text-blue-700';
+      case '뮤지컬': return 'bg-purple-100 text-purple-700';
+      case '콘서트': return 'bg-green-100 text-green-700';
+      default: return 'bg-gray-100 text-gray-700';
+    }
+  };
+
+  return (
+    <div className="relative inline-block">
+      <div
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+        className="cursor-help"
+      >
+        {children}
+      </div>
+      {isVisible && (
+        <div className="absolute top-0 right-full mr-4 w-96 bg-white border border-gray-200 rounded-xl shadow-xl z-50 p-4">
+          {/* 툴팁 헤더 */}
+          <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
+            <h4 className="font-semibold text-gray-900 text-sm">활성 공연 목록</h4>
+            <span className="text-xs text-gray-500">{performances.length}개 운영중</span>
+          </div>
+          
+          {/* 공연 목록 - 공연명 1줄로 표시 */}
+          <div className="space-y-2">
+            {performances.map((performance, index) => (
+              <div key={`${performance.genre}-${performance.name}`} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors duration-150">
+                <span className={`px-2 py-0.5 rounded-md text-xs font-medium flex-shrink-0 ${getGenreColor(performance.genre)}`}>
+                  {performance.genre}
+                </span>
+                <div className="text-sm font-medium text-gray-900 truncate" title={performance.name}>
+                  {performance.name}
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* 툴팁 화살표 - 오른쪽에서 왼쪽으로 가리키는 화살표 */}
+          <div className="absolute top-8 left-full w-0 h-0 border-t-4 border-b-4 border-l-4 border-transparent border-l-white"></div>
+          <div className="absolute top-8 left-full w-0 h-0 border-t-4 border-b-4 border-l-4 border-transparent border-l-gray-200" style={{ marginLeft: '-1px' }}></div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // 툴팁 컴포넌트
 function Tooltip({ children, content }: { children: React.ReactNode; content: string }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -948,13 +1010,17 @@ export default function DashboardPage() {
               
               {/* 활성 공연 */}
               <div className="text-center sm:text-left sm:col-span-2 lg:col-span-1">
-                <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2 flex items-center justify-center sm:justify-start">
-                  활성 공연
-                  <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-green-50 text-green-600 text-xs rounded-full">운영중</span>
-                </h3>
-                <p className="text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-1 sm:mb-2">
-                  {dashboardData.performanceDetails.length}개
-                </p>
+                <ActivePerformancesTooltip performances={dashboardData.performanceDetails}>
+                  <div>
+                    <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2 flex items-center justify-center sm:justify-start">
+                      활성 공연
+                      <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-green-50 text-green-600 text-xs rounded-full">운영중</span>
+                    </h3>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-1 sm:mb-2">
+                      {dashboardData.performanceDetails.length}개
+                    </p>
+                  </div>
+                </ActivePerformancesTooltip>
               </div>
             </div>
 
