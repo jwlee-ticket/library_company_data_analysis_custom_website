@@ -983,7 +983,7 @@ export default function DashboardPage() {
                   총 매출
                   <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-blue-50 text-blue-600 text-xs rounded-full">누적</span>
                 </h3>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-1">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
                   {new Intl.NumberFormat('ko-KR').format(Number(dashboardData.totalSummary.totalRevenue) || 0)}원
                 </p>
                 <div className="text-xs sm:text-sm text-gray-500 mb-1 sm:mb-2">
@@ -996,7 +996,7 @@ export default function DashboardPage() {
                 <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2 flex items-center justify-center sm:justify-start">
                   목표 달성률
                 </h3>
-                <p className="text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-1 sm:mb-2">
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
                   {(Number(dashboardData.totalSummary.achievementRate) || 0).toFixed(1)}%
                 </p>
                 <div className="flex items-center text-xs sm:text-sm justify-center sm:justify-start">
@@ -1016,7 +1016,7 @@ export default function DashboardPage() {
                       활성 공연
                       <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-green-50 text-green-600 text-xs rounded-full">운영중</span>
                     </h3>
-                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-1 sm:mb-2">
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
                       {dashboardData.performanceDetails.length}개
                     </p>
                   </div>
